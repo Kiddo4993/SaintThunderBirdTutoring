@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Saint Thunderbird Tutoring</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .founder-section {
+            margin-top: 8rem;
+            position: relative;
+        }
+
+        .founder-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(212, 165, 116, 0.3);
+            border-radius: 24px;
+            padding: 4rem;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .founder-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.08) 0%, transparent 70%);
+            animation: glow 8s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-20px, -20px) scale(1.1); }
+        }
+
+        .founder-image {
+            width: 100%;
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, rgba(212, 165, 116, 0.2), rgba(139, 69, 19, 0.2));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8rem;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .founder-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .founder-content h3 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--beige), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .founder-title {
+            color: var(--beige-light);
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+        }
+
+        .founder-bio {
+            color: var(--beige-light);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .heritage-badge {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: rgba(212, 165, 116, 0.15);
+            border: 1px solid rgba(212, 165, 116, 0.4);
+            border-radius: 50px;
+            color: var(--beige);
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 1rem;
+        }
+
+        .purpose-highlight {
+            background: linear-gradient(135deg, rgba(212, 165, 116, 0.1), rgba(139, 69, 19, 0.1));
+            border-left: 4px solid var(--beige);
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 3rem 0;
+        }
+
+        .purpose-highlight h4 {
+            font-size: 1.5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            color: var(--beige);
+        }
+
+        .purpose-highlight p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--beige-light);
+        }
+
+        .stats-mini {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .stat-mini {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(212, 165, 116, 0.05);
+            border-radius: 16px;
+            border: 1px solid rgba(212, 165, 116, 0.2);
+        }
+
+        .stat-mini-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--beige), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-mini-label {
+            font-size: 0.9rem;
+            color: var(--beige-light);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .community-bridge {
+            margin-top: 6rem;
+            text-align: center;
+        }
+
+        .bridge-text {
+            max-width: 900px;
+            margin: 2rem auto;
+            font-size: 1.2rem;
+            line-height: 1.9;
+            color: var(--beige-light);
+            font-style: italic;
+            position: relative;
+            padding: 2rem;
+        }
+
+        .bridge-text::before,
+        .bridge-text::after {
+            content: '"';
+            font-size: 4rem;
+            color: var(--beige);
+            opacity: 0.3;
+            position: absolute;
+        }
+
+        .bridge-text::before {
+            top: 0;
+            left: 0;
+        }
+
+        .bridge-text::after {
+            bottom: 0;
+            right: 0;
+        }
+
+        body.light-mode .founder-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(212, 165, 116, 0.4);
+        }
+
+        body.light-mode .founder-bio,
+        body.light-mode .founder-title,
+        body.light-mode .bridge-text {
+            color: #3a3a3a;
+        }
+
+        body.light-mode .purpose-highlight {
+            background: linear-gradient(135deg, rgba(212, 165, 116, 0.15), rgba(139, 69, 19, 0.15));
+        }
+
+        body.light-mode .purpose-highlight p {
+            color: #2d2d2d;
+        }
+
+        @media (max-width: 768px) {
+            .founder-card {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                padding: 2rem;
+            }
+
+            .founder-image {
+                font-size: 5rem;
+            }
+
+            .stats-mini {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav id="nav">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-icon">⚡</span>
+                <span><a href="index.html" style="color: inherit; text-decoration: none;">Saint Thunderbird</a></span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="about.html" class="nav-link active">About</a></li>
+                <li><a href="subject.html" class="nav-link">Subjects</a></li>
+                <li><a href="students.html" class="nav-link">Students</a></li>
+                <li><a href="mentors.html" class="nav-link">Mentors</a></li>
+                <li><button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">🌓</button></li>
+                <li><a href="login.html" class="profile-icon" title="Login / Sign Up">👤</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="page-hero">
+        <div class="mesh-gradient"></div>
+        <div class="hero-content">
+            <h1><span class="gradient-text">About</span> Saint Thunderbird</h1>
+            <p>Empowering indigenous students through culturally responsive education</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="container">
+            <!-- Purpose Section -->
+            <div class="section-header">
+                <div class="section-tag">OUR PURPOSE</div>
+                <h2 class="section-title">Student-to-Student <span class="gradient-text">Excellence</span></h2>
+            </div>
+
+            <div class="purpose-highlight">
+                <h4>🎓 Non-Profit, Student-Led</h4>
+                <p>Saint Thunderbird Tutoring is a student-to-student non-profit organization that introduces tutors and students, with a focus on providing academic support to First Nations children. Our tutors are passionate about education, and our students are committed to learning. Together, we create a community where knowledge flows freely and cultural understanding deepens.</p>
+            </div>
+
+            <div class="stats-mini">
+                <div class="stat-mini">
+                    <div class="stat-mini-number">100%</div>
+                    <div class="stat-mini-label">Student-Led</div>
+                </div>
+                <div class="stat-mini">
+                    <div class="stat-mini-number">500+</div>
+                    <div class="stat-mini-label">Students Served</div>
+                </div>
+                <div class="stat-mini">
+                    <div class="stat-mini-number">Free</div>
+                    <div class="stat-mini-label">To All Students</div>
+                </div>
+            </div>
+
+            <!-- Mission, Vision, Values -->
+            <div style="margin-top: 8rem;">
+                <div class="section-header">
+                    <div class="section-tag">WHO WE ARE</div>
+                    <h2 class="section-title">Our <span class="gradient-text">Foundation</span></h2>
+                </div>
+
+                <div class="grid">
+                    <div class="glass-card">
+                        <span class="card-icon">🌟</span>
+                        <h3>Our Mission</h3>
+                        <p>To provide culturally responsive education that honors indigenous traditions while preparing students for future success through accessible, high-quality tutoring and mentorship.</p>
+                    </div>
+                    <div class="glass-card">
+                        <span class="card-icon">👁️</span>
+                        <h3>Our Vision</h3>
+                        <p>A world where indigenous students thrive academically while maintaining strong connections to their cultural heritage, languages, and community values.</p>
+                    </div>
+                    <div class="glass-card">
+                        <span class="card-icon">💎</span>
+                        <h3>Our Values</h3>
+                        <p>Cultural respect, educational excellence, community empowerment, inclusivity, and sustainable growth through collaborative learning and mutual support.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Founder Section -->
+            <div class="founder-section">
+                <div class="section-header">
+                    <div class="section-tag">LEADERSHIP</div>
+                    <h2 class="section-title">Meet Our <span class="gradient-text">Founder</span></h2>
+                </div>
+
+                <div class="founder-card">
+                    <div class="founder-image">
+                        👤
+                    </div>
+                    <div class="founder-content">
+                        <h3>Dylan Duan</h3>
+                        <p class="founder-title">Founder</p>
+                        <p class="founder-bio">
+                            Dylan Duan grew up in a family deeply committed to bridging understanding and communication with First Nations communities. His elder sister worked closely with indigenous communities, and his brother is an honorary member of Spuzzum First Nations, reflecting a profound family dedication to reconciliation and partnership.
+                        </p>
+                        <p class="founder-bio">
+                            The history of fellowship and understanding between Asian communities and First Nations is embedded in Canadian history. Dylan carries forward this legacy of cross-cultural collaboration, building bridges through education and mutual respect. Saint Thunderbird Tutoring embodies his vision of student-led change and community empowerment.
+                        </p>
+                        <span class="heritage-badge">🤝 Building Bridges Through Education</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Why Choose Us -->
+            <div style="margin-top: 8rem;">
+                <h2 class="section-title">Why Choose <span class="gradient-text">Us</span></h2>
+                <div class="grid subjects-grid" style="margin-top: 3rem;">
+                    <div class="glass-card">
+                        <span class="card-icon">🎯</span>
+                        <h3>Culturally Responsive</h3>
+                        <p>All our programs integrate indigenous knowledge, languages, and cultural practices into the learning experience, ensuring education that respects and celebrates heritage.</p>
+                    </div>
+                    <div class="glass-card">
+                        <span class="card-icon">🏆</span>
+                        <h3>Proven Results</h3>
+                        <p>92% of our students show significant academic improvement within the first semester of tutoring, with measurable gains in confidence and cultural pride.</p>
+                    </div>
+                    <div class="glass-card">
+                        <span class="card-icon">🤝</span>
+                        <h3>Community Driven</h3>
+                        <p>Led by indigenous educators and community members who understand the unique needs of our students, ensuring authentic and meaningful support.</p>
+                    </div>
+                    <div class="glass-card">
+                        <span class="card-icon">💝</span>
+                        <h3>Student-to-Student</h3>
+                        <p>Peer-led learning creates relatable connections where students feel understood, supported, and empowered to reach their full potential.</p>
+                    </div>
+                    <div class="glass-card">
+                        <span class="card-icon">🌍</span>
+                        <h3>Cross-Cultural Unity</h3>
+                        <p>Honoring the historical bonds between diverse communities while building new bridges for future generations of learners and leaders.</p>
+                    </div>
+                    <div class="glass-card">
+                        <span class="card-icon">⚡</span>
+                        <h3>Completely Free</h3>
+                        <p>As a non-profit organization, all our services are provided at no cost, ensuring every First Nations student has access to quality education.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 Saint Thunderbird Tutoring</p>
+        <p>Empowering communities through education</p>
+    </footer>
+
+    <button id="scrollTopBtn" title="Back to Top">↑</button>
+    <script src="script.js"></script>
+</body>
+</html>

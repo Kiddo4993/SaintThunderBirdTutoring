@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terms & Conditions - Saint Thunderbird Tutoring</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --beige: #d4a574;
+      --accent: #8b4513;
+      --beige-light: #e8d5c4;
+    }
+
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background: #000;
+      color: #e5e5e5;
+      padding: 2rem;
+      line-height: 1.7;
+      transition: background 0.6s ease, color 0.6s ease;
+    }
+
+    body.light-mode {
+      background: linear-gradient(135deg, #ffffff 0%, #faf9f6 50%, #f5f5f0 100%);
+      color: #1a1a1a;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 3rem;
+    }
+
+    body.light-mode .container {
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(212, 165, 116, 0.3);
+    }
+
+    h1, h2 {
+      background: linear-gradient(135deg, var(--beige), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+      margin-top: 2rem;
+    }
+
+    p, li {
+      font-size: 0.95rem;
+      color: var(--beige-light);
+    }
+
+    body.light-mode p, body.light-mode li {
+      color: #333;
+    }
+
+    ul {
+      margin-left: 1.5rem;
+    }
+
+    a {
+      color: var(--beige);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    a:hover {
+      color: var(--accent);
+    }
+
+    .theme-toggle-btn {
+      position: fixed;
+      top: 2rem;
+      right: 2rem;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--beige), var(--accent));
+      border: none;
+      color: #fff;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      z-index: 100;
+    }
+
+    .theme-toggle-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 3rem;
+      text-align: center;
+      color: var(--beige);
+      text-decoration: none;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      transition: color 0.3s;
+    }
+
+    .back-link:hover {
+      color: var(--accent);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="theme-toggle-btn" onclick="toggleTheme()">🌓</button>
+  <div class="container">
+    <h1>Terms & Conditions</h1>
+    <p>Welcome to <strong>Saint Thunderbird Tutoring</strong>. By creating an account as a student or tutor, you agree to the following terms and conditions designed to ensure a safe, respectful, and effective learning environment for everyone involved.</p>
+
+    <h2>1. Purpose</h2>
+    <p>Saint Thunderbird Tutoring is a non-profit educational platform dedicated to providing free, culturally grounded tutoring to First Nations students across Canada. We aim to promote educational equity and support students in achieving their academic and personal goals.</p>
+
+    <h2>2. Account Responsibilities</h2>
+    <ul>
+      <li>All users must provide accurate, up-to-date information during registration.</li>
+      <li>Students and tutors are responsible for maintaining the confidentiality of their login information.</li>
+      <li>Accounts found to be fraudulent or misrepresentative may be suspended or removed.</li>
+    </ul>
+
+    <h2>3. Code of Conduct</h2>
+    <ul>
+      <li>Respect for all cultures, beliefs, and communities is mandatory.</li>
+      <li>Discrimination, harassment, or inappropriate behavior of any kind will not be tolerated.</li>
+      <li>Tutors must maintain professionalism and appropriate boundaries with students.</li>
+      <li>Students must engage respectfully and be committed to their learning process.</li>
+    </ul>
+
+    <h2>4. Privacy & Data Use</h2>
+    <p>Your information is used solely to connect students and tutors within the Saint Thunderbird Tutoring program. We will never sell or distribute your personal data to third parties. By signing up, you consent to our use of anonymized data for program improvement and research purposes.</p>
+
+    <h2>5. Tutor Expectations</h2>
+    <ul>
+      <li>Tutors are expected to dedicate the number of hours indicated in their application.</li>
+      <li>All tutoring sessions should be conducted respectfully and with a focus on supporting student growth.</li>
+      <li>Tutors agree to maintain confidentiality regarding all student information and progress.</li>
+    </ul>
+
+    <h2>6. Student Expectations</h2>
+    <ul>
+      <li>Students are expected to attend sessions punctually and notify tutors of cancellations in advance.</li>
+      <li>Learning goals shared with tutors are used solely to personalize support and track growth.</li>
+      <li>Students must treat tutors with the same respect and professionalism expected from tutors.</li>
+    </ul>
+
+    <h2>7. Program Integrity</h2>
+    <p>Saint Thunderbird Tutoring reserves the right to modify, pause, or discontinue parts of the program to improve quality and accessibility. Any misuse of the platform may result in account termination.</p>
+
+    <h2>8. Contact</h2>
+    <p>For any questions regarding these terms, please contact us at:  
+      <a href="mailto:dylanduancanada@gmail.com">dylanduancanada@gmail.com</a>
+    </p>
+
+    <a href="signup.html" class="back-link">← Back to Sign Up</a>
+  </div>
+
+  <script>
+    function toggleTheme() {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+      localStorage.setItem('st-theme', isLight ? 'light' : 'dark');
+      document.querySelector('.theme-toggle-btn').textContent = isLight ? '☀️' : '🌓';
+    }
+
+    // Load saved theme
+    const savedTheme = localStorage.getItem('st-theme');
+    if (savedTheme === 'light') {
+      document.body.classList.add('light-mode');
+      document.querySelector('.theme-toggle-btn').textContent = '☀️';
+    }
+  </script>
+</body>
+</html>

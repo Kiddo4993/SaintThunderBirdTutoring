@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saint Thunderbird Tutoring</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    
+    <script>
+      window.toggleTheme = function toggleTheme() {
+        document.body.classList.toggle('light-mode');
+        if (document.body.classList.contains('light-mode')) {
+          try { localStorage.setItem('st-theme', 'light'); } catch {}
+        } else {
+          try { localStorage.setItem('st-theme', 'dark'); } catch {}
+        }
+      };
+    
+      try {
+        const saved = localStorage.getItem('st-theme');
+        if (saved === 'light') document.documentElement.classList.add('light-mode');
+      } catch (e) {}
+    </script>
+    
+</head>
+
+    
+<body>
+    <!-- Ultra-Futuristic Intro -->
+    <div class="intro-overlay">
+        <div class="grid-bg"></div>
+        <div class="scan-line"></div>
+        <div class="energy-ring"></div>
+        <div class="hologram-container">
+            <div class="thunderbird-hologram">⚡</div>
+            <h1 class="intro-title">SAINT THUNDERBIRD</h1>
+            <p class="intro-subtitle">Tutoring</p>
+        </div>
+    </div>
+
+    <nav id="nav">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-icon">⚡</span>
+                <span>Saint Thunderbird</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="about.html" class="nav-link">About</a></li>
+                <li><a href="subject.html" class="nav-link">Subjects</a></li>
+                <li><a href="students.html" class="nav-link">Students</a></li>
+                <li><a href="mentors.html" class="nav-link">Mentors</a></li>
+                <li><button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">🌓</button></li>
+                <li><a href="login.html" class="profile-icon" title="Login / Sign Up">👤</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="stars" id="stars"></div>
+        <div class="mesh-gradient"></div>
+        <div class="hero-content">
+            <div class="hero-badge">Empowering Indigenous Students</div>
+            <h1><span class="gradient-text">Excellence</span><br>In Indigenous Education</h1>
+            <p>Connecting indigenous students with expert tutors for academic success. Browse our courses and join our community of learners and educators.</p>
+            <div class="cta-group">
+                <a href="#subjects" class="btn btn-primary">View Courses →</a>
+                <a href="#mentors" class="btn btn-secondary">Become a Tutor</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overview Section -->
+    <div class="section" style="padding-top: 8rem;">
+        <div class="section-header">
+            <div class="section-tag">OVERVIEW</div>
+            <h2 class="section-title"><span class="gradient-text">Welcome</span> To Saint Thunderbird</h2>
+            <p class="section-subtitle">Data-driven excellence in indigenous education</p>
+        </div>
+
+        <!-- Data Visualizations -->
+        <div class="stats-grid subjects-grid" style="margin-bottom: 6rem;">
+            <div class="stat" data-percent="100">
+              <div class="stat-number counter" data-target="500">0</div>
+              <div class="stat-label">Students Enrolled</div>
+              <div class="progress-bar">
+                <div class="progress-fill"></div>
+              </div>
+              <p class="stat-subtext">↑ 45% from last year</p>
+            </div>
+          
+            <div class="stat" data-percent="60">
+              <div class="stat-number counter" data-target="15">0</div>
+              <div class="stat-label">Communities</div>
+              <div class="progress-bar">
+                <div class="progress-fill"></div>
+              </div>
+              <p class="stat-subtext">Across 3 provinces</p>
+            </div>
+          
+            <div class="stat" data-percent="92">
+              <div class="stat-number counter" data-target="92">0</div>
+              <div class="stat-label">Success Rate</div>
+              <div class="progress-bar">
+                <div class="progress-fill"></div>
+              </div>
+              <p class="stat-subtext">Students improving grades</p>
+            </div>
+          
+            <div class="stat" data-percent="85">
+              <div class="stat-number counter" data-target="1200">0</div>
+              <div class="stat-label">Monthly Sessions</div>
+              <div class="progress-bar">
+                <div class="progress-fill"></div>
+              </div>
+              <p class="stat-subtext">Hours of quality tutoring</p>
+            </div>
+          </div>
+          
+
+        <!-- Progress Bars -->
+        <div style="max-width: 1000px; margin: 4rem auto;">
+            <h3 style="font-size: 2rem; font-weight: 900; text-align: center; margin-bottom: 3rem; text-transform: uppercase;">Subject Excellence</h3>
+            <div style="display: grid; gap: 2rem;">
+          
+              <div class="glass-card" style="padding: 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                  <span style="font-weight: 700; font-size: 1.1rem;">Mathematics</span>
+                  <span style="color: var(--beige); font-weight: 700;">100%</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" data-width="100"></div>
+                </div>
+              </div>
+          
+              <div class="glass-card" style="padding: 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                  <span style="font-weight: 700; font-size: 1.1rem;">Sciences</span>
+                  <span style="color: var(--beige); font-weight: 700;">100%</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" data-width="100"></div>
+                </div>
+              </div>
+          
+              <div class="glass-card" style="padding: 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                  <span style="font-weight: 700; font-size: 1.1rem;">Languages</span>
+                  <span style="color: var(--beige); font-weight: 700;">100%</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" data-width="100"></div>
+                </div>
+              </div>
+          
+              <div class="glass-card" style="padding: 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                  <span style="font-weight: 700; font-size: 1.1rem;">Technology</span>
+                  <span style="color: var(--beige); font-weight: 700;">100%</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" data-width="100"></div>
+                </div>
+              </div>
+          
+            </div>
+          </div>
+          
+
+        <!-- Summary Cards -->
+        <div class="grid subjects-grid" style="margin-top: 6rem;">
+            <div class="glass-card" >
+                <span class="card-icon">🌟</span>
+                <h3>About Us</h3>
+                <p>We provide culturally responsive education that honors indigenous traditions while preparing students for future success through accessible, high-quality tutoring and mentorship programs.</p>
+                <a href="#about" style="color: var(--beige); text-decoration: none; font-weight: 700; margin-top: 1rem; display: inline-block;">Learn More →</a>
+            </div>
+            <div class="glass-card">
+                <span class="card-icon">📚</span>
+                <h3>Our Subjects</h3>
+                <p>From mathematics and sciences to languages and arts, we offer comprehensive tutoring across all core subjects with culturally relevant teaching methods and materials.</p>
+                <a href="#subjects" style="color: var(--beige); text-decoration: none; font-weight: 700; margin-top: 1rem; display: inline-block;">View Subjects →</a>
+            </div>
+            <div class="glass-card">
+                <span class="card-icon">👨‍🏫</span>
+                <h3>Expert Mentors</h3>
+                <p>Our team includes certified educators, indigenous community leaders, and career professionals dedicated to helping students achieve academic excellence and personal growth.</p>
+                <a href="#mentors" style="color: var(--beige); text-decoration: none; font-weight: 700; margin-top: 1rem; display: inline-block;">Meet Our Team →</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="students" class="section">
+        <div class="section-header">
+            <div class="section-tag">FOR STUDENTS</div>
+            <h2 class="section-title">Your <span class="gradient-text">Journey</span></h2>
+            <p class="section-subtitle">Personalized support for every indigenous student</p>
+        </div>
+        <div class="grid subjects-grid">
+            <div class="glass-card">
+                <span class="card-icon">🎯</span>
+                <h3>Personalized Learning</h3>
+                <p>Each student receives a customized learning plan that adapts to their pace, learning style, and academic goals while honoring their cultural background.</p>
+            </div>
+            <div class="glass-card">
+                <span class="card-icon">🤝</span>
+                <h3>Peer Support</h3>
+                <p>Join study groups and connect with fellow indigenous students for collaborative learning, mutual encouragement, and community building.</p>
+            </div>
+            <div class="glass-card">
+                <span class="card-icon">🏆</span>
+                <h3>Achievement Recognition</h3>
+                <p>Celebrate your successes! We recognize academic achievements, cultural contributions, and personal growth throughout your educational journey.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="about" class="section">
+        <div class="section-header">
+            <div class="section-tag">WHO WE ARE</div>
+            <h2 class="section-title"><span class="gradient-text">About</span> Us</h2>
+            <p class="section-subtitle">Building bridges between heritage and innovation through transformative learning</p>
+        </div>
+        <div class="grid subjects-grid">
+            <div class="glass-card">
+                <span class="card-icon">🌟</span>
+                <h3>Our Mission</h3>
+                <p>To provide culturally responsive education that honors indigenous traditions while preparing students for future success through accessible, high-quality tutoring and mentorship.</p>
+            </div>
+            <div class="glass-card">
+                <span class="card-icon">👁️</span>
+                <h3>Our Vision</h3>
+                <p>A world where indigenous students thrive academically while maintaining strong connections to their cultural heritage, languages, and community values.</p>
+            </div>
+            <div class="glass-card">
+                <span class="card-icon">💎</span>
+                <h3>Our Values</h3>
+                <p>Cultural respect, educational excellence, community empowerment, inclusivity, and sustainable growth through collaborative learning and mutual support.</p>
+            </div>
+        </div>
+    </div>
+
+    <section id="subjects" class="section">
+        <div class="section-header">
+          <div class="section-tag">Subjects We Teach</div>
+          <h2 class="section-title">Explore Our <span class="gradient-text">Tutoring Areas</span></h2>
+          <p class="section-subtitle">We support Indigenous students across a wide range of academic disciplines, empowering excellence through culturally grounded education.</p>
+        </div>
+      
+        <div class="grid subjects-grid">
+          <!-- Row 1 -->
+          <div class="glass-card">
+            <span class="card-icon">📘</span>
+            <h3>English & Literature</h3>
+            <p>Strengthen communication, essay writing, and analytical reading through Indigenous perspectives and contemporary voices.</p>
+          </div>
+      
+          <div class="glass-card">
+            <span class="card-icon">🧮</span>
+            <h3>Mathematics</h3>
+            <p>Master foundational to advanced math concepts with culturally relevant examples and step-by-step mentorship.</p>
+          </div>
+      
+          <div class="glass-card">
+            <span class="card-icon">🧬</span>
+            <h3>Science</h3>
+            <p>Explore biology, chemistry, and physics while connecting traditional Indigenous knowledge with modern discoveries.</p>
+          </div>
+      
+          <!-- Row 2 -->
+          <div class="glass-card">
+            <span class="card-icon">🌍</span>
+            <h3>Social Studies</h3>
+            <p>Understand history, geography, and social justice through inclusive and Indigenous-centered perspectives.</p>
+          </div>
+      
+          <div class="glass-card">
+            <span class="card-icon">💻</span>
+            <h3>Computer Science</h3>
+            <p>Build digital skills, learn to code, and explore technology as a tool for creativity and community empowerment.</p>
+          </div>
+      
+          <div class="glass-card">
+            <span class="card-icon">🎨</span>
+            <h3>Arts & Culture</h3>
+            <p>Express yourself through visual arts, music, and storytelling — celebrating Indigenous creativity and identity.</p>
+          </div>
+        </div>
+      </section>
+      
+
+    <div id="mentors" class="section">
+        <div class="section-header">
+            <div class="section-tag">OUR TEAM</div>
+            <h2 class="section-title">Our <span class="gradient-text">Mentors</span></h2>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="stats-grid subjects-grid">
+            <div class="stat">
+                <div class="stat-number counter" data-target="500">0</div>
+                <div class="stat-label">Active Students</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number counter" data-target="15">0</div>
+                <div class="stat-label">Communities</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number counter" data-target="92">0</div>
+                <div class="stat-label">Success Rate</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number counter" data-target="45">0</div>
+                <div class="stat-label">Expert Tutors</div>
+            </div>
+        </div>
+
+        <div class="grid subjects-grid container section" style="margin-top: 4rem;">
+            <div class="glass-card">
+                <span class="card-icon">👨‍🏫</span>
+                <h3>Expert Educators</h3>
+                <p>Certified teachers, university professors, and subject matter experts committed to culturally responsive education and student success.</p>
+            </div>
+            <div class="glass-card">
+                <span class="card-icon">🌱</span>
+                <h3>Community Leaders</h3>
+                <p>Indigenous community members, elders, and cultural practitioners who share traditional knowledge and provide cultural guidance.</p>
+            </div>
+            <div class="glass-card">
+                <span class="card-icon">💼</span>
+                <h3>Career Professionals</h3>
+                <p>Successful indigenous professionals from various fields who inspire students and share real-world experience and career insights.</p>
+            </div>
+        </div>
+
+        <div style="margin-top: 6rem; text-align: center; max-width: 800px; margin-left: auto; margin-right: auto;">
+            <h3 style="font-size: 3rem; margin-bottom: 1.5rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.02em;">Become a Tutor</h3>
+            <p style="font-size: 1.2rem; color: var(--beige-light); line-height: 1.8; margin-bottom: 2.5rem;">Share your knowledge, experience, and passion. Help shape the next generation of indigenous leaders and scholars. Apply today to join our community of dedicated educators.</p>
+            <a href="login.html" class="btn btn-primary">Apply to Tutor →</a>
+        </div>
+    </div>
+    <!-- Scroll to Top Button -->
+    <button id="scrollTopBtn" title="Back to Top">↑</button>
+   
+     <script src="script.js"></script>
+</body>

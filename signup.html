@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Saint Thunderbird Tutoring</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4a7c9e;
+            --beige: #d4a574;
+            --accent: #8b4513;
+            --beige-light: #e8d5c4;
+        }
+
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: #000000;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            transition: background-color 0.6s ease;
+        }
+
+        body.light-mode {
+            background: linear-gradient(135deg, #ffffff 0%, #faf9f6 50%, #f5f5f0 100%);
+        }
+
+        .mesh-gradient {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(at 20% 30%, rgba(96, 165, 250, 0.15) 0%, transparent 50%),
+                radial-gradient(at 80% 70%, rgba(139, 69, 19, 0.12) 0%, transparent 50%);
+            filter: blur(60px);
+            z-index: 0;
+        }
+
+        .signup-container {
+            max-width: 600px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 3rem;
+            position: relative;
+            z-index: 10;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        body.light-mode .signup-container {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(212, 165, 116, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            font-size: 4rem;
+            filter: drop-shadow(0 0 20px rgba(96, 165, 250, 0.6));
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--beige), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--beige-light);
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        body.light-mode .subtitle {
+            color: #4a4a4a;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            color: #9ca3af;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, var(--beige), var(--accent));
+            border-color: var(--beige);
+            color: #fff;
+        }
+
+        body.light-mode .tab {
+            background: rgba(212, 165, 116, 0.1);
+            border: 1px solid rgba(212, 165, 116, 0.3);
+            color: #4a4a4a;
+        }
+
+        body.light-mode .tab.active {
+            background: linear-gradient(135deg, var(--beige), var(--accent));
+            color: #fff;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--beige);
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        body.light-mode label {
+            color: #2d2d2d;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #ffffff;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        body.light-mode input,
+        body.light-mode select,
+        body.light-mode textarea {
+            background: rgba(212, 165, 116, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.3);
+            color: #1a1a1a;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--beige);
+            background: rgba(212, 165, 116, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            font-size: 0.85rem;
+            text-transform: none;
+            letter-spacing: 0;
+            color: var(--beige-light);
+        }
+
+        body.light-mode .checkbox-group label {
+            color: #4a4a4a;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 1.2rem;
+            background: linear-gradient(135deg, var(--beige), var(--accent));
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(212, 165, 116, 0.4);
+        }
+
+        .links-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .link {
+            color: var(--beige);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .link:hover {
+            color: var(--accent);
+        }
+
+        body.light-mode .link {
+            color: #2d2d2d;
+        }
+
+        .theme-toggle-btn {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--beige), var(--accent));
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 100;
+        }
+
+        .theme-toggle-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        body.light-mode h1 {
+            background: linear-gradient(135deg, var(--beige), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .info-text {
+            background: rgba(212, 165, 116, 0.1);
+            border-left: 3px solid var(--beige);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            color: var(--beige-light);
+        }
+
+        body.light-mode .info-text {
+            background: rgba(212, 165, 116, 0.15);
+            color: #4a4a4a;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .links-group {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mesh-gradient"></div>
+    <button class="theme-toggle-btn" onclick="toggleTheme()">🌓</button>
+
+    <div class="signup-container">
+        <div class="logo">
+            <div class="logo-icon">⚡</div>
+        </div>
+        
+        <h1>Join Saint Thunderbird</h1>
+        <p class="subtitle">Create your account and start your learning journey</p>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('student')">Student</div>
+            <div class="tab" onclick="switchTab('tutor')">Tutor</div>
+        </div>
+        
+        <!-- Student Sign Up -->
+        <div id="student-content" class="tab-content active">
+            <div class="info-text">
+                ✨ Join 500+ First Nations students receiving free, culturally responsive tutoring!
+            </div>
+            <form id="studentSignupForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="studentFirstName">First Name</label>
+                        <input type="text" id="studentFirstName" name="firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentLastName">Last Name</label>
+                        <input type="text" id="studentLastName" name="lastName" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="studentEmail">Email Address</label>
+                    <input type="email" id="studentEmail" name="email" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="studentPassword">Password</label>
+                        <input type="password" id="studentPassword" name="password" required minlength="8">
+                    </div>
+                    <div class="form-group">
+                        <label for="studentConfirmPassword">Confirm Password</label>
+                        <input type="password" id="studentConfirmPassword" name="confirmPassword" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="studentGrade">Grade Level</label>
+                    <select id="studentGrade" name="grade" required>
+                        <option value="">Select Grade</option>
+                        <option value="elementary">Elementary (K-5)</option>
+                        <option value="middle">Middle School (6-8)</option>
+                        <option value="high">High School (9-12)</option>
+                        <option value="post-secondary">Post-Secondary</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="studentCommunity">Community/Nation (Optional)</label>
+                    <input type="text" id="studentCommunity" name="community" placeholder="e.g., Spuzzum First Nation">
+                </div>
+
+                <div class="form-group">
+                    <label for="studentSubjects">Subjects Interested In</label>
+                    <select id="studentSubjects" name="subjects" multiple size="4">
+                        <option value="math">Mathematics</option>
+                        <option value="science">Sciences</option>
+                        <option value="languages">Languages</option>
+                        <option value="social">Social Studies</option>
+                        <option value="technology">Technology</option>
+                        <option value="arts">Arts & Culture</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="studentGoals">Learning Goals (Optional)</label>
+                    <textarea id="studentGoals" name="goals" placeholder="Tell us what you'd like to achieve..."></textarea>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="studentTerms" name="terms" required>
+                    <label for="studentTerms">
+                        I agree to the <a href="terms.html" class="link" target="_blank">terms and conditions</a>
+                      </label>                      
+                </div>
+
+                <button type="submit" class="btn-submit">Sign Up as Student</button>
+            </form>
+        </div>
+
+        <!-- Tutor Sign Up -->
+        <div id="tutor-content" class="tab-content">
+            <div class="info-text">
+                🎓 Join 45+ dedicated tutors making a difference in First Nations education!
+            </div>
+            <form id="tutorSignupForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tutorFirstName">First Name</label>
+                        <input type="text" id="tutorFirstName" name="firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tutorLastName">Last Name</label>
+                        <input type="text" id="tutorLastName" name="lastName" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="tutorEmail">Email Address</label>
+                    <input type="email" id="tutorEmail" name="email" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tutorPassword">Password</label>
+                        <input type="password" id="tutorPassword" name="password" required minlength="8">
+                    </div>
+                    <div class="form-group">
+                        <label for="tutorConfirmPassword">Confirm Password</label>
+                        <input type="password" id="tutorConfirmPassword" name="confirmPassword" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="tutorEducation">Education Level</label>
+                    <select id="tutorEducation" name="education" required>
+                        <option value="">Select Education Level</option>
+                        <option value="high-school">High School Student</option>
+                        <option value="undergraduate">Undergraduate</option>
+                        <option value="graduate">Graduate Student</option>
+                        <option value="professional">Professional/Teacher</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="tutorSubjects">Subjects You Can Teach</label>
+                    <select id="tutorSubjects" name="subjects" multiple size="4" required>
+                        <option value="math">Mathematics</option>
+                        <option value="science">Sciences</option>
+                        <option value="languages">Languages</option>
+                        <option value="social">Social Studies</option>
+                        <option value="technology">Technology</option>
+                        <option value="arts">Arts & Culture</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="tutorExperience">Teaching Experience</label>
+                    <textarea id="tutorExperience" name="experience" placeholder="Tell us about your teaching or tutoring experience..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="tutorAvailability">Weekly Availability (Hours)</label>
+                    <select id="tutorAvailability" name="availability" required>
+                        <option value="">Select Hours</option>
+                        <option value="1-3">1-3 hours</option>
+                        <option value="4-6">4-6 hours</option>
+                        <option value="7-10">7-10 hours</option>
+                        <option value="10+">10+ hours</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="tutorMotivation">Why Join Saint Thunderbird?</label>
+                    <textarea id="tutorMotivation" name="motivation" placeholder="Tell us what motivates you to tutor First Nations students..." required></textarea>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="tutorTerms" name="terms" required>
+                    <label for="studentTerms">
+                        I agree to the <a href="terms.html" class="link" target="_blank">terms and conditions</a>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-submit">Apply as Tutor</button>
+            </form>
+        </div>
+        
+        <div class="links-group">
+            <a href="login.html" class="link">Already have an account? Log in →</a>
+            <a href="index.html" class="link">← Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            localStorage.setItem('st-theme', isLight ? 'light' : 'dark');
+            document.querySelector('.theme-toggle-btn').textContent = isLight ? '☀️' : '🌓';
+        }
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('st-theme');
+        if (savedTheme === 'light') {
+            document.body.classList.add('light-mode');
+            document.querySelector('.theme-toggle-btn').textContent = '☀️';
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(tab + '-content').classList.add('active');
+        }
+
+        // Student Sign Up Handler
+        document.getElementById('studentSignupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const password = document.getElementById('studentPassword').value;
+            const confirmPassword = document.getElementById('studentConfirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+
+            // Get form data
+            const formData = {
+                firstName: document.getElementById('studentFirstName').value,
+                lastName: document.getElementById('studentLastName').value,
+                email: document.getElementById('studentEmail').value,
+                grade: document.getElementById('studentGrade').value,
+                community: document.getElementById('studentCommunity').value,
+                subjects: Array.from(document.getElementById('studentSubjects').selectedOptions).map(opt => opt.value),
+                goals: document.getElementById('studentGoals').value
+            };
+
+            console.log('Student signup data:', formData);
+            alert('Welcome to Saint Thunderbird Tutoring! Your account has been created.');
+            window.location.href = 'login.html';
+        });
+
+        // Tutor Sign Up Handler
+        document.getElementById('tutorSignupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const password = document.getElementById('tutorPassword').value;
+            const confirmPassword = document.getElementById('tutorConfirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+
+            // Get form data
+            const formData = {
+                firstName: document.getElementById('tutorFirstName').value,
+                lastName: document.getElementById('tutorLastName').value,
+                email: document.getElementById('tutorEmail').value,
+                education: document.getElementById('tutorEducation').value,
+                subjects: Array.from(document.getElementById('tutorSubjects').selectedOptions).map(opt => opt.value),
+                experience: document.getElementById('tutorExperience').value,
+                availability: document.getElementById('tutorAvailability').value,
+                motivation: document.getElementById('tutorMotivation').value
+            };
+
+            console.log('Tutor signup data:', formData);
+            alert('Thank you for applying! We will review your application and contact you soon.');
+            window.location.href = 'login.html';
+            // inside your <script> tag
+            document.getElementById('studentSignupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const email = document.getElementById('studentEmail').value;
+            const password = document.getElementById('studentPassword').value;
+            const firstName = document.getElementById('studentFirstName').value;
+            const lastName = document.getElementById('studentLastName').value;
+
+            const res = await fetch('http://localhost:3000/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password, firstName, lastName, userType: 'student' })
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                alert('Signup successful! You can now log in.');
+                window.location.href = 'login.html';
+            } else {
+                alert(data.error);
+            }
+            });
+
+        });
+    </script>
+</body>
+</html>

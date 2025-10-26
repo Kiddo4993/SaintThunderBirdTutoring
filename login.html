@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Saint Thunderbird Tutoring</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4a7c9e;
+            --beige: #d4a574;
+            --accent: #8b4513;
+            --beige-light: #e8d5c4;
+        }
+
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: #000000;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            transition: background-color 0.6s ease;
+        }
+
+        body.light-mode {
+            background: linear-gradient(135deg, #ffffff 0%, #faf9f6 50%, #f5f5f0 100%);
+        }
+
+        .mesh-gradient {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(at 20% 30%, rgba(96, 165, 250, 0.15) 0%, transparent 50%),
+                radial-gradient(at 80% 70%, rgba(139, 69, 19, 0.12) 0%, transparent 50%);
+            filter: blur(60px);
+            z-index: 0;
+        }
+
+        .login-container {
+            max-width: 500px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 3rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        body.light-mode .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(212, 165, 116, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            font-size: 4rem;
+            filter: drop-shadow(0 0 20px rgba(96, 165, 250, 0.6));
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--beige), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--beige-light);
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        body.light-mode .subtitle {
+            color: #4a4a4a;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            color: #9ca3af;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, var(--beige), var(--accent));
+            border-color: var(--beige);
+            color: #fff;
+        }
+
+        body.light-mode .tab {
+            background: rgba(212, 165, 116, 0.1);
+            border: 1px solid rgba(212, 165, 116, 0.3);
+            color: #4a4a4a;
+        }
+
+        body.light-mode .tab.active {
+            background: linear-gradient(135deg, var(--beige), var(--accent));
+            color: #fff;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--beige);
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        body.light-mode label {
+            color: #2d2d2d;
+        }
+
+        input {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #ffffff;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        body.light-mode input {
+            background: rgba(212, 165, 116, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.3);
+            color: #1a1a1a;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--beige);
+            background: rgba(212, 165, 116, 0.1);
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin-top: 0.5rem;
+        }
+
+        .forgot-password a {
+            color: var(--beige);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.3s;
+        }
+
+        .forgot-password a:hover {
+            color: var(--accent);
+        }
+
+        body.light-mode .forgot-password a {
+            color: #4a4a4a;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 1.2rem;
+            background: linear-gradient(135deg, var(--beige), var(--accent));
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(212, 165, 116, 0.4);
+        }
+
+        .divider {
+            text-align: center;
+            margin: 2rem 0;
+            color: var(--beige-light);
+            font-size: 0.9rem;
+            position: relative;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background: rgba(212, 165, 116, 0.3);
+        }
+
+        .divider::before {
+            left: 0;
+        }
+
+        .divider::after {
+            right: 0;
+        }
+
+        body.light-mode .divider {
+            color: #4a4a4a;
+        }
+
+        .signup-link {
+            text-align: center;
+            color: var(--beige-light);
+            font-size: 0.95rem;
+        }
+
+        .signup-link a {
+            color: var(--beige);
+            font-weight: 700;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .signup-link a:hover {
+            color: var(--accent);
+        }
+
+        body.light-mode .signup-link {
+            color: #4a4a4a;
+        }
+
+        body.light-mode .signup-link a {
+            color: #2d2d2d;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 2rem;
+            color: var(--beige);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: var(--accent);
+        }
+
+        body.light-mode .back-link {
+            color: #2d2d2d;
+        }
+
+        .theme-toggle-btn {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--beige), var(--accent));
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 100;
+        }
+
+        .theme-toggle-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        body.light-mode h1 {
+            background: linear-gradient(135deg, var(--beige), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .remember-me label {
+            margin: 0;
+            font-size: 0.85rem;
+            text-transform: none;
+            letter-spacing: 0;
+            color: var(--beige-light);
+            cursor: pointer;
+        }
+
+        body.light-mode .remember-me label {
+            color: #4a4a4a;
+        }
+    </style>
+</head>
+<body>
+    <div class="mesh-gradient"></div>
+    <button class="theme-toggle-btn" onclick="toggleTheme()">🌓</button>
+
+    <div class="login-container">
+        <div class="logo">
+            <div class="logo-icon">⚡</div>
+        </div>
+        
+        <h1>Saint Thunderbird</h1>
+        <p class="subtitle">Welcome back to your learning journey</p>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('student')">Student</div>
+            <div class="tab" onclick="switchTab('tutor')">Tutor</div>
+        </div>
+        
+        <!-- Student Login -->
+        <div id="student-content" class="tab-content active">
+            <form id="studentLoginForm">
+                <div class="form-group">
+                    <label for="studentEmail">Email</label>
+                    <input type="email" id="studentEmail" name="email" placeholder="student@example.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="studentPassword">Password</label>
+                    <input type="password" id="studentPassword" name="password" placeholder="Enter your password" required>
+                    <div class="forgot-password">
+                        <a href="#" onclick="forgotPassword('student'); return false;">Forgot Password?</a>
+                    </div>
+                </div>
+
+                <div class="remember-me">
+                    <input type="checkbox" id="studentRemember" name="remember">
+                    <label for="studentRemember">Remember me</label>
+                </div>
+                
+                <button type="submit" class="btn-submit">Login as Student</button>
+            </form>
+
+            <div class="divider">OR</div>
+
+            <p class="signup-link">
+                Don't have an account? <a href="signup.html">Sign up →</a>
+            </p>
+        </div>
+
+        <!-- Tutor Login -->
+        <div id="tutor-content" class="tab-content">
+            <form id="tutorLoginForm">
+                <div class="form-group">
+                    <label for="tutorEmail">Email</label>
+                    <input type="email" id="tutorEmail" name="email" placeholder="tutor@example.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="tutorPassword">Password</label>
+                    <input type="password" id="tutorPassword" name="password" placeholder="Enter your password" required>
+                    <div class="forgot-password">
+                        <a href="#" onclick="forgotPassword('tutor'); return false;">Forgot Password?</a>
+                    </div>
+                </div>
+
+                <div class="remember-me">
+                    <input type="checkbox" id="tutorRemember" name="remember">
+                    <label for="tutorRemember">Remember me</label>
+                </div>
+                
+                <button type="submit" class="btn-submit">Login as Tutor</button>
+            </form>
+
+            <div class="divider">OR</div>
+
+            <p class="signup-link">
+                Don't have an account? <a href="signup.html">Sign up →</a>
+            </p>
+        </div>
+        
+        <a href="index.html" class="back-link">← Back to Home</a>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            localStorage.setItem('st-theme', isLight ? 'light' : 'dark');
+            document.querySelector('.theme-toggle-btn').textContent = isLight ? '☀️' : '🌓';
+        }
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('st-theme');
+        if (savedTheme === 'light') {
+            document.body.classList.add('light-mode');
+            document.querySelector('.theme-toggle-btn').textContent = '☀️';
+        }
+
+        function switchTab(tab) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(tab + '-content').classList.add('active');
+        }
+
+        function forgotPassword(userType) {
+            const email = prompt(`Enter your ${userType} email address to reset your password:`);
+            if (email) {
+                alert(`Password reset link has been sent to ${email}. Please check your inbox.`);
+            }
+        }
+
+        // Student Login Handler
+        document.getElementById('studentLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('studentEmail').value;
+            const password = document.getElementById('studentPassword').value;
+            const remember = document.getElementById('studentRemember').checked;
+
+            // Here you would normally send this to your backend
+            console.log('Student Login:', { email, password, remember });
+            
+            alert('Welcome back! Logging you in...');
+            // Redirect to student dashboard
+            // window.location.href = 'student-dashboard.html';
+        });
+
+        // Tutor Login Handler
+        document.getElementById('tutorLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('tutorEmail').value;
+            const password = document.getElementById('tutorPassword').value;
+            const remember = document.getElementById('tutorRemember').checked;
+
+            // Here you would normally send this to your backend
+            console.log('Tutor Login:', { email, password, remember });
+            
+            alert('Welcome back! Logging you in...');
+            // Redirect to tutor dashboard
+            // window.location.href = 'tutor-dashboard.html';
+        });
+                // inside your <script> tag
+        document.getElementById('studentLoginForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const email = document.getElementById('studentEmail').value;
+        const password = document.getElementById('studentPassword').value;
+
+        const res = await fetch('http://localhost:3000/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+        
+        const data = await res.json();
+        if (data.success) {
+            alert('Welcome back, ' + data.user.firstName + '!');
+            window.location.href = 'student-dashboard.html';
+        } else {
+            alert(data.error);
+        }
+        });
+
+    </script>
+</body>
+</html>
