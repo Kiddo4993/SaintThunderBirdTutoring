@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Saint Thunderbird Tutoring</title>
@@ -8,35 +8,28 @@
     <link rel="stylesheet" href="style.css">
     
     <script>
-      window.toggleTheme = function toggleTheme() {
-        document.body.classList.toggle('light-mode');
-        if (document.body.classList.contains('light-mode')) {
-          try { localStorage.setItem('st-theme', 'light'); } catch {}
+        // Hide page immediately to prevent flash
+        document.documentElement.style.display = 'none';
+        
+        // Check if we just came from loading.html
+        const skipIntro = localStorage.getItem('skip_intro');
+        
+        if (skipIntro === 'true') {
+            // We came from loading - clear flag and show page
+            localStorage.removeItem('skip_intro');
+            document.documentElement.style.display = 'block';
         } else {
-          try { localStorage.setItem('st-theme', 'dark'); } catch {}
+            // First time - redirect to loading (page stays hidden)
+            localStorage.setItem('skip_intro', 'true');
+            window.location.replace('loading.html');
         }
-      };
-    
-      try {
-        const saved = localStorage.getItem('st-theme');
-        if (saved === 'light') document.documentElement.classList.add('light-mode');
-      } catch (e) {}
     </script>
-    
 </head>
 
     
 <body>
     <!-- Ultra-Futuristic Intro -->
-    <div class="intro-overlay">
-        <div class="grid-bg"></div>
-        <div class="scan-line"></div>
-        <div class="energy-ring"></div>
-        <div class="hologram-container">
-            <div class="thunderbird-hologram">⚡</div>
-            <h1 class="intro-title">SAINT THUNDERBIRD</h1>
-            <p class="intro-subtitle">Tutoring</p>
-        </div>
+    
     </div>
 
     <nav id="nav">

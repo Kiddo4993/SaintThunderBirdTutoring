@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saint Thunderbird - Loading</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: radial-gradient(circle at center, #0a0e27 0%, #030712 100%);
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .loading-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            background: radial-gradient(circle at center, #0a0e27 0%, #030712 100%);
+        }
+
+        /* Background Elements */
+        .bg-element {
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .stars-field {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .star {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            background: #fff;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        /* Grid Background */
+        .grid-lines {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.08;
+        }
+
+        .grid-line-h {
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(74, 124, 158, 0.3), transparent);
+        }
+
+        .grid-line-v {
+            position: absolute;
+            width: 1px;
+            height: 100%;
+            background: linear-gradient(180deg, transparent, rgba(74, 124, 158, 0.3), transparent);
+        }
+
+        /* Glow Orbs */
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.15;
+            animation: orbFloat 15s ease-in-out infinite;
+        }
+
+        .orb-primary {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(74, 124, 158, 0.4), transparent);
+            top: -100px;
+            right: -100px;
+            animation-delay: 0s;
+        }
+
+        .orb-secondary {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.3), transparent);
+            bottom: -50px;
+            left: -50px;
+            animation-delay: 3s;
+        }
+
+        .orb-accent {
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(139, 69, 19, 0.2), transparent);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: 6s;
+        }
+
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0); }
+            33% { transform: translate(40px, 40px); }
+            66% { transform: translate(-40px, 40px); }
+        }
+
+        /* Main Content */
+        .loading-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+        }
+
+        /* Hologram Container */
+        .hologram-container {
+            position: relative;
+            perspective: 1200px;
+            margin-bottom: 1rem;
+        }
+
+        .thunderbird-hologram {
+            font-size: 12rem;
+            background: linear-gradient(135deg, #4a7c9e 0%, #d4a574 50%, #8b4513 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            opacity: 0;
+            transform: rotateY(-90deg) rotateX(10deg) scale(0.3);
+            animation: hologramReveal 2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards;
+            filter: drop-shadow(0 0 40px rgba(74, 124, 158, 0.5));
+            line-height: 1;
+            font-weight: 900;
+        }
+
+        @keyframes hologramReveal {
+            0% {
+                opacity: 0;
+                transform: rotateY(-90deg) rotateX(10deg) scale(0.3);
+                filter: drop-shadow(0 0 20px rgba(74, 124, 158, 0.2));
+            }
+            50% {
+                filter: drop-shadow(0 0 60px rgba(74, 124, 158, 0.6));
+            }
+            100% {
+                opacity: 1;
+                transform: rotateY(0deg) rotateX(0deg) scale(1);
+                filter: drop-shadow(0 0 40px rgba(74, 124, 158, 0.4));
+            }
+        }
+
+        /* Title Animation */
+        .intro-title {
+            font-size: 4.5rem;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            margin-top: 2rem;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: titleSlideIn 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) 1.8s forwards;
+            background: linear-gradient(90deg, #e8d5c4 0%, #d4a574 25%, #4a7c9e 50%, #d4a574 75%, #e8d5c4 100%);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+            text-shadow: 0 0 40px rgba(74, 124, 158, 0.3);
+            animation: titleSlideIn 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) 1.8s forwards, textShimmer 3s linear 2.2s infinite;
+        }
+
+        @keyframes titleSlideIn {
+            0% {
+                opacity: 0;
+                transform: translateY(50px);
+                letter-spacing: 0.15em;
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+                letter-spacing: 0.08em;
+            }
+        }
+
+        @keyframes textShimmer {
+            0%, 100% { background-position: 200% 0; }
+            50% { background-position: -200% 0; }
+        }
+
+        /* Subtitle */
+        .intro-subtitle {
+            font-size: 1.4rem;
+            color: #d4a574;
+            margin-top: 0.5rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: subtitleFadeIn 0.9s cubic-bezier(0.4, 0, 0.2, 1) 2.4s forwards;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            font-weight: 700;
+            position: relative;
+        }
+
+        .intro-subtitle::before {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #d4a574, transparent);
+            transform: translateX(-50%);
+            animation: lineExpand 1s cubic-bezier(0.34, 1.56, 0.64, 1) 2.6s forwards;
+        }
+
+        @keyframes subtitleFadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes lineExpand {
+            0% { width: 0; }
+            100% { width: 100%; }
+        }
+
+        /* Scan Line */
+        .scan-line {
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(212, 165, 116, 0.6), transparent);
+            top: 0;
+            animation: scan 2.5s linear infinite;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        @keyframes scan {
+            0% { top: 0%; }
+            100% { top: 100%; }
+        }
+
+        /* Energy Ring */
+        .energy-ring {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border: 2px solid;
+            border-image: linear-gradient(90deg, #4a7c9e, #d4a574, #8b4513) 1;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            animation: ringExpand 2.5s cubic-bezier(0.4, 0, 0.2, 1) 0.5s forwards;
+            box-shadow: 0 0 40px rgba(74, 124, 158, 0.3), inset 0 0 40px rgba(74, 124, 158, 0.1);
+        }
+
+        @keyframes ringExpand {
+            0% {
+                opacity: 0.8;
+                transform: translate(-50%, -50%) scale(0.3);
+                box-shadow: 0 0 20px rgba(74, 124, 158, 0.6), inset 0 0 20px rgba(74, 124, 158, 0.3);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(2.5);
+                box-shadow: 0 0 0px rgba(74, 124, 158, 0), inset 0 0 0px rgba(74, 124, 158, 0);
+            }
+        }
+
+        /* Progress Section */
+        .progress-section {
+            margin-top: 5rem;
+            opacity: 0;
+            animation: fadeInUp 1s cubic-bezier(0.4, 0, 0.2, 1) 3s forwards;
+        }
+
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .progress-label {
+            font-size: 0.9rem;
+            letter-spacing: 0.15em;
+            margin-bottom: 1.5rem;
+            color: #d4a574;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .progress-bar-wrapper {
+            width: 320px;
+            height: 6px;
+            background: rgba(74, 124, 158, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(74, 124, 158, 0.2);
+            position: relative;
+            margin: 0 auto;
+            box-shadow: inset 0 0 20px rgba(74, 124, 158, 0.1);
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #4a7c9e 0%, #d4a574 50%, #8b4513 100%);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(74, 124, 158, 0.6), inset 0 0 10px rgba(255, 255, 255, 0.1);
+            animation: fillProgress 4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmerBar 2s infinite;
+        }
+
+        @keyframes fillProgress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        @keyframes shimmerBar {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Loading Dots */
+        .loading-dots {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            opacity: 0;
+            animation: fadeInUp 1s cubic-bezier(0.4, 0, 0.2, 1) 3.4s forwards;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d4a574, #8b4513);
+            box-shadow: 0 0 15px rgba(212, 165, 116, 0.4);
+            animation: dotPulse 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        .dot:nth-child(1) { animation-delay: 0s; }
+        .dot:nth-child(2) { animation-delay: 0.3s; }
+        .dot:nth-child(3) { animation-delay: 0.6s; }
+
+        @keyframes dotPulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+            50% {
+                transform: scale(1.3) translateY(-8px);
+                opacity: 1;
+            }
+        }
+
+        /* Exit Animation */
+        .loading-container.exit {
+            animation: containerExit 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes containerExit {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+                filter: blur(0px);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(1.1);
+                filter: blur(10px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-container" id="loadingContainer">
+        <!-- Stars -->
+        <div class="stars-field" id="starsField"></div>
+
+        <!-- Background Glow Orbs -->
+        <div class="glow-orb orb-primary"></div>
+        <div class="glow-orb orb-secondary"></div>
+        <div class="glow-orb orb-accent"></div>
+
+        <!-- Scan Line -->
+        <div class="scan-line"></div>
+
+        <!-- Main Content -->
+        <div class="loading-content">
+            <!-- Energy Ring -->
+            <div class="energy-ring"></div>
+
+            <!-- Hologram Container -->
+            <div class="hologram-container">
+                <div class="thunderbird-hologram">⚡</div>
+            </div>
+
+            <!-- Title and Subtitle -->
+            <h1 class="intro-title">SAINT THUNDERBIRD</h1>
+            <p class="intro-subtitle">Tutoring</p>
+
+            <!-- Progress Section -->
+            <div class="progress-section">
+                <div class="progress-label">Loading</div>
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar-fill"></div>
+                </div>
+            </div>
+
+            <!-- Loading Dots -->
+            <div class="loading-dots">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Generate Stars
+        function generateStars() {
+            const starsField = document.getElementById('starsField');
+            for (let i = 0; i < 150; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                star.style.opacity = Math.random() * 0.7 + 0.3;
+                starsField.appendChild(star);
+            }
+        }
+
+        // Generate Grid Lines
+        function generateGrid() {
+            const gridContainer = document.createElement('div');
+            gridContainer.className = 'grid-lines';
+            
+            for (let i = 0; i < 10; i++) {
+                const line = document.createElement('div');
+                line.className = 'grid-line-h';
+                line.style.top = (i * 10) + '%';
+                gridContainer.appendChild(line);
+            }
+
+            for (let i = 0; i < 10; i++) {
+                const line = document.createElement('div');
+                line.className = 'grid-line-v';
+                line.style.left = (i * 10) + '%';
+                gridContainer.appendChild(line);
+            }
+
+            document.querySelector('.loading-container').appendChild(gridContainer);
+        }
+
+        generateStars();
+        generateGrid();
+
+        // Flag to prevent multiple redirects
+        let isRedirecting = false;
+
+        // Function to handle redirect
+        function goToMainPage() {
+            if (isRedirecting) return; // Prevent multiple redirects
+            isRedirecting = true;
+            
+            const container = document.getElementById('loadingContainer');
+            if (container) {
+                container.classList.add('exit');
+            }
+            
+            setTimeout(() => {
+                // Set flag BEFORE redirecting to prevent loop
+                localStorage.setItem('skip_intro', 'true');
+                window.location.replace('index.html');
+            }, 1000);
+        }
+
+        // Auto-redirect after 5 seconds
+        setTimeout(() => {
+            goToMainPage();
+        }, 5000);
+
+        // Skip on Click
+        document.body.addEventListener('click', () => {
+            goToMainPage();
+        });
+
+        // Skip on ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                goToMainPage();
+            }
+        });
+    </script>
+</body>
+</html>

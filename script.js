@@ -1,222 +1,354 @@
-
-
-
-/* ====== Non-destructive fixes for your original file ======
-   - Theme toggle function (toggleTheme)
-   - Intro overlay removal after animation
-   - IntersectionObservers to add .visible to elements
-   - Counters and progress bar animations
-   - Nav scrolled class
-   - Small star generator for #stars (non-intrusive)
-   Paste this block BEFORE </body>.
-===========================================================*/
+/* ====== Saint Thunderbird - Main Animations & Features ====== */
 
 (function () {
-  // --- Helper: safe query
+  'use strict';
+
   const $ = (s, root = document) => root.querySelector(s);
   const $$ = (s, root = document) => Array.from(root.querySelectorAll(s));
 
-  // --- Theme toggle function (used by your button onclick="toggleTheme()")
-  window.toggleTheme = function toggleTheme() {
-    document.body.classList.toggle('light-mode');
-    // store preference
-    if (document.body.classList.contains('light-mode')) {
-      try { localStorage.setItem('st-theme', 'light'); } catch {}
-    } else {
-      try { localStorage.setItem('st-theme', 'dark'); } catch {}
-    }
-  };
-
-  // Apply saved theme on load
-  try {
-    const saved = localStorage.getItem('st-theme');
-    if (saved === 'light') document.body.classList.add('light-mode');
-    if (saved === 'dark') document.body.classList.remove('light-mode');
-  } catch (e) { /* ignore localStorage errors */ }
-
-  // --- Intro overlay handling
-  const intro = document.querySelector('.intro-overlay') || document.getElementById('popupOverlay');
+  // ===== SMOOTH INTRO OVERLAY EXIT =====
+  const intro = $('.intro-overlay');
   if (intro) {
-    // If it's the CSS animated overlay (.intro-overlay) we wait for its animationend.
-    // Otherwise for popupOverlay we listen for a close button as in your file earlier.
-    const finishOverlay = () => {
-      try {
-        // Add class to hide and then remove from DOM after a short delay to avoid covering click events
+    const closeIntro = () => {
+      intro.style.transition = 'opacity 1s ease, transform 1s ease';
+      intro.style.opacity = '0';
+      intro.style.transform = 'scale(1.05)';
+      
+      setTimeout(() => {
+        intro.style.display = 'none';
         intro.classList.add('hidden');
-        // also ensure it's removed from flow
-        setTimeout(() => {
-          intro.style.display = 'none';
-          // accessibility: restore focus to body
-          document.body.removeAttribute('aria-hidden');
-        }, 600);
-      } catch (e) { /* ignore */ }
+        document.body.style.overflow = 'auto';
+      }, 1000);
     };
 
-    // If CSS animation ends (for .intro-overlay)
-    intro.addEventListener('animationend', (ev) => {
-      // Many overlays use chained animations; we simply hide when an animation finishes (safe)
-      finishOverlay();
-    }, { once: true });
+    // Auto-close after 4.5 seconds
+    setTimeout(closeIntro, 4500);
 
-    // In case animationend doesn't fire (some browsers), fallback timer (matches your CSS timings)
-    setTimeout(() => {
-      if (getComputedStyle(intro).display !== 'none') finishOverlay();
-    }, 6000); // slightly longer than your CSS 4.5s+1s
+    // Click anywhere to skip
+    intro.style.cursor = 'pointer';
+    intro.addEventListener('click', closeIntro);
 
-    // If your popupOverlay uses a close button with id closePopup, hook it
-    const closeBtn = document.getElementById('closePopup');
-    if (closeBtn) closeBtn.addEventListener('click', finishOverlay);
+    // ESC key to skip
+    const escHandler = (e) => {
+      if (e.key === 'Escape') {
+        closeIntro();
+        window.removeEventListener('keydown', escHandler);
+      }
+    };
+    window.addEventListener('keydown', escHandler);
   }
 
-  // --- IntersectionObserver to add .visible to many elements while preserving CSS animations
-  const ioOptions = { threshold: 0.18 };
+  // ===== INTERSECTION OBSERVER =====
+  const observerOptions = { threshold: 0.18, rootMargin: '0px 0px -50px 0px' };
+  
   const revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('visible');
-        // once visible, unobserve to avoid repeated firing
-        revealObserver.unobserve(e.target);
+    entries.forEach((entry, index) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, index * 80);
+        revealObserver.unobserve(entry.target);
       }
     });
-  }, ioOptions);
+  }, observerOptions);
 
-  // target lists: section headers, glass-cards, stats, hero badge, cta, nav links maybe
   const revealSelectors = [
     '.section-header',
     '.glass-card',
     '.stat',
     '.hero-badge',
     '.cta-group',
-    '.hero h1', '.hero p'
+    '.hero h1',
+    '.hero p'
   ];
+
   revealSelectors.forEach(sel => {
     $$(sel).forEach(el => {
-      // if element already visible because of CSS, skip
-      if (!el.classList.contains('visible')) revealObserver.observe(el);
+      if (!el.classList.contains('visible')) {
+        revealObserver.observe(el);
+      }
     });
   });
 
-  // Also ensure elements that were set to opacity:0 in CSS start visible if you want them visible immediately.
-  // You asked to keep animations, so we rely on the observer above for in-view reveals.
-
-  // --- Counters (animate from 0 to data-target)
+  // ===== ANIMATED COUNTERS =====
   const counters = $$('.counter');
   const counterObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (!entry.isIntersecting) return;
+      
       const el = entry.target;
-      if (el.dataset._animated) { counterObserver.unobserve(el); return; }
-      const target = parseInt(el.getAttribute('data-target') || el.textContent || '0', 10) || 0;
-      const durationMs = 1600;
-      const fps = 60;
-      const totalFrames = Math.round((durationMs / 1000) * fps);
+      if (el.dataset._animated) {
+        counterObserver.unobserve(el);
+        return;
+      }
+
+      const target = parseInt(el.getAttribute('data-target') || '0', 10);
+      const duration = 2000;
+      let start = 0;
       let frame = 0;
-      const start = 0;
-      const step = () => {
+      const fps = 60;
+      const totalFrames = (duration / 1000) * fps;
+
+      const animate = () => {
         frame++;
         const progress = frame / totalFrames;
-        // easeOutQuad
-        const eased = 1 - (1 - progress) * (1 - progress);
-        const value = Math.round(start + (target - start) * eased);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const value = Math.round(target * eased);
+        
         el.textContent = value.toLocaleString();
-        if (frame < totalFrames) requestAnimationFrame(step);
-        else {
+        
+        if (frame < totalFrames) {
+          requestAnimationFrame(animate);
+        } else {
           el.textContent = target.toLocaleString();
           el.dataset._animated = 'true';
           counterObserver.unobserve(el);
         }
       };
-      requestAnimationFrame(step);
+
+      requestAnimationFrame(animate);
     });
   }, { threshold: 0.3 });
 
   counters.forEach(c => counterObserver.observe(c));
 
-  // --- Progress bars: animate width to data-width when in view
-  const progressBars = $$('.progress-bar');
+  // ===== PROGRESS BARS WITH ORANGE =====
+  const progressFills = $$('.progress-fill');
   const progressObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (!entry.isIntersecting) return;
-      const bar = entry.target;
-      if (bar.dataset._filled) { progressObserver.unobserve(bar); return; }
-      const width = parseFloat(bar.getAttribute('data-width') || bar.dataset.width || '0') || 0;
-      // apply width with transition (CSS already has transition for width on .progress-bar? if not, set inline)
-      bar.style.transition = 'width 1200ms cubic-bezier(0.34, 1.56, 0.64, 1)';
-      // set a tiny timeout to ensure transition runs
-      setTimeout(() => bar.style.width = width + '%', 40);
-      bar.classList.add('visible');
-      bar.dataset._filled = 'true';
-      progressObserver.unobserve(bar);
+      
+      const fill = entry.target;
+      if (fill.dataset._filled) {
+        progressObserver.unobserve(fill);
+        return;
+      }
+
+      const width = parseFloat(fill.getAttribute('data-width') || '100');
+      
+      setTimeout(() => {
+        fill.style.width = width + '%';
+        fill.style.background = 'linear-gradient(90deg, #ff8c00, #ffa500, #ff6b35)';
+        fill.dataset._filled = 'true';
+      }, 100);
+
+      progressObserver.unobserve(fill);
     });
   }, { threshold: 0.2 });
-  progressBars.forEach(b => progressObserver.observe(b));
 
-  // --- Nav scrolled behavior
-  const nav = document.getElementById('nav') || document.querySelector('nav');
-  const onScroll = () => {
-    if (!nav) return;
-    if (window.scrollY > 48) nav.classList.add('scrolled');
-    else nav.classList.remove('scrolled');
-  };
-  window.addEventListener('scroll', onScroll, { passive: true });
-  // init once
-  onScroll();
+  progressFills.forEach(f => progressObserver.observe(f));
 
-  // --- Simple star generator for #stars (non-destructive, small)
-  const starsRoot = document.getElementById('stars');
+  // ===== NAVIGATION =====
+  const nav = $('#nav');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 100) {
+      nav.classList.add('scrolled');
+    } else {
+      nav.classList.remove('scrolled');
+    }
+  }, { passive: true });
+
+  // ===== SMOOTH SCROLL =====
+  $$('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      const href = this.getAttribute('href');
+      if (href === '#') return;
+      
+      e.preventDefault();
+      const target = $(href);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // ===== STAR GENERATOR =====
+  const starsRoot = $('#stars');
   if (starsRoot && !starsRoot.dataset.generated) {
-    const count = 40;
-    const rnd = (min, max) => Math.random() * (max - min) + min;
-    for (let i = 0; i < count; i++) {
-      const s = document.createElement('div');
-      s.className = 'star';
-      s.style.left = `${rnd(0, 100)}%`;
-      s.style.top = `${rnd(0, 100)}%`;
-      s.style.width = s.style.height = `${rnd(1, 3)}px`;
-      s.style.animationDelay = `${rnd(0, 3)}s`;
-      s.style.opacity = `${rnd(0.1, 0.9)}`;
-      starsRoot.appendChild(s);
+    for (let i = 0; i < 100; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      const rnd = (min, max) => Math.random() * (max - min) + min;
+      star.style.cssText = `
+        left: ${rnd(0, 100)}%;
+        top: ${rnd(0, 100)}%;
+        width: ${rnd(1, 3)}px;
+        height: ${rnd(1, 3)}px;
+        animation-delay: ${rnd(0, 3)}s;
+      `;
+      starsRoot.appendChild(star);
     }
     starsRoot.dataset.generated = 'true';
   }
 
-  // --- Accessibility: allow skipping overlay with Escape key (if overlay present)
-  window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      if (intro && getComputedStyle(intro).display !== 'none') {
-        intro.classList.add('hidden');
-        setTimeout(() => intro.style.display = 'none', 300);
+  // ===== ENHANCED SCROLL BUTTON =====
+  const scrollBtn = $('#scrollTopBtn');
+  if (scrollBtn) {
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        scrollBtn.classList.add('visible');
+      } else {
+        scrollBtn.classList.remove('visible');
       }
+    }, { passive: true });
+
+    scrollBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // Prevent any default button behavior
+    scrollBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  // ===== ENHANCED POPUP SYSTEM WITH VARIETY =====
+  const popups = [
+    { 
+      icon: '🎓', 
+      title: 'Welcome!', 
+      msg: 'Explore culturally responsive education for Indigenous students', 
+      btn: 'Learn More', 
+      link: '#about' 
+    },
+    { 
+      icon: '500️⃣', 
+      title: '500+ Students', 
+      msg: 'Join our thriving community across 15 Indigenous communities', 
+      btn: 'Join Us', 
+      link: '#students' 
+    },
+    { 
+      icon: '💝', 
+      title: 'Completely Free', 
+      msg: 'All tutoring services are free for First Nations students', 
+      btn: 'Get Started', 
+      link: '#subjects' 
+    },
+    { 
+      icon: '👨‍🏫', 
+      title: 'Become a Tutor', 
+      msg: 'Share your knowledge and make a lasting impact', 
+      btn: 'Apply Now', 
+      link: '#mentors' 
+    },
+    { 
+      icon: '⚡', 
+      title: 'Expert Mentorship', 
+      msg: 'Learn from certified educators and indigenous community leaders', 
+      btn: 'Meet Our Team', 
+      link: '#mentors' 
+    },
+    { 
+      icon: '🌟', 
+      title: '92% Success Rate', 
+      msg: 'Students are improving their grades with our personalized support', 
+      btn: 'View Subjects', 
+      link: '#subjects' 
+    },
+    { 
+      icon: '🤝', 
+      title: 'Community First', 
+      msg: 'Join study groups and connect with fellow indigenous students', 
+      btn: 'Explore More', 
+      link: '#students' 
+    },
+    { 
+      icon: '🏆', 
+      title: 'Celebrate Success', 
+      msg: 'We recognize every achievement and celebrate your growth', 
+      btn: 'Learn More', 
+      link: '#about' 
     }
-  });
+  ];
 
-  // -- End of script
+  let popupIndex = 0;
+  let popupEl;
+
+  function createPopup() {
+    popupEl = document.createElement('div');
+    popupEl.className = 'st-popup';
+    popupEl.innerHTML = `
+      <div class="st-popup-card">
+        <button class="st-popup-close">×</button>
+        <div class="st-popup-icon"></div>
+        <h3 class="st-popup-title"></h3>
+        <p class="st-popup-msg"></p>
+        <a href="#" class="st-popup-btn"></a>
+      </div>
+    `;
+    document.body.appendChild(popupEl);
+
+    popupEl.querySelector('.st-popup-close').addEventListener('click', hidePopup);
+    popupEl.addEventListener('click', (e) => {
+      if (e.target === popupEl) hidePopup();
+    });
+  }
+
+  function showPopup() {
+    if (!popupEl) createPopup();
+
+    const p = popups[popupIndex];
+    popupEl.querySelector('.st-popup-icon').textContent = p.icon;
+    popupEl.querySelector('.st-popup-title').textContent = p.title;
+    popupEl.querySelector('.st-popup-msg').textContent = p.msg;
+    popupEl.querySelector('.st-popup-btn').textContent = p.btn;
+    popupEl.querySelector('.st-popup-btn').href = p.link;
+
+    popupEl.classList.add('active');
+    setTimeout(() => hidePopup(), 8000);
+    popupIndex = (popupIndex + 1) % popups.length;
+  }
+
+  function hidePopup() {
+    if (popupEl) popupEl.classList.remove('active');
+  }
+
+  setTimeout(showPopup, 6000);
+  setInterval(() => {
+    if (!popupEl || !popupEl.classList.contains('active')) {
+      showPopup();
+    }
+  }, 25000);
+
+  console.log('%c⚡ Saint Thunderbird', 'color: #d4a574; font-size: 20px; font-weight: bold;');
+
 })();
-// ===== Scroll to Top Script =====
-const scrollBtn = document.getElementById('scrollTopBtn');
 
-window.addEventListener('scroll', () => {
-// Show button after scrolling down 250px
-if (window.scrollY > 250) {
-    scrollBtn.style.opacity = '1';
-    scrollBtn.style.pointerEvents = 'auto';
-} else {
-    scrollBtn.style.opacity = '0';
-    scrollBtn.style.pointerEvents = 'none';
+/* ====== Theme Toggle (Load First) ====== */
+window.toggleTheme = function toggleTheme() {
+  document.body.classList.toggle('light-mode');
+  const isLight = document.body.classList.contains('light-mode');
+  
+  if (isLight) {
+    try { localStorage.setItem('st-theme', 'light'); } catch {}
+  } else {
+    try { localStorage.setItem('st-theme', 'dark'); } catch {}
+  }
+
+  const themeBtn = document.querySelector('.theme-toggle');
+  if (themeBtn) {
+    themeBtn.textContent = isLight ? '☀️' : '🌓';
+  }
+};
+
+// Load saved theme immediately
+try {
+  const saved = localStorage.getItem('st-theme');
+  if (saved === 'light') {
+    document.documentElement.classList.add('light-mode');
+    document.body.classList.add('light-mode');
+  }
+} catch (e) {
+  console.warn('Could not load theme');
 }
-});
 
-// Smooth scroll to top on click
-scrollBtn.addEventListener('click', () => {
-window.scrollTo({ top: 0, behavior: 'smooth' });
+// Update button when DOM loads
+document.addEventListener('DOMContentLoaded', () => {
+  const themeBtn = document.querySelector('.theme-toggle');
+  if (themeBtn && document.body.classList.contains('light-mode')) {
+    themeBtn.textContent = '☀️';
+  }
 });
-
-// ===== Hide overlay on load =====
-window.addEventListener('load', () => {
-const overlay = document.querySelector('.intro-overlay, #popupOverlay');
-if (overlay) {
-    overlay.style.display = 'none';
-    overlay.classList.add('hidden');
-}
-});
-
