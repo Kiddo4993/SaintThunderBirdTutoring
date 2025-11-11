@@ -1,4 +1,4 @@
-/* ====== Saint Thunderbird - Main Animations & Features ====== */
+/* ====== Saint Thunderbird - Complete Working Script ====== */
 
 (function () {
   'use strict';
@@ -21,14 +21,10 @@
       }, 1000);
     };
 
-    // Auto-close after 4.5 seconds
     setTimeout(closeIntro, 4500);
-
-    // Click anywhere to skip
     intro.style.cursor = 'pointer';
     intro.addEventListener('click', closeIntro);
 
-    // ESC key to skip
     const escHandler = (e) => {
       if (e.key === 'Escape') {
         closeIntro();
@@ -84,7 +80,6 @@
 
       const target = parseInt(el.getAttribute('data-target') || '0', 10);
       const duration = 2000;
-      let start = 0;
       let frame = 0;
       const fps = 60;
       const totalFrames = (duration / 1000) * fps;
@@ -112,7 +107,7 @@
 
   counters.forEach(c => counterObserver.observe(c));
 
-  // ===== PROGRESS BARS WITH ORANGE =====
+  // ===== PROGRESS BARS =====
   const progressFills = $$('.progress-fill');
   const progressObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -181,7 +176,7 @@
     starsRoot.dataset.generated = 'true';
   }
 
-  // ===== ENHANCED SCROLL BUTTON =====
+  // ===== SCROLL TO TOP BUTTON =====
   const scrollBtn = $('#scrollTopBtn');
   if (scrollBtn) {
     window.addEventListener('scroll', () => {
@@ -196,15 +191,9 @@
       e.preventDefault();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
-
-    // Prevent any default button behavior
-    scrollBtn.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
   }
 
-  // ===== ENHANCED POPUP SYSTEM WITH VARIETY =====
+  // ===== POPUP SYSTEM =====
   const popups = [
     { 
       icon: '🎓', 
@@ -317,7 +306,99 @@
 
 })();
 
-/* ====== Theme Toggle (Load First) ====== */
+/* ====== MUSIC SYSTEM ====== */
+let audioContext;
+let isPlaying = false;
+
+function setupMusicControls() {
+  const volumeSlider = document.getElementById('volumeSlider');
+  const musicToggle = document.getElementById('musicToggle');
+  const volumeValue = document.getElementById('volumeValue');
+
+  if (volumeSlider) {
+    volumeSlider.addEventListener('input', function() {
+      volumeValue.textContent = this.value + '%';
+    });
+  }
+
+  if (musicToggle) {
+    musicToggle.addEventListener('click', toggleMusic);
+  }
+}
+
+function toggleMusic() {
+  const btn = document.getElementById('musicToggle');
+  
+  if (!isPlaying) {
+    if (!audioContext) {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    audioContext.resume();
+    isPlaying = true;
+    btn.textContent = '⏸ Stop Music';
+    playClassicalMusic();
+  } else {
+    isPlaying = false;
+    btn.textContent = '▶ Play Music';
+  }
+}
+
+function playClassicalMusic() {
+  if (!isPlaying) return;
+  
+  const notes = [
+    { freq: 329.63, duration: 0.6 },
+    { freq: 349.23, duration: 0.6 },
+    { freq: 392.00, duration: 0.9 },
+    { freq: 349.23, duration: 0.6 },
+    { freq: 329.63, duration: 0.6 },
+    { freq: 293.66, duration: 0.9 },
+    { freq: 261.63, duration: 0.6 },
+    { freq: 293.66, duration: 0.6 },
+    { freq: 329.63, duration: 0.9 },
+  ];
+  
+  let delay = 0;
+  notes.forEach(note => {
+    setTimeout(() => {
+      if (isPlaying) {
+        playNote(note.freq, note.duration);
+      }
+    }, delay * 1000);
+    delay += note.duration;
+  });
+  
+  if (isPlaying) {
+    setTimeout(() => playClassicalMusic(), delay * 1000);
+  }
+}
+
+function playNote(frequency, duration) {
+  if (!audioContext) return;
+  
+  const volumeSlider = document.getElementById('volumeSlider');
+  const volume = volumeSlider ? volumeSlider.value / 100 : 0.3;
+  
+  const osc = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+  
+  osc.type = 'sine';
+  osc.frequency.value = frequency;
+  
+  gain.gain.setValueAtTime(0.05 * volume, audioContext.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001 * volume, audioContext.currentTime + duration);
+  
+  osc.connect(gain);
+  gain.connect(audioContext.destination);
+  
+  osc.start(audioContext.currentTime);
+  osc.stop(audioContext.currentTime + duration);
+}
+
+// Initialize on load
+document.addEventListener('DOMContentLoaded', setupMusicControls);
+
+/* ====== Theme Toggle ====== */
 window.toggleTheme = function toggleTheme() {
   document.body.classList.toggle('light-mode');
   const isLight = document.body.classList.contains('light-mode');
@@ -351,4 +432,201 @@ document.addEventListener('DOMContentLoaded', () => {
   if (themeBtn && document.body.classList.contains('light-mode')) {
     themeBtn.textContent = '☀️';
   }
+  setupInfoTabs();
 });
+
+/* ====== PREMIUM INFO CARDS SYSTEM ====== */
+const infoCards = [
+  {
+    icon: '🎓',
+    title: 'Our Mission',
+    subtitle: 'Empowering Through Education',
+    description: 'Provide culturally responsive education that honors indigenous traditions while preparing students for future success through accessible, high-quality tutoring and mentorship.',
+    highlight: 'Excellence meets Heritage',
+    stats: ['500+ Students', '92% Success Rate', '15 Communities']
+  },
+  {
+    icon: '🌍',
+    title: 'Serving Communities',
+    subtitle: 'Across the Nation',
+    description: 'We proudly serve indigenous students across 15 different First Nations communities spanning 3 provinces, bringing quality education directly to where our students live.',
+    highlight: 'Coast to Coast Impact',
+    stats: ['15 Communities', '3 Provinces', 'Growing Daily']
+  },
+  {
+    icon: '⚡',
+    title: '500+ Students Strong',
+    subtitle: 'A Growing Movement',
+    description: 'Over 500 indigenous students are currently enrolled and thriving with Saint Thunderbird. Each student receives personalized support tailored to their unique learning style and cultural background.',
+    highlight: 'Every Student Matters',
+    stats: ['500+ Enrolled', '45% Growth YoY', 'Free Access']
+  },
+  {
+    icon: '👨‍🏫',
+    title: 'Expert Team',
+    subtitle: 'Dedicated Educators',
+    description: 'Our team of 45+ expert tutors includes certified teachers, university professors, indigenous community leaders, and successful professionals committed to student success.',
+    highlight: 'Experts Who Care',
+    stats: ['45+ Tutors', 'All Certified', 'Community Leaders']
+  },
+  {
+    icon: '🏆',
+    title: '92% Success Rate',
+    subtitle: 'Proven Results',
+    description: 'Students consistently show significant academic improvement within the first semester. We measure success not just in grades, but in confidence, cultural pride, and personal growth.',
+    highlight: 'Results That Matter',
+    stats: ['92% Improve', 'Grade Increases', 'Confidence Boost']
+  },
+  {
+    icon: '💝',
+    title: 'Completely Free',
+    subtitle: 'No Hidden Costs',
+    description: 'All tutoring services are provided completely free to First Nations students. As a non-profit organization, we believe quality education should never be a financial burden.',
+    highlight: 'Education for Everyone',
+    stats: ['100% Free', 'No Fees', 'All Services Covered']
+  },
+  {
+    icon: '🤝',
+    title: 'Student-Led Non-Profit',
+    subtitle: 'By Students, For Students',
+    description: 'Founded on the principle that students understand student needs best. Saint Thunderbird is led by passionate young educators and community members dedicated to change.',
+    highlight: 'Youth Leadership',
+    stats: ['Student Founded', 'Community Driven', 'Growing Network']
+  },
+  {
+    icon: '🌟',
+    title: 'Cultural Pride',
+    subtitle: 'Honoring Our Heritage',
+    description: 'We celebrate and integrate indigenous knowledge, languages, and cultural perspectives into every aspect of learning. Education that strengthens identity, not diminishes it.',
+    highlight: 'Heritage + Excellence',
+    stats: ['Cultural Integration', 'Language Support', 'Tradition Honored']
+  }
+];
+
+let currentCardIndex = 0;
+let infoCardElement = null;
+let cardTimeout = null;
+
+function createInfoCard() {
+  infoCardElement = document.createElement('div');
+  infoCardElement.className = 'premium-info-card';
+  infoCardElement.innerHTML = `
+    <div class="premium-info-backdrop"></div>
+    <div class="premium-info-content">
+      <button class="premium-info-close">×</button>
+      <div class="premium-info-icon"></div>
+      <div class="premium-info-header">
+        <h3 class="premium-info-title"></h3>
+        <p class="premium-info-subtitle"></p>
+      </div>
+      <p class="premium-info-description"></p>
+      <div class="premium-info-highlight"></div>
+      <div class="premium-info-stats"></div>
+      <div class="premium-info-footer">
+        <button class="premium-info-prev">←</button>
+        <span class="premium-info-counter"></span>
+        <button class="premium-info-next">→</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(infoCardElement);
+
+  infoCardElement.querySelector('.premium-info-close').addEventListener('click', hideInfoCard);
+  infoCardElement.querySelector('.premium-info-prev').addEventListener('click', () => changeCard(-1));
+  infoCardElement.querySelector('.premium-info-next').addEventListener('click', () => changeCard(1));
+  infoCardElement.querySelector('.premium-info-backdrop').addEventListener('click', hideInfoCard);
+}
+
+function showInfoCard() {
+  if (!infoCardElement) createInfoCard();
+
+  const card = infoCards[currentCardIndex];
+  const closeBtn = infoCardElement.querySelector('.premium-info-close');
+  const content = infoCardElement.querySelector('.premium-info-content');
+  
+  infoCardElement.querySelector('.premium-info-icon').textContent = card.icon;
+  infoCardElement.querySelector('.premium-info-title').textContent = card.title;
+  infoCardElement.querySelector('.premium-info-subtitle').textContent = card.subtitle;
+  infoCardElement.querySelector('.premium-info-description').textContent = card.description;
+  infoCardElement.querySelector('.premium-info-highlight').textContent = '✨ ' + card.highlight + ' ✨';
+  
+  const statsHtml = card.stats.map(stat => `<span class="stat-badge">${stat}</span>`).join('');
+  infoCardElement.querySelector('.premium-info-stats').innerHTML = statsHtml;
+  
+  infoCardElement.querySelector('.premium-info-counter').textContent = `${currentCardIndex + 1}/${infoCards.length}`;
+
+  closeBtn.style.opacity = '1';
+  content.style.opacity = '1';
+  infoCardElement.classList.add('active');
+  
+  clearTimeout(cardTimeout);
+  cardTimeout = setTimeout(() => {
+    closeBtn.style.opacity = '0';
+    content.style.opacity = '0';
+    setTimeout(() => hideInfoCard(), 300);
+  }, 12000);
+}
+
+function hideInfoCard() {
+  if (infoCardElement) {
+    infoCardElement.classList.remove('active');
+    clearTimeout(cardTimeout);
+  }
+}
+
+function changeCard(direction) {
+  currentCardIndex += direction;
+  if (currentCardIndex >= infoCards.length) currentCardIndex = 0;
+  if (currentCardIndex < 0) currentCardIndex = infoCards.length - 1;
+  showInfoCard();
+}
+
+function setupInfoTabs() {
+  // Removed auto-popup - only shows on user interaction now
+}
+
+/* ====== INFO MENU SYSTEM ====== */
+let infoMenuElement = null;
+
+function toggleInfoMenu() {
+  if (!infoMenuElement) createInfoMenu();
+  infoMenuElement.classList.toggle('active');
+}
+
+function createInfoMenu() {
+  infoMenuElement = document.createElement('div');
+  infoMenuElement.className = 'info-menu-dropdown';
+  
+  let html = '<div class="info-menu-stripes">☰</div>';
+  html += '<div class="info-menu-content">';
+  
+  infoCards.forEach((card, index) => {
+    html += `
+      <div class="info-menu-item" onclick="openDetailedCard(${index})">
+        <span class="menu-item-icon">${card.icon}</span>
+        <div class="menu-item-text">
+          <div class="menu-item-title">${card.title}</div>
+          <div class="menu-item-subtitle">${card.subtitle}</div>
+        </div>
+        <span class="menu-item-arrow">→</span>
+      </div>
+    `;
+  });
+  
+  html += '</div>';
+  infoMenuElement.innerHTML = html;
+  
+  document.body.appendChild(infoMenuElement);
+  
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.info-menu-btn') && !e.target.closest('.info-menu-dropdown')) {
+      infoMenuElement.classList.remove('active');
+    }
+  });
+}
+
+function openDetailedCard(index) {
+  currentCardIndex = index;
+  showInfoCard();
+  if (infoMenuElement) infoMenuElement.classList.remove('active');
+}

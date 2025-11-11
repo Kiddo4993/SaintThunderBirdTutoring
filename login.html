@@ -186,6 +186,7 @@
             text-decoration: none;
             font-size: 0.85rem;
             transition: color 0.3s;
+            cursor: pointer;
         }
 
         .forgot-password a:hover {
@@ -350,6 +351,17 @@
         body.light-mode .remember-me label {
             color: #4a4a4a;
         }
+
+        .error-message {
+            color: #ff6b6b;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .loading {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -375,13 +387,14 @@
                 <div class="form-group">
                     <label for="studentEmail">Email</label>
                     <input type="email" id="studentEmail" name="email" placeholder="student@example.com" required>
+                    <div class="error-message" id="studentEmailError"></div>
                 </div>
                 
                 <div class="form-group">
                     <label for="studentPassword">Password</label>
                     <input type="password" id="studentPassword" name="password" placeholder="Enter your password" required>
                     <div class="forgot-password">
-                        <a href="#" onclick="forgotPassword('student'); return false;">Forgot Password?</a>
+                        <a onclick="forgotPassword('student'); return false;">Forgot Password?</a>
                     </div>
                 </div>
 
@@ -406,13 +419,14 @@
                 <div class="form-group">
                     <label for="tutorEmail">Email</label>
                     <input type="email" id="tutorEmail" name="email" placeholder="tutor@example.com" required>
+                    <div class="error-message" id="tutorEmailError"></div>
                 </div>
                 
                 <div class="form-group">
                     <label for="tutorPassword">Password</label>
                     <input type="password" id="tutorPassword" name="password" placeholder="Enter your password" required>
                     <div class="forgot-password">
-                        <a href="#" onclick="forgotPassword('tutor'); return false;">Forgot Password?</a>
+                        <a onclick="forgotPassword('tutor'); return false;">Forgot Password?</a>
                     </div>
                 </div>
 
@@ -466,59 +480,114 @@
             }
         }
 
-        // Student Login Handler
-        document.getElementById('studentLoginForm').addEventListener('submit', function(e) {
+        // STUDENT LOGIN HANDLER
+        document.getElementById('studentLoginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const email = document.getElementById('studentEmail').value;
             const password = document.getElementById('studentPassword').value;
             const remember = document.getElementById('studentRemember').checked;
 
-            // Here you would normally send this to your backend
-            console.log('Student Login:', { email, password, remember });
-            
-            alert('Welcome back! Logging you in...');
-            // Redirect to student dashboard
-            // window.location.href = 'student-dashboard.html';
+            try {
+                const res = await fetch('http://localhost:5000/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    // Save token and user data
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    // Remember me feature
+                    if (remember) {
+                        localStorage.setItem('rememberEmail', email);
+                    }
+
+                    alert('✅ Welcome back, ' + data.user.firstName + '!');
+                    window.location.href = 'student-dashboard.html';
+                } else {
+                    alert('❌ Error: ' + data.error);
+                    document.getElementById('studentEmailError').textContent = data.error;
+                    document.getElementById('studentEmailError').style.display = 'block';
+                }
+            } catch (error) {
+                alert('❌ Connection error: ' + error.message);
+            }
         });
 
-        // Tutor Login Handler
-        document.getElementById('tutorLoginForm').addEventListener('submit', function(e) {
+        // TUTOR LOGIN HANDLER
+        document.getElementById('tutorLoginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const email = document.getElementById('tutorEmail').value;
             const password = document.getElementById('tutorPassword').value;
             const remember = document.getElementById('tutorRemember').checked;
 
-            // Here you would normally send this to your backend
-            console.log('Tutor Login:', { email, password, remember });
-            
-            alert('Welcome back! Logging you in...');
-            // Redirect to tutor dashboard
-            // window.location.href = 'tutor-dashboard.html';
-        });
-                // inside your <script> tag
-        document.getElementById('studentLoginForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
+            try {
+                const res = await fetch('http://localhost:5000/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
 
-        const email = document.getElementById('studentEmail').value;
-        const password = document.getElementById('studentPassword').value;
+                const data = await res.json();
 
-        const res = await fetch('http://localhost:3000/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
-        });
-        
-        const data = await res.json();
-        if (data.success) {
-            alert('Welcome back, ' + data.user.firstName + '!');
-            window.location.href = 'student-dashboard.html';
-        } else {
-            alert(data.error);
-        }
+                if (data.success) {
+                    // Save token and user data
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    // Remember me feature
+                    if (remember) {
+                        localStorage.setItem('rememberEmail', email);
+                    }
+
+                    alert('✅ Welcome back, ' + data.user.firstName + '!');
+                    window.location.href = 'tutor-dashboard.html';
+                } else {
+                    alert('❌ Error: ' + data.error);
+                    document.getElementById('tutorEmailError').textContent = data.error;
+                    document.getElementById('tutorEmailError').style.display = 'block';
+                }
+            } catch (error) {
+                alert('❌ Connection error: ' + error.message);
+            }
         });
 
+        // Load remembered email on page load
+        window.addEventListener('load', function() {
+            const remembered = localStorage.getItem('rememberEmail');
+            if (remembered) {
+                document.getElementById('studentEmail').value = remembered;
+            }
+        });
+        async function login(email, password) {
+    const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+    });
+
+    const data = await response.json();
+    
+    if (data.success) {
+        localStorage.setItem('authToken', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        window.location.href = '/dashboard.html';
+    } else {
+        alert('Error: ' + data.error);
+    }
+}
+function logout() {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('user');
+    window.location.href = '/index.html';
+}
     </script>
+    <script src="auth.js"></script>
 </body>
 </html>

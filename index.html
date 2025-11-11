@@ -11,27 +11,19 @@
         // Hide page immediately to prevent flash
         document.documentElement.style.display = 'none';
         
-        // Check if we just came from loading.html
         const skipIntro = localStorage.getItem('skip_intro');
         
         if (skipIntro === 'true') {
-            // We came from loading - clear flag and show page
             localStorage.removeItem('skip_intro');
             document.documentElement.style.display = 'block';
         } else {
-            // First time - redirect to loading (page stays hidden)
             localStorage.setItem('skip_intro', 'true');
             window.location.replace('loading.html');
         }
     </script>
 </head>
 
-    
 <body>
-    <!-- Ultra-Futuristic Intro -->
-    
-    </div>
-
     <nav id="nav">
         <div class="nav-container">
             <div class="logo">
@@ -44,8 +36,10 @@
                 <li><a href="students.html" class="nav-link">Students</a></li>
                 <li><a href="mentors.html" class="nav-link">Mentors</a></li>
                 <li><button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">🌓</button></li>
+                <li><button class="info-menu-btn" onclick="toggleInfoMenu()" title="Organization Info">☰</button></li>
                 <li><a href="login.html" class="profile-icon" title="Login / Sign Up">👤</a></li>
             </ul>
+        
         </div>
     </nav>
 
@@ -63,7 +57,6 @@
         </div>
     </div>
 
-    <!-- Overview Section -->
     <div class="section" style="padding-top: 8rem;">
         <div class="section-header">
             <div class="section-tag">OVERVIEW</div>
@@ -71,7 +64,6 @@
             <p class="section-subtitle">Data-driven excellence in indigenous education</p>
         </div>
 
-        <!-- Data Visualizations -->
         <div class="stats-grid subjects-grid" style="margin-bottom: 6rem;">
             <div class="stat" data-percent="100">
               <div class="stat-number counter" data-target="500">0</div>
@@ -108,10 +100,8 @@
               </div>
               <p class="stat-subtext">Hours of quality tutoring</p>
             </div>
-          </div>
-          
+        </div>
 
-        <!-- Progress Bars -->
         <div style="max-width: 1000px; margin: 4rem auto;">
             <h3 style="font-size: 2rem; font-weight: 900; text-align: center; margin-bottom: 3rem; text-transform: uppercase;">Subject Excellence</h3>
             <div style="display: grid; gap: 2rem;">
@@ -157,10 +147,8 @@
               </div>
           
             </div>
-          </div>
-          
+        </div>
 
-        <!-- Summary Cards -->
         <div class="grid subjects-grid" style="margin-top: 6rem;">
             <div class="glass-card" >
                 <span class="card-icon">🌟</span>
@@ -241,7 +229,6 @@
         </div>
       
         <div class="grid subjects-grid">
-          <!-- Row 1 -->
           <div class="glass-card">
             <span class="card-icon">📘</span>
             <h3>English & Literature</h3>
@@ -260,7 +247,6 @@
             <p>Explore biology, chemistry, and physics while connecting traditional Indigenous knowledge with modern discoveries.</p>
           </div>
       
-          <!-- Row 2 -->
           <div class="glass-card">
             <span class="card-icon">🌍</span>
             <h3>Social Studies</h3>
@@ -279,8 +265,7 @@
             <p>Express yourself through visual arts, music, and storytelling — celebrating Indigenous creativity and identity.</p>
           </div>
         </div>
-      </section>
-      
+    </section>
 
     <div id="mentors" class="section">
         <div class="section-header">
@@ -288,7 +273,6 @@
             <h2 class="section-title">Our <span class="gradient-text">Mentors</span></h2>
         </div>
 
-        <!-- Stats Section -->
         <div class="stats-grid subjects-grid">
             <div class="stat">
                 <div class="stat-number counter" data-target="500">0</div>
@@ -308,7 +292,7 @@
             </div>
         </div>
 
-        <div class="grid subjects-grid container section" style="margin-top: 4rem;">
+        <div class="grid subjects-grid" style="margin-top: 4rem;">
             <div class="glass-card">
                 <span class="card-icon">👨‍🏫</span>
                 <h3>Expert Educators</h3>
@@ -332,8 +316,28 @@
             <a href="login.html" class="btn btn-primary">Apply to Tutor →</a>
         </div>
     </div>
+
     <!-- Scroll to Top Button -->
     <button id="scrollTopBtn" title="Back to Top">↑</button>
-   
-     <script src="script.js"></script>
+
+    <!-- Music Control Panel -->
+    <div class="music-control" style="left: 2rem; right: auto;">
+        <h4>🎵 Music</h4>
+        <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="30">
+        <div class="volume-label">
+            <span>Soft</span>
+            <span id="volumeValue">30%</span>
+            <span>Intense</span>
+        </div>
+        <button class="music-toggle" id="musicToggle">▶ Play Music</button>
+    </div>
+
+    <footer>
+      <p>© 2025 Saint Thunderbird Tutoring</p>
+      <p>Empowering communities through education</p>
+  </footer>
+
+    <script src="script.js"></script>
 </body>
+
+</html>
