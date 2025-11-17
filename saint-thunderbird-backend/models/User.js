@@ -29,6 +29,17 @@ const userSchema = new mongoose.Schema({
         enum: ['student', 'tutor'],
         required: true
     },
+    tutorApplication: {
+        name: String,
+        age: Number,
+        status: {
+            type: String,
+            enum: ['pending', 'approved', 'denied'],
+            default: 'pending'
+        },
+        appliedAt: Date,
+        approvedAt: Date
+    },
     createdAt: {
         type: Date,
         default: Date.now
