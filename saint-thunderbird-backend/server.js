@@ -3,8 +3,10 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const authRoutes = require('./routes/auth');
+const tutorRoutes = require('./routes/tutor');
 
 const app = express();
+// ... rest of code
 
 // Middleware
 app.use(express.json());
