@@ -2,9 +2,9 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const User = require('./models/User');  // ← ADD THIS LINE
-const authRoutes = require('./routes/auth');
-const tutorRoutes = require('./routes/tutor');
+const User = require('./saint-thunderbird-backend/models/User');  // ← ADD THIS LINE
+const authRoutes = require('./saint-thunderbird-backend/routes/auth');
+const tutorRoutes = require('./saint-thunderbird-backend/routes/tutor');
 
 const app = express();
 // ... rest of code
