@@ -7,29 +7,27 @@ const authRoutes = require('./routes/auth');
 const tutorRoutes = require('./routes/tutor');
 
 const app = express();
-// ... rest of code
 
 // Middleware
 app.use(express.json());
 app.use(cors());
 
+// Serve static files
 app.use(express.static('.'));
-
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
-});
-
-app.get('/loading.html', (req, res) => {
-    res.sendFile(__dirname + '/loading.html');
-});
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('✅ MongoDB Connected'))
     .catch(err => console.log('❌ MongoDB Error:', err));
 
+// Homepage
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+});
+
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/tutor', tutorRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -40,10 +38,4 @@ app.get('/api/health', (req, res) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
-});
-
-app.use(express.static('public'));
-
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
 });
