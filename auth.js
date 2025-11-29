@@ -2,7 +2,7 @@
 // AUTHENTICATION FUNCTIONS
 // ========================================
 
-const API_URL = 'http://localhost:5000/api/auth';
+const API_URL = 'https://saintthunderbirdtutoring.onrender.com/api/auth';
 
 // ========== SIGNUP HANDLERS ==========
 
