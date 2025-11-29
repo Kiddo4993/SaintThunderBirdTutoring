@@ -13,6 +13,16 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+app.use(express.static('.'));
+
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+});
+
+app.get('/loading.html', (req, res) => {
+    res.sendFile(__dirname + '/loading.html');
+});
+
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('✅ MongoDB Connected'))
