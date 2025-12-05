@@ -358,10 +358,6 @@
             margin-top: 0.5rem;
             display: none;
         }
-
-        .loading {
-            display: none;
-        }
     </style>
 </head>
 <body>
@@ -387,7 +383,6 @@
                 <div class="form-group">
                     <label for="studentEmail">Email</label>
                     <input type="email" id="studentEmail" name="email" placeholder="student@example.com" required>
-                    <div class="error-message" id="studentEmailError"></div>
                 </div>
                 
                 <div class="form-group">
@@ -419,7 +414,6 @@
                 <div class="form-group">
                     <label for="tutorEmail">Email</label>
                     <input type="email" id="tutorEmail" name="email" placeholder="tutor@example.com" required>
-                    <div class="error-message" id="tutorEmailError"></div>
                 </div>
                 
                 <div class="form-group">
@@ -449,40 +443,6 @@
     </div>
 
     <script>
-         document.getElementById('studentLoginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('studentEmail').value;
-            const password = document.getElementById('studentPassword').value;
-            const remember = document.getElementById('studentRemember').checked;
-
-            try {
-                const res = await fetch('https://saintthunderbirdtutoring.onrender.com/api/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
-
-                const data = await res.json();
-
-                if (data.success) {
-                    localStorage.setItem('authToken', data.token);
-                    localStorage.setItem('user', JSON.stringify(data.user));
-                    
-                    if (remember) {
-                        localStorage.setItem('rememberEmail', email);
-                    }
-
-                    alert('✅ Welcome back, ' + data.user.firstName + '!');
-                    window.location.href = 'student-dashboard.html';
-                } else {
-                    alert('❌ Error: ' + data.error);
-                }
-            } catch (error) {
-                alert('❌ Connection error: ' + error.message);
-            }
-        });
-
         function toggleTheme() {
             document.body.classList.toggle('light-mode');
             const isLight = document.body.classList.contains('light-mode');
@@ -490,7 +450,6 @@
             document.querySelector('.theme-toggle-btn').textContent = isLight ? '☀️' : '🌓';
         }
 
-        // Load saved theme
         const savedTheme = localStorage.getItem('st-theme');
         if (savedTheme === 'light') {
             document.body.classList.add('light-mode');
@@ -498,11 +457,9 @@
         }
 
         function switchTab(tab) {
-            // Update tab buttons
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             event.target.classList.add('active');
 
-            // Update content
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.getElementById(tab + '-content').classList.add('active');
         }
@@ -514,7 +471,7 @@
             }
         }
 
-        // STUDENT LOGIN HANDLER
+        // STUDENT LOGIN - Only once
         document.getElementById('studentLoginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -532,11 +489,15 @@
                 const data = await res.json();
 
                 if (data.success) {
-                    // Save token and user data
+                    // CHECK IF USER IS STUDENT
+                    if (data.user.userType !== 'student') {
+                        alert('❌ Error: You are not a student. You are a ' + data.user.userType);
+                        return;
+                    }
+
                     localStorage.setItem('authToken', data.token);
                     localStorage.setItem('user', JSON.stringify(data.user));
                     
-                    // Remember me feature
                     if (remember) {
                         localStorage.setItem('rememberEmail', email);
                     }
@@ -545,15 +506,13 @@
                     window.location.href = 'student-dashboard.html';
                 } else {
                     alert('❌ Error: ' + data.error);
-                    document.getElementById('studentEmailError').textContent = data.error;
-                    document.getElementById('studentEmailError').style.display = 'block';
                 }
             } catch (error) {
                 alert('❌ Connection error: ' + error.message);
             }
         });
 
-        // TUTOR LOGIN HANDLER
+        // TUTOR LOGIN - Only once
         document.getElementById('tutorLoginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -571,11 +530,15 @@
                 const data = await res.json();
 
                 if (data.success) {
-                    // Save token and user data
+                    // CHECK IF USER IS TUTOR
+                    if (data.user.userType !== 'tutor') {
+                        alert('❌ Error: You are not a tutor. You are a ' + data.user.userType);
+                        return;
+                    }
+
                     localStorage.setItem('authToken', data.token);
                     localStorage.setItem('user', JSON.stringify(data.user));
                     
-                    // Remember me feature
                     if (remember) {
                         localStorage.setItem('rememberEmail', email);
                     }
@@ -584,8 +547,6 @@
                     window.location.href = 'tutor-dashboard.html';
                 } else {
                     alert('❌ Error: ' + data.error);
-                    document.getElementById('tutorEmailError').textContent = data.error;
-                    document.getElementById('tutorEmailError').style.display = 'block';
                 }
             } catch (error) {
                 alert('❌ Connection error: ' + error.message);
@@ -597,30 +558,9 @@
             const remembered = localStorage.getItem('rememberEmail');
             if (remembered) {
                 document.getElementById('studentEmail').value = remembered;
+                document.getElementById('tutorEmail').value = remembered;
             }
         });
-        async function login(email, password) {
-    const response = await fetch('https://saintthunderbirdtutoring.onrender.com/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-    });
-
-    const data = await response.json();
-    
-    if (data.success) {
-        localStorage.setItem('authToken', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-        window.location.href = '/dashboard.html';
-    } else {
-        alert('Error: ' + data.error);
-    }
-}
-function logout() {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('user');
-    window.location.href = '/index.html';
-}
     </script>
     <script src="auth.js"></script>
 </body>
