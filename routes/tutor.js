@@ -495,4 +495,49 @@ router.post('/complete-session', authMiddleware, async (req, res) => {
     }
 });
 
+// UPDATE TUTOR SPECIALTIES
+router.post('/update-specialties', authMiddleware, async (req, res) => {
+    try {
+        const { subjects } = req.body;
+        
+        const tutor = await User.findByIdAndUpdate(
+            req.user.userId,
+            { 'tutorProfile.subjects': subjects },
+            { new: true }
+        );
+
+        res.json({
+            success: true,
+            message: 'Specialties updated',
+            tutorProfile: tutor.tutorProfile
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// UPDATE STUDENT PREFERENCES
+router.post('/update-student-preferences', authMiddleware, async (req, res) => {
+    try {
+        const { interests, grade } = req.body;
+        
+        const student = await User.findByIdAndUpdate(
+            req.user.userId,
+            { 
+                grade: grade,
+                interests: interests
+            },
+            { new: true }
+        );
+
+        res.json({
+            success: true,
+            message: 'Preferences updated',
+            preferences: { interests, grade }
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 module.exports = router;

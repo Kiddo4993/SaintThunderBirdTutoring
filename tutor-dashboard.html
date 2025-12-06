@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tutor Dashboard - Saint Thunderbird</title>
+    <title>Tutor Profile - Saint Thunderbird</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,771 +13,628 @@
         }
 
         :root {
-            --bg-primary: #f8f9fa;
-            --bg-secondary: #fff;
-            --text-primary: #1f2937;
-            --text-secondary: #6b7280;
-            --border-color: #e5e7eb;
-            --hover-bg: #f9fafb;
-        }
-
-        body.dark-mode {
-            --bg-primary: #1a1a1a;
-            --bg-secondary: #2d2d2d;
-            --text-primary: #f3f4f6;
-            --text-secondary: #d1d5db;
-            --border-color: #4b5563;
-            --hover-bg: #3d3d3d;
+            --bg-primary: #000000;
+            --bg-secondary: #0a0a0a;
+            --bg-tertiary: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #e8d5c4;
+            --beige: #d4a574;
+            --accent: #8b4513;
+            --border: rgba(212, 165, 116, 0.2);
         }
 
         body {
             font-family: 'Orbitron', sans-serif;
-            background: var(--bg-primary);
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-primary) 100%);
             min-height: 100vh;
-            display: flex;
-            transition: background 0.3s ease;
-            color: var(--text-primary);
-        }
-
-        .sidebar {
-            width: 200px;
-            background: var(--bg-secondary);
-            border-right: 1px solid var(--border-color);
-            padding: 2rem 1rem;
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-            transition: all 0.3s ease;
-        }
-
-        .sidebar-logo {
-            text-align: center;
-            margin-bottom: 2rem;
-            padding-bottom: 2rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .sidebar-user {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1.5rem;
-            padding: 1rem;
-            background: var(--hover-bg);
-            border-radius: 8px;
-        }
-
-        .sidebar-user-avatar {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #d4a574, #8b4513);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-weight: 700;
-        }
-
-        .sidebar-user-info p {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            margin-top: 0.25rem;
-        }
-
-        .sidebar-user-name {
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-
-        .sidebar-nav {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .sidebar-nav-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem;
-            color: var(--text-secondary);
-            text-decoration: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 0.9rem;
-        }
-
-        .sidebar-nav-item:hover {
-            background: var(--hover-bg);
-            color: #d4a574;
-        }
-
-        .sidebar-nav-item.active {
-            background: linear-gradient(135deg, #d4a574, #8b4513);
-            color: #fff;
-        }
-
-        .sidebar-nav-icon {
-            font-size: 1.2rem;
-        }
-
-        .theme-toggle {
-            width: 100%;
-            padding: 0.75rem;
-            background: var(--hover-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-primary);
-            cursor: pointer;
-            font-weight: 700;
-            transition: all 0.3s;
-            margin-top: 1rem;
-            font-family: 'Orbitron', sans-serif;
-        }
-
-        .theme-toggle:hover {
-            background: linear-gradient(135deg, #d4a574, #8b4513);
-            color: #fff;
-            border-color: #d4a574;
-        }
-
-        .main-content {
-            margin-left: 200px;
-            flex: 1;
             padding: 2rem;
-            transition: all 0.3s ease;
+            color: var(--text-primary);
         }
 
-        .header-section {
-            background: linear-gradient(135deg, #d4a574 0%, #8b4513 50%, #4a7c9e 100%);
-            border-radius: 16px;
-            padding: 3rem;
-            color: #fff;
-            margin-bottom: 2rem;
-            position: relative;
-            overflow: hidden;
+        .mesh-gradient {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(at 20% 30%, rgba(212, 165, 116, 0.1) 0%, transparent 50%),
+                radial-gradient(at 80% 70%, rgba(139, 69, 19, 0.08) 0%, transparent 50%);
+            filter: blur(60px);
+            z-index: 0;
+            pointer-events: none;
         }
 
-        .header-section::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -10%;
-            width: 300px;
-            height: 300px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-        }
-
-        .header-content {
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
             position: relative;
             z-index: 10;
         }
 
-        .header-greeting {
-            font-size: 2rem;
-            font-weight: 900;
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+        }
+
+        .header-content h1 {
+            font-size: 2.5rem;
+            color: var(--beige);
             margin-bottom: 0.5rem;
         }
 
-        .header-subtitle {
-            font-size: 0.9rem;
-            opacity: 0.9;
+        .header-content p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
         }
 
-        .dashboard-grid {
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--beige), var(--accent));
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212, 165, 116, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(212, 165, 116, 0.1);
+            color: var(--beige);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(212, 165, 116, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .grid-2 {
             display: grid;
-            grid-template-columns: 2fr 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 2rem;
             margin-bottom: 2rem;
         }
 
-        .dashboard-card {
-            background: var(--bg-secondary);
+        .card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
             border-radius: 16px;
             padding: 2rem;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            border-color: var(--beige);
+            background: rgba(255, 255, 255, 0.05);
         }
 
         .card-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--text-primary);
+            font-size: 1.5rem;
+            color: var(--beige);
             margin-bottom: 1.5rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
 
-        .notification-badge {
-            background: linear-gradient(135deg, #d4a574, #8b4513);
-            color: #fff;
-            padding: 0.5rem 1rem;
+        .approval-badge {
+            display: inline-block;
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid rgba(34, 197, 94, 0.5);
+            color: #22c55e;
+            padding: 0.75rem 1.5rem;
             border-radius: 20px;
-            font-size: 0.85rem;
-            text-decoration: none;
-            transition: all 0.3s;
-            margin-left: auto;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            animation: pulse 2s ease-in-out infinite;
         }
 
-        .notification-badge:hover {
-            transform: translateX(5px);
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
         }
 
-        .waiting-students-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0;
+        .info-box {
+            background: rgba(212, 165, 116, 0.1);
+            border-left: 4px solid var(--beige);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
         }
 
-        .student-row {
+        .info-box p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .specialties-container {
+            margin-top: 1.5rem;
+        }
+
+        .specialties-grid {
             display: grid;
-            grid-template-columns: 1.5fr 1.5fr 1fr auto;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
             gap: 1rem;
-            padding: 1.25rem;
-            border-bottom: 1px solid var(--border-color);
-            align-items: center;
-            transition: all 0.3s;
+            margin-bottom: 1.5rem;
         }
 
-        .student-row:last-child {
+        .specialty-item {
+            background: rgba(212, 165, 116, 0.15);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .specialty-item.selected {
+            border-color: var(--beige);
+            background: rgba(212, 165, 116, 0.3);
+            box-shadow: 0 0 20px rgba(212, 165, 116, 0.3);
+        }
+
+        .specialty-item:hover {
+            border-color: var(--beige);
+            transform: translateY(-3px);
+        }
+
+        .specialty-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .specialty-name {
+            font-weight: 600;
+            color: var(--beige);
+            font-size: 0.9rem;
+        }
+
+        .specialty-checkmark {
+            position: absolute;
+            top: 5px;
+            right: 8px;
+            color: #22c55e;
+            font-weight: 700;
+            display: none;
+        }
+
+        .specialty-item.selected .specialty-checkmark {
+            display: block;
+        }
+
+        .email-settings {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .email-setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .email-setting-item:last-child {
             border-bottom: none;
         }
 
-        .student-row:hover {
-            background: var(--hover-bg);
-            border-radius: 8px;
-        }
-
-        .student-name {
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-
-        .student-subject {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-
-        .wait-time {
-            background: #fef3c7;
-            color: #92400e;
-            padding: 0.25rem 0.75rem;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .join-btn {
-            background: linear-gradient(135deg, #4a7c9e, #2d5a7b);
-            color: #fff;
-            border: none;
-            padding: 0.5rem 1.25rem;
-            border-radius: 8px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .join-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(74, 124, 158, 0.3);
-        }
-
-        .impact-summary {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .impact-card {
-            border-radius: 12px;
-            padding: 1.5rem;
-            border: 2px solid;
-            transition: all 0.3s ease;
-        }
-
-        .impact-card.coaching {
-            background: linear-gradient(135deg, #d4a57422, #8b451322);
-            border-color: #d4a574;
-            box-shadow: 0 4px 12px rgba(212, 165, 116, 0.15);
-        }
-
-        .impact-card.community {
-            background: linear-gradient(135deg, #a6674222, #6b4423bb);
-            border-color: #a66742;
-            box-shadow: 0 4px 12px rgba(166, 103, 66, 0.15);
-        }
-
-        .impact-card.availability {
-            background: linear-gradient(135deg, #7a563522, #5a3a2222);
-            border-color: #7a5635;
-            box-shadow: 0 4px 12px rgba(122, 86, 53, 0.15);
-        }
-
-        .impact-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(212, 165, 116, 0.25);
-        }
-
-        .impact-card-title {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 0.75rem;
-            font-size: 0.95rem;
-        }
-
-        .impact-stat {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
-        }
-
-        .impact-stat-label {
+        .email-setting-label {
             color: var(--text-secondary);
         }
 
-        .impact-stat-value {
-            font-weight: 700;
-            color: #d4a574;
-        }
-
-        .student-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 1rem;
-            margin-bottom: 1rem;
+        .toggle-switch {
             position: relative;
-            transition: all 0.3s;
-        }
-
-        .student-card:hover {
-            border-color: #d4a574;
-            box-shadow: 0 4px 12px rgba(212, 165, 116, 0.15);
-        }
-
-        .student-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 0.75rem;
-        }
-
-        .student-card-name {
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-
-        .student-card-subject {
-            background: #fef3c7;
-            color: #92400e;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .student-card-topic {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .student-card-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-
-        .join-session-btn {
-            background: linear-gradient(135deg, #4a7c9e, #2d5a7b);
-            color: #fff;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            font-weight: 700;
+            width: 50px;
+            height: 26px;
+            background: rgba(212, 165, 116, 0.2);
+            border: 1px solid var(--border);
+            border-radius: 13px;
             cursor: pointer;
-            font-size: 0.85rem;
             transition: all 0.3s;
         }
 
-        .join-session-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(74, 124, 158, 0.3);
+        .toggle-switch.active {
+            background: rgba(34, 197, 94, 0.3);
+            border-color: #22c55e;
         }
 
-        .empty-state {
-            text-align: center;
-            padding: 2rem;
-            color: var(--text-secondary);
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background: var(--beige);
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s;
         }
 
-        .bottom-section {
-            background: var(--bg-secondary);
-            border-radius: 16px;
-            padding: 2rem;
-            border: 1px solid var(--border-color);
+        .toggle-switch.active::after {
+            left: 26px;
+            background: #22c55e;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
             margin-bottom: 2rem;
         }
 
-        .notification-container {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background: var(--bg-secondary);
+        .stat-card {
+            background: rgba(212, 165, 116, 0.1);
+            border: 1px solid var(--border);
             border-radius: 12px;
             padding: 1.5rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            max-width: 400px;
-            border: 1px solid var(--border-color);
+            text-align: center;
         }
 
-        .notification-header {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-        }
-
-        .notification-icon {
-            font-size: 2rem;
-        }
-
-        .notification-text h3 {
+        .stat-value {
+            font-size: 1.8rem;
+            color: var(--beige);
             font-weight: 700;
-            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .notifications-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            background: rgba(212, 165, 116, 0.1);
+            border-left: 4px solid var(--beige);
+            padding: 1rem;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 700;
+            color: var(--beige);
             margin-bottom: 0.25rem;
         }
 
-        .notification-text p {
+        .notification-msg {
             color: var(--text-secondary);
             font-size: 0.9rem;
         }
 
-        @media (max-width: 1024px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
+        .notification-time {
+            color: #9ca3af;
+            font-size: 0.75rem;
+        }
+
+        .notification-badge {
+            background: linear-gradient(135deg, var(--beige), var(--accent));
+            color: #000;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            white-space: nowrap;
+            margin-left: 1rem;
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, var(--beige), var(--accent));
+            color: #000;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1.5rem;
+            width: 100%;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212, 165, 116, 0.3);
+        }
+
+        .save-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         @media (max-width: 768px) {
-            .sidebar {
-                width: 60px;
-                padding: 1rem 0.5rem;
-            }
-
-            .sidebar-nav-item span:not(.sidebar-nav-icon) {
-                display: none;
-            }
-
-            .main-content {
-                margin-left: 60px;
-            }
-
-            .student-row {
+            .grid-2 {
                 grid-template-columns: 1fr;
             }
 
-            .header-section {
-                padding: 2rem 1.5rem;
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
             }
 
-            .header-greeting {
-                font-size: 1.5rem;
+            .header-actions {
+                width: 100%;
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-logo">
-            <div style="font-size: 2rem;">⚡</div>
-        </div>
+    <div class="mesh-gradient"></div>
 
-        <div class="sidebar-user">
-            <div class="sidebar-user-avatar" id="userAvatar">D</div>
-            <div class="sidebar-user-info">
-                <p class="sidebar-user-name" id="sidebarUserName">Dylan</p>
-                <p>Tutor Account</p>
-            </div>
-        </div>
-
-        <div class="sidebar-nav">
-            <a href="#" class="sidebar-nav-item active">
-                <span class="sidebar-nav-icon">🏠</span>
-                <span>Dashboard</span>
-            </a>
-            <a href="#" class="sidebar-nav-item">
-                <span class="sidebar-nav-icon">📚</span>
-                <span>Training</span>
-            </a>
-            <a href="#" class="sidebar-nav-item">
-                <span class="sidebar-nav-icon">📅</span>
-                <span>Schedule</span>
-            </a>
-            <a href="#" class="sidebar-nav-item">
-                <span class="sidebar-nav-icon">📊</span>
-                <span>Session History</span>
-            </a>
-            <a href="#" class="sidebar-nav-item">
-                <span class="sidebar-nav-icon">⭐</span>
-                <span>Level Up</span>
-            </a>
-            <hr style="margin: 1rem 0; border: none; border-top: 1px solid var(--border-color);">
-            <a href="#" class="sidebar-nav-item" onclick="logout()">
-                <span class="sidebar-nav-icon">🚪</span>
-                <span>Logout</span>
-            </a>
-        </div>
-
-        <button class="theme-toggle" onclick="toggleTheme()">🌓 Toggle Theme</button>
-    </div>
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="header-section">
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
             <div class="header-content">
-                <div class="header-greeting">Hello, <span id="tutorNameGreeting">Dylan</span>! 👋</div>
-                <div class="header-subtitle">Welcome back to Saint Thunderbird Tutoring</div>
+                <h1>⚡ Welcome, <span id="tutorName">Dylan</span>!</h1>
+                <p>Your tutor profile & settings</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-secondary" onclick="goToDashboard()">📊 Go to Dashboard</button>
+                <button class="btn-secondary" onclick="logout()">🚪 Logout</button>
             </div>
         </div>
 
-        <div class="dashboard-grid">
-            <!-- Waiting Students Section -->
-            <div class="dashboard-card">
-                <div class="card-title">
-                    ⏳ Waiting Students
-                    <span class="notification-badge">Allow browser notifications →</span>
+        <!-- Approval Status & Stats -->
+        <div class="grid-2">
+            <!-- Approval Status -->
+            <div class="card">
+                <div class="approval-badge">✅ Approved Tutor</div>
+                <div class="card-title">🎉 You're Accepted!</div>
+                
+                <div class="info-box">
+                    <p>Congratulations! Your tutor application has been approved. You are now officially part of the Saint Thunderbird tutoring team.</p>
                 </div>
-                <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.9rem;">Students waiting for help will show up below</p>
 
-                <div class="waiting-students-list" id="waitingStudentsList">
-                    <div class="empty-state">Loading students...</div>
+                <div style="background: rgba(212, 165, 116, 0.05); padding: 1rem; border-radius: 8px;">
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.75rem;"><strong>📧 Email Notifications:</strong></p>
+                    <p style="color: var(--text-secondary); font-size: 0.85rem;">We'll send you emails when:</p>
+                    <ul style="list-style: none; margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">
+                        <li>✓ New student requests match your specialties</li>
+                        <li>✓ A session is scheduled with you</li>
+                        <li>✓ Important platform updates</li>
+                        <li>✓ Your impact milestones</li>
+                    </ul>
                 </div>
             </div>
 
-            <!-- Impact Summary Section -->
+            <!-- Quick Stats -->
             <div>
-                <div class="card-title">Your Impact Summary</div>
-
-                <div class="impact-card coaching">
-                    <div class="impact-card-title">📊 Coaching Activity</div>
-                    <div class="impact-stat">
-                        <span class="impact-stat-label">Hours this week</span>
-                        <span class="impact-stat-value" id="hoursThisWeek">0h 0m</span>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="requestsCount">0</div>
+                        <div class="stat-label">Requests</div>
                     </div>
-                    <div class="impact-stat">
-                        <span class="impact-stat-label">Hours all time</span>
-                        <span class="impact-stat-value" id="hoursAllTime">0h 0m</span>
+                    <div class="stat-card">
+                        <div class="stat-value" id="sessionsCount">0</div>
+                        <div class="stat-label">Sessions</div>
                     </div>
-                    <div class="impact-stat">
-                        <span class="impact-stat-label">Requests filled</span>
-                        <span class="impact-stat-value" id="requestsFilled">0</span>
+                    <div class="stat-card">
+                        <div class="stat-value" id="hoursCount">0</div>
+                        <div class="stat-label">Hours</div>
                     </div>
-                    <div class="impact-stat">
-                        <span class="impact-stat-label">Certifications</span>
-                        <span class="impact-stat-value">0</span>
-                    </div>
-                </div>
-
-                <div class="impact-card community">
-                    <div class="impact-card-title">👥 Community Impact</div>
-                    <div class="impact-stat">
-                        <span class="impact-stat-label">Students helped</span>
-                        <span class="impact-stat-value" id="studentsHelpedCount">0</span>
-                    </div>
-                    <div class="impact-stat">
-                        <span class="impact-stat-label">Referral Hours</span>
-                        <span class="impact-stat-value">0h 0m</span>
-                    </div>
-                </div>
-
-                <div class="impact-card availability">
-                    <div class="impact-card-title">⏰ Availability</div>
-                    <div class="impact-stat">
-                        <span class="impact-stat-label">Hours selected</span>
-                        <span class="impact-stat-value">0 h</span>
-                    </div>
-                    <div class="impact-stat">
-                        <span class="impact-stat-label">Hours elapsed</span>
-                        <span class="impact-stat-value">0 h</span>
+                    <div class="stat-card">
+                        <div class="stat-value">4.9</div>
+                        <div class="stat-label">Rating</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Active Requests Section -->
-        <div class="bottom-section">
-            <div class="card-title">📋 Your Active Sessions</div>
-            <div id="activeSessionsList">
-                <div class="empty-state">Loading sessions...</div>
-            </div>
-        </div>
-    </div>
+        <!-- Main Content Grid -->
+        <div class="grid-2">
+            <!-- Specialties Selection -->
+            <div class="card">
+                <div class="card-title">🎓 Your Specialties</div>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Select the subjects you're qualified to teach. These help match you with the right students.</p>
 
-    <!-- Notification -->
-    <div class="notification-container" id="notificationContainer" style="display: none;">
-        <div class="notification-header">
-            <div class="notification-icon">🎓</div>
-            <div class="notification-text">
-                <h3 id="notificationTitle">New Request</h3>
-                <p id="notificationMsg">needs help with Reading</p>
+                <div class="specialties-grid">
+                    <div class="specialty-item" onclick="toggleSpecialty('math')">
+                        <div class="specialty-checkmark">✓</div>
+                        <div class="specialty-icon">📐</div>
+                        <div class="specialty-name">Mathematics</div>
+                    </div>
+                    <div class="specialty-item" onclick="toggleSpecialty('science')">
+                        <div class="specialty-checkmark">✓</div>
+                        <div class="specialty-icon">🔬</div>
+                        <div class="specialty-name">Sciences</div>
+                    </div>
+                    <div class="specialty-item" onclick="toggleSpecialty('languages')">
+                        <div class="specialty-checkmark">✓</div>
+                        <div class="specialty-icon">🌐</div>
+                        <div class="specialty-name">Languages</div>
+                    </div>
+                    <div class="specialty-item" onclick="toggleSpecialty('social')">
+                        <div class="specialty-checkmark">✓</div>
+                        <div class="specialty-icon">📚</div>
+                        <div class="specialty-name">Social Studies</div>
+                    </div>
+                    <div class="specialty-item" onclick="toggleSpecialty('technology')">
+                        <div class="specialty-checkmark">✓</div>
+                        <div class="specialty-icon">💻</div>
+                        <div class="specialty-name">Technology</div>
+                    </div>
+                    <div class="specialty-item" onclick="toggleSpecialty('arts')">
+                        <div class="specialty-checkmark">✓</div>
+                        <div class="specialty-icon">🎨</div>
+                        <div class="specialty-name">Arts & Culture</div>
+                    </div>
+                </div>
+
+                <button class="save-btn" onclick="saveSpecialties()">Save Specialties</button>
+            </div>
+
+            <!-- Email Preferences -->
+            <div class="card">
+                <div class="card-title">📧 Email Preferences</div>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Manage how you receive notifications from Saint Thunderbird.</p>
+
+                <div class="email-settings">
+                    <div class="email-setting-item">
+                        <div class="email-setting-label">New Student Requests</div>
+                        <div class="toggle-switch active" onclick="toggleEmailSetting(this)"></div>
+                    </div>
+                    <div class="email-setting-item">
+                        <div class="email-setting-label">Session Reminders</div>
+                        <div class="toggle-switch active" onclick="toggleEmailSetting(this)"></div>
+                    </div>
+                    <div class="email-setting-item">
+                        <div class="email-setting-label">Weekly Summary</div>
+                        <div class="toggle-switch active" onclick="toggleEmailSetting(this)"></div>
+                    </div>
+                    <div class="email-setting-item">
+                        <div class="email-setting-label">Platform Updates</div>
+                        <div class="toggle-switch active" onclick="toggleEmailSetting(this)"></div>
+                    </div>
+                    <div class="email-setting-item">
+                        <div class="email-setting-label">Impact Achievements</div>
+                        <div class="toggle-switch active" onclick="toggleEmailSetting(this)"></div>
+                    </div>
+                </div>
             </div>
         </div>
-        <button class="join-session-btn" style="width: 100%;" onclick="acceptFirstRequest()">Join session</button>
+
+        <!-- Recent Notifications -->
+        <div class="card">
+            <div class="card-title">🔔 Recent Notifications</div>
+            <div class="notifications-list" id="notificationsList">
+                <div class="notification-item">
+                    <div class="notification-content">
+                        <div class="notification-title">Welcome to Saint Thunderbird!</div>
+                        <div class="notification-msg">Your tutor application has been approved. You can now start accepting student requests.</div>
+                        <div class="notification-time">Just now</div>
+                    </div>
+                    <div class="notification-badge">NEW</div>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-content">
+                        <div class="notification-title">Profile Complete</div>
+                        <div class="notification-msg">Your profile is now visible to students. Start accepting requests!</div>
+                        <div class="notification-time">2 minutes ago</div>
+                    </div>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-content">
+                        <div class="notification-title">Application Approved</div>
+                        <div class="notification-msg">Great news! Your tutor application has been successfully approved by our team.</div>
+                        <div class="notification-time">5 minutes ago</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="auth.js"></script>
     <script>
         const API_URL = 'https://saintthunderbirdtutoring.onrender.com';
-
-        // Load theme preference
-        const savedTheme = localStorage.getItem('tutorTheme') || 'light';
-        if (savedTheme === 'dark') {
-            document.body.classList.add('dark-mode');
-        }
-
-        function toggleTheme() {
-            document.body.classList.toggle('dark-mode');
-            const theme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
-            localStorage.setItem('tutorTheme', theme);
-        }
+        let selectedSpecialties = new Set(['math', 'science']);
 
         const user = getUser();
-        if (!user || user.userType !== 'tutor') {
+        if (!user) {
             window.location.href = 'login.html';
         }
 
-        // Set user name
-        const firstName = user.firstName;
-        const lastName = user.lastName;
-        const fullName = `${firstName} ${lastName}`;
-        
-        document.getElementById('tutorNameGreeting').textContent = firstName;
-        document.getElementById('sidebarUserName').textContent = firstName;
-        document.getElementById('userAvatar').textContent = firstName[0].toUpperCase();
+        // Set tutor name
+        document.getElementById('tutorName').textContent = user.firstName;
 
-        let allRequests = [];
-
-        async function fetchWaitingStudents() {
-            try {
-                const token = localStorage.getItem('authToken');
-                const res = await fetch(`${API_URL}/api/tutor/requests`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                const data = await res.json();
-
-                if (data.success && data.requests.length > 0) {
-                    allRequests = data.requests;
-                    const html = data.requests.map(req => `
-                        <div class="student-row">
-                            <div class="student-name">${req.studentName}</div>
-                            <div class="student-subject">${req.subject}</div>
-                            <div class="wait-time">&lt; 1 min</div>
-                            <button class="join-btn" onclick="acceptRequest('${req._id}', '${req.studentName}')">Join Session</button>
-                        </div>
-                    `).join('');
-                    document.getElementById('waitingStudentsList').innerHTML = html;
-                    document.getElementById('requestsFilled').textContent = data.requests.length;
-
-                    if (data.requests.length > 0) {
-                        const firstReq = data.requests[0];
-                        document.getElementById('notificationContainer').style.display = 'block';
-                        document.getElementById('notificationTitle').textContent = firstReq.studentName;
-                        document.getElementById('notificationMsg').textContent = `needs help with ${firstReq.subject}`;
-                    }
-                } else {
-                    document.getElementById('waitingStudentsList').innerHTML = '<div class="empty-state">No waiting students</div>';
-                    document.getElementById('notificationContainer').style.display = 'none';
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('waitingStudentsList').innerHTML = '<div class="empty-state">Error loading students</div>';
+        function toggleSpecialty(specialty) {
+            const item = event.target.closest('.specialty-item');
+            if (selectedSpecialties.has(specialty)) {
+                selectedSpecialties.delete(specialty);
+                item.classList.remove('selected');
+            } else {
+                selectedSpecialties.add(specialty);
+                item.classList.add('selected');
             }
         }
 
-        async function fetchActiveSessions() {
+        async function saveSpecialties() {
             try {
                 const token = localStorage.getItem('authToken');
-                const res = await fetch(`${API_URL}/api/tutor/sessions`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                const data = await res.json();
-
-                if (data.success && data.sessions.length > 0) {
-                    const html = data.sessions.map(session => `
-                        <div class="student-card">
-                            <div class="student-card-header">
-                                <div class="student-card-name">${session.studentName}</div>
-                                <div class="student-card-subject">${session.subject}</div>
-                            </div>
-                            <div class="student-card-topic">${session.subject} - Session scheduled</div>
-                            <div class="student-card-footer">
-                                <span>${new Date(session.scheduledTime).toLocaleString()}</span>
-                                <button class="join-session-btn" onclick="startSession('${session._id}')">Start Session</button>
-                            </div>
-                        </div>
-                    `).join('');
-                    document.getElementById('activeSessionsList').innerHTML = html;
-                    document.getElementById('studentsHelpedCount').textContent = data.sessions.length;
-                } else {
-                    document.getElementById('activeSessionsList').innerHTML = '<div class="empty-state">No active sessions - Accept student requests to create sessions!</div>';
-                }
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        }
-
-        async function acceptRequest(requestId, studentName) {
-            try {
-                const token = localStorage.getItem('authToken');
-                const res = await fetch(`${API_URL}/api/tutor/accept-request`, {
+                const res = await fetch(`${API_URL}/api/tutor/update-specialties`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify({ requestId, tutorName: fullName })
+                    body: JSON.stringify({
+                        subjects: Array.from(selectedSpecialties)
+                    })
                 });
 
                 const data = await res.json();
-                
+
                 if (data.success) {
-                    alert(`✅ Session started with ${studentName}!`);
-                    fetchWaitingStudents();
-                    fetchActiveSessions();
+                    alert('✅ Specialties saved successfully!');
                 } else {
                     alert('❌ Error: ' + data.error);
                 }
             } catch (error) {
-                alert('Error: ' + error.message);
+                alert('Error saving specialties: ' + error.message);
             }
         }
 
-        function acceptFirstRequest() {
-            if (allRequests.length > 0) {
-                const firstReq = allRequests[0];
-                acceptRequest(firstReq._id, firstReq.studentName);
-            }
+        function toggleEmailSetting(element) {
+            element.classList.toggle('active');
         }
 
-        function startSession(sessionId) {
-            alert('🎥 Starting video session... (Video conferencing integration here)');
+        function goToDashboard() {
+            window.location.href = 'tutor-dashboard.html';
         }
 
         function logout() {
@@ -785,13 +643,22 @@
             window.location.href = 'login.html';
         }
 
-        // Load data on page load
-        fetchWaitingStudents();
-        fetchActiveSessions();
-        
-        // Refresh every 5 seconds
-        setInterval(fetchWaitingStudents, 5000);
-        setInterval(fetchActiveSessions, 10000);
+        // Initialize selected specialties
+        if (user.tutorProfile?.subjects) {
+            user.tutorProfile.subjects.forEach(subject => {
+                selectedSpecialties.add(subject);
+            });
+        }
+
+        // Highlight selected specialties on load
+        selectedSpecialties.forEach(specialty => {
+            const items = document.querySelectorAll('.specialty-item');
+            items.forEach(item => {
+                if (item.getAttribute('onclick').includes(`'${specialty}'`)) {
+                    item.classList.add('selected');
+                }
+            });
+        });
     </script>
 </body>
 </html>
