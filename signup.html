@@ -219,6 +219,47 @@
             color: #4a4a4a;
         }
 
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .subject-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .subject-item input[type="checkbox"] {
+            width: auto;
+        }
+
+        .subject-item label {
+            margin: 0;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: capitalize;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .subject-item:hover {
+            border-color: var(--beige);
+            background: rgba(212, 165, 116, 0.1);
+        }
+
+        body.light-mode .subject-item {
+            background: rgba(212, 165, 116, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.2);
+        }
+
         .btn-submit {
             width: 100%;
             padding: 1.2rem;
@@ -393,15 +434,33 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="studentSubjects">Subjects Interested In</label>
-                    <select id="studentSubjects" name="subjects" multiple size="4">
-                        <option value="math">Mathematics</option>
-                        <option value="science">Sciences</option>
-                        <option value="languages">Languages</option>
-                        <option value="social">Social Studies</option>
-                        <option value="technology">Technology</option>
-                        <option value="arts">Arts & Culture</option>
-                    </select>
+                    <label>Subjects Interested In (Select Multiple)</label>
+                    <div class="subjects-grid">
+                        <div class="subject-item">
+                            <input type="checkbox" id="studentMath" value="math" class="student-subject">
+                            <label for="studentMath">Mathematics</label>
+                        </div>
+                        <div class="subject-item">
+                            <input type="checkbox" id="studentScience" value="science" class="student-subject">
+                            <label for="studentScience">Sciences</label>
+                        </div>
+                        <div class="subject-item">
+                            <input type="checkbox" id="studentLanguages" value="languages" class="student-subject">
+                            <label for="studentLanguages">Languages</label>
+                        </div>
+                        <div class="subject-item">
+                            <input type="checkbox" id="studentSocial" value="social" class="student-subject">
+                            <label for="studentSocial">Social Studies</label>
+                        </div>
+                        <div class="subject-item">
+                            <input type="checkbox" id="studentTech" value="technology" class="student-subject">
+                            <label for="studentTech">Technology</label>
+                        </div>
+                        <div class="subject-item">
+                            <input type="checkbox" id="studentArts" value="arts" class="student-subject">
+                            <label for="studentArts">Arts & Culture</label>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -413,7 +472,7 @@
                     <input type="checkbox" id="studentTerms" name="terms" required>
                     <label for="studentTerms">
                         I agree to the <a href="terms.html" class="link" target="_blank">terms and conditions</a>
-                      </label>                      
+                    </label>                      
                 </div>
 
                 <button type="submit" class="btn-submit">Sign Up as Student</button>
@@ -465,15 +524,33 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="tutorSubjects">Subjects You Can Teach</label>
-                    <select id="tutorSubjects" name="subjects" multiple size="4" required>
-                        <option value="math">Mathematics</option>
-                        <option value="science">Sciences</option>
-                        <option value="languages">Languages</option>
-                        <option value="social">Social Studies</option>
-                        <option value="technology">Technology</option>
-                        <option value="arts">Arts & Culture</option>
-                    </select>
+                    <label>Subjects You Can Teach (Select Multiple)</label>
+                    <div class="subjects-grid">
+                        <div class="subject-item">
+                            <input type="checkbox" id="tutorMath" value="math" class="tutor-subject">
+                            <label for="tutorMath">Mathematics</label>
+                        </div>
+                        <div class="subject-item">
+                            <input type="checkbox" id="tutorScience" value="science" class="tutor-subject">
+                            <label for="tutorScience">Sciences</label>
+                        </div>
+                        <div class="subject-item">
+                            <input type="checkbox" id="tutorLanguages" value="languages" class="tutor-subject">
+                            <label for="tutorLanguages">Languages</label>
+                        </div>
+                        <div class="subject-item">
+                            <input type="checkbox" id="tutorSocial" value="social" class="tutor-subject">
+                            <label for="tutorSocial">Social Studies</label>
+                        </div>
+                        <div class="subject-item">
+                            <input type="checkbox" id="tutorTech" value="technology" class="tutor-subject">
+                            <label for="tutorTech">Technology</label>
+                        </div>
+                        <div class="subject-item">
+                            <input type="checkbox" id="tutorArts" value="arts" class="tutor-subject">
+                            <label for="tutorArts">Arts & Culture</label>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -499,7 +576,7 @@
 
                 <div class="checkbox-group">
                     <input type="checkbox" id="tutorTerms" name="terms" required>
-                    <label for="studentTerms">
+                    <label for="tutorTerms">
                         I agree to the <a href="terms.html" class="link" target="_blank">terms and conditions</a>
                     </label>
                 </div>
@@ -515,39 +592,6 @@
     </div>
 
     <script>
-        document.getElementById('tutorLoginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('tutorEmail').value;
-            const password = document.getElementById('tutorPassword').value;
-            const remember = document.getElementById('tutorRemember').checked;
-
-            try {
-                const res = await fetch('https://saintthunderbirdtutoring.onrender.com/api/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
-
-                const data = await res.json();
-
-                if (data.success) {
-                    localStorage.setItem('authToken', data.token);
-                    localStorage.setItem('user', JSON.stringify(data.user));
-                    
-                    if (remember) {
-                        localStorage.setItem('rememberEmail', email);
-                    }
-
-                    alert('✅ Welcome back, ' + data.user.firstName + '!');
-                    window.location.href = 'tutor-dashboard.html';
-                } else {
-                    alert('❌ Error: ' + data.error);
-                }
-            } catch (error) {
-                alert('❌ Connection error: ' + error.message);
-            }
-        });
         function toggleTheme() {
             document.body.classList.toggle('light-mode');
             const isLight = document.body.classList.contains('light-mode');
@@ -555,7 +599,6 @@
             document.querySelector('.theme-toggle-btn').textContent = isLight ? '☀️' : '🌓';
         }
 
-        // Load saved theme
         const savedTheme = localStorage.getItem('st-theme');
         if (savedTheme === 'light') {
             document.body.classList.add('light-mode');
@@ -570,145 +613,100 @@
             document.getElementById(tab + '-content').classList.add('active');
         }
 
-        // Student Sign Up Handler
-        document.getElementById('studentSignupForm').addEventListener('submit', function(e) {
+        document.getElementById('studentSignupForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const password = document.getElementById('studentPassword').value;
             const confirmPassword = document.getElementById('studentConfirmPassword').value;
             
             if (password !== confirmPassword) {
-                alert('Passwords do not match!');
+                alert('❌ Passwords do not match!');
                 return;
             }
 
-            // Get form data
-            const formData = {
-                firstName: document.getElementById('studentFirstName').value,
-                lastName: document.getElementById('studentLastName').value,
-                email: document.getElementById('studentEmail').value,
-                grade: document.getElementById('studentGrade').value,
-                community: document.getElementById('studentCommunity').value,
-                subjects: Array.from(document.getElementById('studentSubjects').selectedOptions).map(opt => opt.value),
-                goals: document.getElementById('studentGoals').value
-            };
-
-            console.log('Student signup data:', formData);
-            alert('Welcome to Saint Thunderbird Tutoring! Your account has been created.');
-            window.location.href = 'login.html';
-        });
-
-        // Tutor Sign Up Handler
-        // TUTOR SIGNUP HANDLER - Replace in signup.html
-document.getElementById('tutorSignupForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    const password = document.getElementById('tutorPassword').value;
-    const confirmPassword = document.getElementById('tutorConfirmPassword').value;
-    
-    if (password !== confirmPassword) {
-        alert('❌ Passwords do not match!');
-        return;
-    }
-
-    const firstName = document.getElementById('tutorFirstName').value;
-    const lastName = document.getElementById('tutorLastName').value;
-    const email = document.getElementById('tutorEmail').value;
-
-    try {
-        const res = await fetch('https://saintthunderbirdtutoring.onrender.com/api/auth/signup', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                firstName,
-                lastName,
-                email,
-                password,
-                userType: 'tutor'
-            })
-        });
-
-        const data = await res.json();
-        
-        if (data.success) {
-            localStorage.setItem('authToken', data.token);
-            localStorage.setItem('user', JSON.stringify(data.user));
-            alert('✅ Application submitted! Please check your email for updates.');
-            // REDIRECT TO PENDING PAGE INSTEAD OF DASHBOARD
-            window.location.href = 'tutor-pending.html';
-        } else {
-            alert('❌ Error: ' + data.error);
-        }
-    } catch (error) {
-        alert('❌ Connection error: ' + error.message);
-    }
-});
-            // Get form data
-            const formData = {
-                firstName: document.getElementById('tutorFirstName').value,
-                lastName: document.getElementById('tutorLastName').value,
-                email: document.getElementById('tutorEmail').value,
-                education: document.getElementById('tutorEducation').value,
-                subjects: Array.from(document.getElementById('tutorSubjects').selectedOptions).map(opt => opt.value),
-                experience: document.getElementById('tutorExperience').value,
-                availability: document.getElementById('tutorAvailability').value,
-                motivation: document.getElementById('tutorMotivation').value
-            };
-
-            console.log('Tutor signup data:', formData);
-            alert('Thank you for applying! We will review your application and contact you soon.');
-            window.location.href = 'login.html';
-            // inside your <script> tag
-            document.getElementById('studentSignupForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            const email = document.getElementById('studentEmail').value;
-            const password = document.getElementById('studentPassword').value;
             const firstName = document.getElementById('studentFirstName').value;
             const lastName = document.getElementById('studentLastName').value;
+            const email = document.getElementById('studentEmail').value;
 
-            const res = await fetch('https://saintthunderbirdtutoring.onrender.com/api/auth/signup', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password, firstName, lastName, userType: 'student' })
-            });
+            const subjects = Array.from(document.querySelectorAll('.student-subject:checked')).map(el => el.value);
 
-            const data = await res.json();
-            if (data.success) {
-                alert('Signup successful! You can now log in.');
-                window.location.href = 'login.html';
-            } else {
-                alert(data.error);
+            try {
+                const res = await fetch('https://saintthunderbirdtutoring.onrender.com/api/auth/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        firstName,
+                        lastName,
+                        email,
+                        password,
+                        userType: 'student'
+                    })
+                });
+
+                const data = await res.json();
+                
+                if (data.success) {
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    alert('✅ Signup successful! Redirecting to dashboard...');
+                    window.location.href = 'student-dashboard.html';
+                } else {
+                    alert('❌ Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('❌ Connection error: ' + error.message);
             }
-            });
-
         });
 
-        async function signup(firstName, lastName, email, password, userType) {
-    const response = await fetch('https://saintthunderbirdtutoring.onrender.com/api/auth/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            firstName,
-            lastName,
-            email,
-            password,
-            userType
-        })
-    });
+        document.getElementById('tutorSignupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const password = document.getElementById('tutorPassword').value;
+            const confirmPassword = document.getElementById('tutorConfirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                alert('❌ Passwords do not match!');
+                return;
+            }
 
-    const data = await response.json();
-    
-    if (data.success) {
-        // Save token to localStorage
-        localStorage.setItem('authToken', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-        window.location.href = '/dashboard.html';
-    } else {
-        alert('Error: ' + data.error);
-    }
-}
+            const firstName = document.getElementById('tutorFirstName').value;
+            const lastName = document.getElementById('tutorLastName').value;
+            const email = document.getElementById('tutorEmail').value;
+
+            const subjects = Array.from(document.querySelectorAll('.tutor-subject:checked')).map(el => el.value);
+
+            if (subjects.length === 0) {
+                alert('❌ Please select at least one subject you can teach!');
+                return;
+            }
+
+            try {
+                const res = await fetch('https://saintthunderbirdtutoring.onrender.com/api/auth/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        firstName,
+                        lastName,
+                        email,
+                        password,
+                        userType: 'tutor'
+                    })
+                });
+
+                const data = await res.json();
+                
+                if (data.success) {
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    alert('✅ Application submitted! Please check your email for updates.');
+                    window.location.href = 'tutor-pending.html';
+                } else {
+                    alert('❌ Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('❌ Connection error: ' + error.message);
+            }
+        });
     </script>
-    <script src="auth.js"></script>
 </body>
 </html>
