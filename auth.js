@@ -36,7 +36,7 @@ async function signupStudent(firstName, lastName, email, password, userType = 's
     }
 }
 
-// Tutor Signup
+// Tutor Signup - REDIRECT TO PENDING PAGE
 async function signupTutor(firstName, lastName, email, password, userType = 'tutor') {
     try {
         const response = await fetch(`${API_URL}/signup`, {
@@ -56,8 +56,9 @@ async function signupTutor(firstName, lastName, email, password, userType = 'tut
         if (data.success) {
             localStorage.setItem('authToken', data.token);
             localStorage.setItem('user', JSON.stringify(data.user));
-            alert(`✅ Welcome, ${data.user.firstName}!`);
-            window.location.href = 'tutor-dashboard.html';
+            alert(`✅ Application submitted! Please check your email for updates.`);
+            // REDIRECT TO PENDING PAGE INSTEAD OF DASHBOARD
+            window.location.href = 'tutor-pending.html';
         } else {
             alert('❌ Error: ' + data.error);
         }
@@ -79,6 +80,17 @@ async function login(email, password, userType = 'student') {
         const data = await response.json();
 
         if (data.success) {
+            // CHECK IF LOGIN TYPE MATCHES USER TYPE
+            if (userType === 'student' && data.user.userType !== 'student') {
+                alert('❌ Error: You are not a student. You are a ' + data.user.userType + '. Please login in the Tutor tab.');
+                return;
+            }
+
+            if (userType === 'tutor' && data.user.userType !== 'tutor') {
+                alert('❌ Error: You are not a tutor. You are a ' + data.user.userType + '. Please login in the Student tab.');
+                return;
+            }
+
             localStorage.setItem('authToken', data.token);
             localStorage.setItem('user', JSON.stringify(data.user));
             alert(`✅ Welcome back, ${data.user.firstName}!`);

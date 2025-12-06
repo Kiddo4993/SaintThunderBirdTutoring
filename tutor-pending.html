@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutor Application Pending - Saint Thunderbird</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: #000000;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .mesh-gradient {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(at 20% 30%, rgba(96, 165, 250, 0.15) 0%, transparent 50%),
+                radial-gradient(at 80% 70%, rgba(139, 69, 19, 0.12) 0%, transparent 50%);
+            filter: blur(60px);
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 3rem;
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            color: #fff;
+        }
+
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #d4a574, #8b4513);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .status {
+            font-size: 1.2rem;
+            color: #e8d5c4;
+            margin-bottom: 2rem;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            margin: 2rem auto;
+            border: 4px solid rgba(212, 165, 116, 0.3);
+            border-top: 4px solid #d4a574;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .info-box {
+            background: rgba(212, 165, 116, 0.1);
+            border-left: 3px solid #d4a574;
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            text-align: left;
+        }
+
+        .info-box h3 {
+            color: #d4a574;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        .info-box p {
+            color: #e8d5c4;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 0.5rem;
+        }
+
+        .email-sent {
+            background: rgba(76, 175, 80, 0.1);
+            border-left: 3px solid #4caf50;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            color: #4caf50;
+        }
+
+        .email-sent strong {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        button {
+            margin-top: 2rem;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #d4a574, #8b4513);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(212, 165, 116, 0.4);
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid #ffc107;
+            color: #ffc107;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            margin: 1rem 0;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <div class="mesh-gradient"></div>
+
+    <div class="container">
+        <div class="logo">⚡</div>
+        
+        <h1>Application Submitted</h1>
+        <p class="status">Your tutor application is under review</p>
+
+        <div class="status-badge">⏳ PENDING APPROVAL</div>
+
+        <div class="loading-spinner"></div>
+
+        <div class="email-sent">
+            <strong>✉️ Confirmation email sent</strong>
+            <p id="emailDisplay">Check your email for updates</p>
+        </div>
+
+        <div class="info-box">
+            <h3>📋 What happens next?</h3>
+            <p>✓ Our team will review your application</p>
+            <p>✓ We'll verify your information</p>
+            <p>✓ You'll receive an email with our decision</p>
+            <p>✓ Approved tutors can start teaching immediately</p>
+        </div>
+
+        <div class="info-box">
+            <h3>⏱️ Typical Review Time</h3>
+            <p>Most applications are reviewed within 24-48 hours</p>
+            <p>You'll be notified by email as soon as we make a decision</p>
+        </div>
+
+        <button onclick="goHome()">← Back to Home</button>
+    </div>
+
+    <script>
+        // Display user email
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user) {
+            document.getElementById('emailDisplay').textContent = 'Check ' + user.email + ' for updates';
+        } else {
+            window.location.href = 'login.html';
+        }
+
+        function goHome() {
+            window.location.href = 'index.html';
+        }
+
+        // Optional: Check approval status every 10 seconds
+        setInterval(async () => {
+            try {
+                const token = localStorage.getItem('authToken');
+                const res = await fetch('https://saintthunderbirdtutoring.onrender.com/api/auth/profile', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                const data = await res.json();
+                
+                if (data.user && data.user.userType === 'tutor') {
+                    // Approved!
+                    alert('🎉 Congratulations! Your tutor application has been approved!');
+                    window.location.href = 'tutor-dashboard.html';
+                }
+            } catch (error) {
+                console.log('Checking status...');
+            }
+        }, 10000); // Check every 10 seconds
+    </script>
+</body>
+</html>
