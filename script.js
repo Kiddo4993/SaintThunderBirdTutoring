@@ -314,6 +314,8 @@ function setupMusicControls() {
   const volumeSlider = document.getElementById('volumeSlider');
   const musicToggle = document.getElementById('musicToggle');
   const volumeValue = document.getElementById('volumeValue');
+  const collapseBtn = document.getElementById('collapseBtn');
+  const musicControl = document.getElementById('musicControl');
 
   if (volumeSlider) {
     volumeSlider.addEventListener('input', function() {
@@ -323,6 +325,14 @@ function setupMusicControls() {
 
   if (musicToggle) {
     musicToggle.addEventListener('click', toggleMusic);
+  }
+
+  // Collapse/expand functionality
+  if (collapseBtn && musicControl) {
+    collapseBtn.addEventListener('click', function() {
+      const isCollapsed = musicControl.classList.toggle('collapsed');
+      collapseBtn.textContent = isCollapsed ? '←' : '→';
+    });
   }
 }
 

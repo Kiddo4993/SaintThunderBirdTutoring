@@ -322,17 +322,25 @@
     <button id="scrollTopBtn" title="Back to Top">↑</button>
 
     <!-- Music Control Panel -->
-    <div class="music-control" style="left: 2rem; right: auto;">
-        <h4>🎵 Music</h4>
-        <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="30">
-        <div class="volume-label">
-            <span>Soft</span>
-            <span id="volumeValue">30%</span>
-            <span>Intense</span>
-        </div>
-        <button class="music-toggle" id="musicToggle">▶ Play Music</button>
-    </div>
+    <div class="music-control" id="musicControl">
+      <div class="music-header">
+          <div class="music-icon">🎵</div>
+          <div class="music-title">Music</div>
+          <button class="collapse-btn" id="collapseBtn">→</button>
+      </div>
+      
+      <div class="music-panel">
+          <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="30">
+          
+          <div class="volume-label">
+              <span>Soft</span>
+              <span id="volumeValue">30%</span>
+              <span>Intense</span>
+          </div>
 
+          <button class="music-toggle" id="musicToggle">▶ Play Music</button>
+      </div>
+  </div>
     <footer>
       <p>© 2025 Saint Thunderbird Tutoring</p>
       <p>Empowering communities through education</p>
