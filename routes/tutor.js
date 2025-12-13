@@ -37,7 +37,6 @@ router.post('/apply-tutor', authMiddleware, async (req, res) => {
             return res.status(400).json({ error: 'Name and age required' });
         }
 
-        // Find user and save tutor application as pending
         const user = await User.findByIdAndUpdate(
             req.user.userId,
             {
@@ -51,7 +50,6 @@ router.post('/apply-tutor', authMiddleware, async (req, res) => {
             { new: true }
         );
 
-        // Send email to admin
         const approveLink = `${process.env.ADMIN_URL || 'http://localhost:5000'}/api/tutor/approve/${user._id}`;
         const denyLink = `${process.env.ADMIN_URL || 'http://localhost:5000'}/api/tutor/deny/${user._id}`;
 
@@ -114,13 +112,12 @@ router.get('/approve/:userId', async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        // Send approval email to tutor
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: user.email,
             subject: 'Your Tutor Application Has Been Approved! 🎉',
             html: `
-                <h2>Congratulations ${user.tutorApplication.name}!</h2>
+                <h2>Congratulations ${user.firstName}!</h2>
                 <p>Your tutor application has been <strong>APPROVED</strong>!</p>
                 <p>You can now start tutoring on Saint Thunderbird.</p>
                 <p>Welcome to the team! 🚀</p>
@@ -152,16 +149,12 @@ router.get('/deny/:userId', async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        const tutorName = user.tutorApplication?.name || 'Applicant';
-
-        // Delete tutor application
         await User.findByIdAndUpdate(
             userId,
             { $unset: { tutorApplication: 1 } },
             { new: true }
         );
 
-        // Send denial email to applicant
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: user.email,
@@ -187,6 +180,8 @@ router.get('/deny/:userId', async (req, res) => {
     }
 });
 
+// ===== STUDENT ENDPOINTS =====
+
 // CREATE A TUTORING REQUEST (Student)
 router.post('/create-request', authMiddleware, async (req, res) => {
     try {
@@ -197,7 +192,6 @@ router.post('/create-request', authMiddleware, async (req, res) => {
             return res.status(404).json({ error: 'Student not found' });
         }
 
-        // Store request in student profile
         if (!student.tutorRequests) {
             student.tutorRequests = [];
         }
@@ -214,12 +208,117 @@ router.post('/create-request', authMiddleware, async (req, res) => {
 
         res.json({
             success: true,
-            message: 'Request created successfully'
+            message: 'Request created successfully',
+            request: student.tutorRequests[student.tutorRequests.length - 1]
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
+
+// GET STUDENT'S REQUESTS
+router.get('/my-requests', authMiddleware, async (req, res) => {
+    try {
+        const student = await User.findById(req.user.userId);
+
+        if (!student || student.userType !== 'student') {
+            return res.status(403).json({ error: 'Only students can view their requests' });
+        }
+
+        res.json({
+            success: true,
+            requests: student.tutorRequests || []
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// GET AVAILABLE TUTORS (for students)
+router.get('/available-tutors', authMiddleware, async (req, res) => {
+    try {
+        const tutors = await User.find({ userType: 'tutor' });
+
+        const availableTutors = tutors.map(tutor => ({
+            _id: tutor._id,
+            firstName: tutor.firstName,
+            lastName: tutor.lastName,
+            email: tutor.email,
+            tutorProfile: tutor.tutorProfile
+        }));
+
+        res.json({
+            success: true,
+            tutors: availableTutors
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// GET STUDENT'S SESSIONS
+router.get('/student-sessions', authMiddleware, async (req, res) => {
+    try {
+        const student = await User.findById(req.user.userId);
+
+        if (!student || student.userType !== 'student') {
+            return res.status(403).json({ error: 'Only students can view their sessions' });
+        }
+
+        const tutors = await User.find({ userType: 'tutor' });
+        const sessions = [];
+
+        for (const tutor of tutors) {
+            if (tutor.tutorSessions) {
+                tutor.tutorSessions.forEach(session => {
+                    if (session.studentId.toString() === student._id.toString()) {
+                        sessions.push({
+                            _id: session._id,
+                            tutorName: `${tutor.firstName} ${tutor.lastName}`,
+                            tutorEmail: tutor.email,
+                            subject: 'Mathematics',
+                            scheduledTime: session.scheduledTime,
+                            status: session.status
+                        });
+                    }
+                });
+            }
+        }
+
+        res.json({
+            success: true,
+            sessions: sessions.filter(s => new Date(s.scheduledTime) > new Date())
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// UPDATE STUDENT PREFERENCES
+router.post('/update-student-preferences', authMiddleware, async (req, res) => {
+    try {
+        const { interests, grade } = req.body;
+        
+        const student = await User.findByIdAndUpdate(
+            req.user.userId,
+            { 
+                grade: grade,
+                interests: interests
+            },
+            { new: true }
+        );
+
+        res.json({
+            success: true,
+            message: 'Preferences updated',
+            preferences: { interests, grade }
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// ===== TUTOR ENDPOINTS =====
 
 // GET ALL REQUESTS FOR TUTORS IN THEIR SUBJECTS
 router.get('/requests', authMiddleware, async (req, res) => {
@@ -232,7 +331,6 @@ router.get('/requests', authMiddleware, async (req, res) => {
 
         const tutorSubjects = tutor.tutorProfile?.subjects || [];
 
-        // Find all students with pending requests in tutor's subjects
         const students = await User.find({
             userType: 'student',
             'tutorRequests': { $exists: true }
@@ -275,7 +373,6 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
             return res.status(403).json({ error: 'Only tutors can accept requests' });
         }
 
-        // Create a session
         if (!tutor.tutorSessions) {
             tutor.tutorSessions = [];
         }
@@ -291,7 +388,6 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
 
         await tutor.save();
 
-        // Also update student's request status and notify them
         const student = await User.findById(studentId);
         if (student && student.tutorRequests) {
             student.tutorRequests.forEach(req => {
@@ -302,7 +398,6 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
             await student.save();
         }
 
-        // Send email to student
         if (student) {
             const mailOptions = {
                 from: process.env.EMAIL_USER,
@@ -365,85 +460,6 @@ router.get('/sessions', authMiddleware, async (req, res) => {
     }
 });
 
-// GET AVAILABLE TUTORS (for students)
-router.get('/available-tutors', authMiddleware, async (req, res) => {
-    try {
-        const tutors = await User.find({ userType: 'tutor' });
-
-        const availableTutors = tutors.map(tutor => ({
-            _id: tutor._id,
-            firstName: tutor.firstName,
-            lastName: tutor.lastName,
-            email: tutor.email,
-            tutorProfile: tutor.tutorProfile
-        }));
-
-        res.json({
-            success: true,
-            tutors: availableTutors
-        });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// GET STUDENT'S REQUESTS
-router.get('/my-requests', authMiddleware, async (req, res) => {
-    try {
-        const student = await User.findById(req.user.userId);
-
-        if (!student || student.userType !== 'student') {
-            return res.status(403).json({ error: 'Only students can view their requests' });
-        }
-
-        res.json({
-            success: true,
-            requests: student.tutorRequests || []
-        });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// GET STUDENT'S SESSIONS
-router.get('/student-sessions', authMiddleware, async (req, res) => {
-    try {
-        const student = await User.findById(req.user.userId);
-
-        if (!student || student.userType !== 'student') {
-            return res.status(403).json({ error: 'Only students can view their sessions' });
-        }
-
-        // Find tutors who have sessions with this student
-        const tutors = await User.find({ userType: 'tutor' });
-        const sessions = [];
-
-        for (const tutor of tutors) {
-            if (tutor.tutorSessions) {
-                tutor.tutorSessions.forEach(session => {
-                    if (session.studentId.toString() === student._id.toString()) {
-                        sessions.push({
-                            _id: session._id,
-                            tutorName: `${tutor.firstName} ${tutor.lastName}`,
-                            tutorEmail: tutor.email,
-                            subject: 'Mathematics',
-                            scheduledTime: session.scheduledTime,
-                            status: session.status
-                        });
-                    }
-                });
-            }
-        }
-
-        res.json({
-            success: true,
-            sessions: sessions.filter(s => new Date(s.scheduledTime) > new Date())
-        });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
 // CHECK TUTOR APPLICATION STATUS (for tutor-pending.html)
 router.get('/application-status', authMiddleware, async (req, res) => {
     try {
@@ -474,7 +490,6 @@ router.post('/complete-session', authMiddleware, async (req, res) => {
             return res.status(403).json({ error: 'Only tutors can complete sessions' });
         }
 
-        // Find and update session
         if (tutor.tutorSessions) {
             tutor.tutorSessions.forEach(session => {
                 if (session._id.toString() === sessionId) {
@@ -510,30 +525,6 @@ router.post('/update-specialties', authMiddleware, async (req, res) => {
             success: true,
             message: 'Specialties updated',
             tutorProfile: tutor.tutorProfile
-        });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// UPDATE STUDENT PREFERENCES
-router.post('/update-student-preferences', authMiddleware, async (req, res) => {
-    try {
-        const { interests, grade } = req.body;
-        
-        const student = await User.findByIdAndUpdate(
-            req.user.userId,
-            { 
-                grade: grade,
-                interests: interests
-            },
-            { new: true }
-        );
-
-        res.json({
-            success: true,
-            message: 'Preferences updated',
-            preferences: { interests, grade }
         });
     } catch (error) {
         res.status(500).json({ error: error.message });

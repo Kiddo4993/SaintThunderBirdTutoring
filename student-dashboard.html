@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Profile - Saint Thunderbird</title>
+    <title>Student Dashboard - Saint Thunderbird</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <style>
@@ -16,7 +16,6 @@
         :root {
             --bg-primary: #000000;
             --bg-secondary: #0a0a0a;
-            --bg-tertiary: #1a1a1a;
             --text-primary: #ffffff;
             --text-secondary: #e8d5c4;
             --beige: #d4a574;
@@ -143,184 +142,6 @@
             gap: 0.5rem;
         }
 
-        .welcome-badge {
-            display: inline-block;
-            background: rgba(74, 124, 158, 0.2);
-            border: 1px solid rgba(74, 124, 158, 0.5);
-            color: #60a5fa;
-            padding: 0.75rem 1.5rem;
-            border-radius: 20px;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            font-size: 0.9rem;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.8; }
-        }
-
-        .info-box {
-            background: rgba(212, 165, 116, 0.1);
-            border-left: 4px solid var(--beige);
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-        }
-
-        .info-box p {
-            color: var(--text-secondary);
-            line-height: 1.6;
-        }
-
-        .interests-container {
-            margin-top: 1.5rem;
-        }
-
-        .interests-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .interest-item {
-            background: rgba(212, 165, 116, 0.15);
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            padding: 1rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-        }
-
-        .interest-item.selected {
-            border-color: var(--beige);
-            background: rgba(212, 165, 116, 0.3);
-            box-shadow: 0 0 20px rgba(212, 165, 116, 0.3);
-        }
-
-        .interest-item:hover {
-            border-color: var(--beige);
-            transform: translateY(-3px);
-        }
-
-        .interest-icon {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .interest-name {
-            font-weight: 600;
-            color: var(--beige);
-            font-size: 0.9rem;
-        }
-
-        .interest-checkmark {
-            position: absolute;
-            top: 5px;
-            right: 8px;
-            color: #22c55e;
-            font-weight: 700;
-            display: none;
-        }
-
-        .interest-item.selected .interest-checkmark {
-            display: block;
-        }
-
-        .grade-section {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-top: 1.5rem;
-        }
-
-        .grade-label {
-            color: var(--text-secondary);
-            margin-bottom: 1rem;
-            font-weight: 600;
-        }
-
-        select {
-            width: 100%;
-            padding: 0.75rem;
-            background: rgba(212, 165, 116, 0.1);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        select:focus {
-            outline: none;
-            border-color: var(--beige);
-            background: rgba(212, 165, 116, 0.2);
-        }
-
-        .email-settings {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-top: 1.5rem;
-        }
-
-        .email-setting-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 0;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .email-setting-item:last-child {
-            border-bottom: none;
-        }
-
-        .email-setting-label {
-            color: var(--text-secondary);
-        }
-
-        .toggle-switch {
-            position: relative;
-            width: 50px;
-            height: 26px;
-            background: rgba(212, 165, 116, 0.2);
-            border: 1px solid var(--border);
-            border-radius: 13px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .toggle-switch.active {
-            background: rgba(34, 197, 94, 0.3);
-            border-color: #22c55e;
-        }
-
-        .toggle-switch::after {
-            content: '';
-            position: absolute;
-            width: 22px;
-            height: 22px;
-            background: var(--beige);
-            border-radius: 50%;
-            top: 2px;
-            left: 2px;
-            transition: all 0.3s;
-        }
-
-        .toggle-switch.active::after {
-            left: 26px;
-            background: #22c55e;
-        }
-
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -350,26 +171,100 @@
             letter-spacing: 0.05em;
         }
 
-        .tutoring-requests {
+        .tutors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .tutor-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .tutor-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--beige);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 30px rgba(212, 165, 116, 0.2);
+        }
+
+        .tutor-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--beige), var(--accent));
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .tutor-name {
+            font-weight: 700;
+            color: var(--beige);
+            margin-bottom: 0.5rem;
+        }
+
+        .tutor-subjects {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .subject-badge {
+            display: inline-block;
+            background: rgba(74, 124, 158, 0.2);
+            color: #60a5fa;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-right: 0.3rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .tutor-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .tutor-actions button {
+            flex: 1;
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+        }
+
+        .requests-list {
             display: flex;
             flex-direction: column;
             gap: 1rem;
-            max-height: 400px;
-            overflow-y: auto;
         }
 
         .request-item {
-            background: rgba(212, 165, 116, 0.1);
+            background: rgba(255, 255, 255, 0.02);
             border-left: 4px solid var(--blue);
-            padding: 1rem;
             border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .request-item:hover {
+            border-color: var(--beige);
+            background: rgba(255, 255, 255, 0.05);
         }
 
         .request-header {
             display: flex;
             justify-content: space-between;
             align-items: start;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
         }
 
         .request-subject {
@@ -398,39 +293,116 @@
             color: #22c55e;
         }
 
-        .request-message {
+        .request-description {
             color: var(--text-secondary);
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
         }
 
-        .request-time {
-            color: #9ca3af;
+        .request-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .request-actions button {
+            padding: 0.5rem 1rem;
             font-size: 0.75rem;
+            flex: 1;
         }
 
-        .save-btn {
-            background: linear-gradient(135deg, var(--beige), var(--accent));
-            color: #000;
-            padding: 1rem 2rem;
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 1.5rem;
+            color: var(--beige);
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-btn {
+            background: none;
             border: none;
-            border-radius: 8px;
-            font-weight: 700;
+            color: var(--beige);
+            font-size: 1.5rem;
             cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 1.5rem;
+            padding: 0;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
             width: 100%;
+            padding: 0.75rem;
+            background: rgba(212, 165, 116, 0.1);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
             font-family: 'Orbitron', sans-serif;
+            font-size: 0.95rem;
         }
 
-        .save-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(212, 165, 116, 0.3);
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
         }
 
-        .save-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .modal-actions button {
+            flex: 1;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
         }
 
         @media (max-width: 768px) {
@@ -453,6 +425,10 @@
                 width: 100%;
             }
 
+            .tutors-grid {
+                grid-template-columns: 1fr;
+            }
+
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -466,163 +442,102 @@
         <!-- Header -->
         <div class="header">
             <div class="header-content">
-                <h1>⚡ Welcome, <span id="studentName">Alex</span>!</h1>
-                <p>Your student profile & learning preferences</p>
+                <h1>⚡ Welcome, <span id="studentName">Student</span>!</h1>
+                <p>Find tutors & manage your learning requests</p>
             </div>
             <div class="header-actions">
-                <button class="btn-secondary" onclick="goToStudentDashboard()">📚 Go to Dashboard</button>
+                <button class="btn-secondary" onclick="openRequestModal()">📝 New Request</button>
+                <button class="btn-secondary" onclick="goToProfile()">👤 Profile</button>
                 <button class="btn-secondary" onclick="logout()">🚪 Logout</button>
             </div>
         </div>
 
-        <!-- Welcome Status & Stats -->
-        <div class="grid-2">
-            <!-- Welcome Status -->
-            <div class="card">
-                <div class="welcome-badge">👋 Welcome to Saint Thunderbird</div>
-                <div class="card-title">🎓 Start Your Learning Journey</div>
-                
-                <div class="info-box">
-                    <p>Welcome to Saint Thunderbird Tutoring! A free, volunteer-powered tutoring platform dedicated to helping First Nations students succeed. Select your learning interests and let us find the perfect tutor for you.</p>
-                </div>
-
-                <div style="background: rgba(212, 165, 116, 0.05); padding: 1rem; border-radius: 8px;">
-                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.75rem;"><strong>📧 Email Notifications:</strong></p>
-                    <p style="color: var(--text-secondary); font-size: 0.85rem;">We'll send you emails when:</p>
-                    <ul style="list-style: none; margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">
-                        <li>✓ A tutor accepts your request</li>
-                        <li>✓ Your session is confirmed</li>
-                        <li>✓ Important learning tips & resources</li>
-                        <li>✓ Session reminders and updates</li>
-                    </ul>
-                </div>
+        <!-- Stats -->
+        <div class="stats-grid" style="margin-bottom: 3rem;">
+            <div class="stat-card">
+                <div class="stat-value" id="requestsCount">0</div>
+                <div class="stat-label">Requests Made</div>
             </div>
-
-            <!-- Quick Stats -->
-            <div>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-value" id="requestsCount">0</div>
-                        <div class="stat-label">Requests</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="tutorsCount">0</div>
-                        <div class="stat-label">Tutors</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="sessionsCount">0</div>
-                        <div class="stat-label">Sessions</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="hoursCount">0</div>
-                        <div class="stat-label">Hours</div>
-                    </div>
-                </div>
+            <div class="stat-card">
+                <div class="stat-value" id="tutorsCount">0</div>
+                <div class="stat-label">Available Tutors</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="sessionsCount">0</div>
+                <div class="stat-label">Active Sessions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="hoursCount">0</div>
+                <div class="stat-label">Hours Tutored</div>
             </div>
         </div>
 
-        <!-- Main Content Grid -->
-        <div class="grid-2">
-            <!-- Learning Interests -->
-            <div class="card">
-                <div class="card-title">📖 Learning Interests</div>
-                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Select the subjects you'd like to focus on. This helps us match you with the right tutors.</p>
+        <!-- Available Tutors -->
+        <div class="card" style="margin-bottom: 2rem;">
+            <div class="card-title">👨‍🏫 Available Tutors</div>
+            <div class="tutors-grid" id="tutorsContainer">
+                <div class="loading">Loading tutors...</div>
+            </div>
+        </div>
 
-                <div class="interests-grid">
-                    <div class="interest-item" onclick="toggleInterest('math')">
-                        <div class="interest-checkmark">✓</div>
-                        <div class="interest-icon">📐</div>
-                        <div class="interest-name">Mathematics</div>
-                    </div>
-                    <div class="interest-item" onclick="toggleInterest('science')">
-                        <div class="interest-checkmark">✓</div>
-                        <div class="interest-icon">🔬</div>
-                        <div class="interest-name">Sciences</div>
-                    </div>
-                    <div class="interest-item" onclick="toggleInterest('languages')">
-                        <div class="interest-checkmark">✓</div>
-                        <div class="interest-icon">🌐</div>
-                        <div class="interest-name">Languages</div>
-                    </div>
-                    <div class="interest-item" onclick="toggleInterest('social')">
-                        <div class="interest-checkmark">✓</div>
-                        <div class="interest-icon">📚</div>
-                        <div class="interest-name">Social Studies</div>
-                    </div>
-                    <div class="interest-item" onclick="toggleInterest('technology')">
-                        <div class="interest-checkmark">✓</div>
-                        <div class="interest-icon">💻</div>
-                        <div class="interest-name">Technology</div>
-                    </div>
-                    <div class="interest-item" onclick="toggleInterest('arts')">
-                        <div class="interest-checkmark">✓</div>
-                        <div class="interest-icon">🎨</div>
-                        <div class="interest-name">Arts & Culture</div>
-                    </div>
-                </div>
+        <!-- Your Requests -->
+        <div class="card">
+            <div class="card-title">📝 Your Tutoring Requests</div>
+            <div class="requests-list" id="requestsContainer">
+                <div class="empty-state">No requests yet. Create one to get started!</div>
+            </div>
+        </div>
+    </div>
 
-                <div class="grade-section">
-                    <div class="grade-label">📚 Your Grade Level</div>
-                    <select id="gradeLevel" onchange="updateGrade()">
-                        <option value="">Select your grade level</option>
-                        <option value="elementary">Elementary (K-5)</option>
-                        <option value="middle">Middle School (6-8)</option>
-                        <option value="high">High School (9-12)</option>
-                        <option value="post-secondary">Post-Secondary</option>
+    <!-- New Request Modal -->
+    <div class="modal" id="requestModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>📝 New Tutoring Request</span>
+                <button class="close-btn" onclick="closeRequestModal()">×</button>
+            </div>
+
+            <form onsubmit="submitRequest(event)">
+                <div class="form-group">
+                    <label>Subject</label>
+                    <select id="requestSubject" required>
+                        <option value="">Select a subject</option>
+                        <option value="Mathematics">Mathematics 📐</option>
+                        <option value="Sciences">Sciences 🔬</option>
+                        <option value="Languages">Languages 🌐</option>
+                        <option value="Social Studies">Social Studies 📚</option>
+                        <option value="Technology">Technology 💻</option>
+                        <option value="Arts & Culture">Arts & Culture 🎨</option>
                     </select>
                 </div>
 
-                <button class="save-btn" onclick="savePreferences()">Save Preferences</button>
-            </div>
-
-            <!-- Email Preferences -->
-            <div class="card">
-                <div class="card-title">📧 Email Preferences</div>
-                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Control how and when you receive notifications from Saint Thunderbird.</p>
-
-                <div class="email-settings">
-                    <div class="email-setting-item">
-                        <div class="email-setting-label">Tutor Acceptance Alerts</div>
-                        <div class="toggle-switch active" onclick="toggleEmailSetting(this)"></div>
-                    </div>
-                    <div class="email-setting-item">
-                        <div class="email-setting-label">Session Reminders</div>
-                        <div class="toggle-switch active" onclick="toggleEmailSetting(this)"></div>
-                    </div>
-                    <div class="email-setting-item">
-                        <div class="email-setting-label">Learning Tips & Resources</div>
-                        <div class="toggle-switch active" onclick="toggleEmailSetting(this)"></div>
-                    </div>
-                    <div class="email-setting-item">
-                        <div class="email-setting-label">Progress Updates</div>
-                        <div class="toggle-switch active" onclick="toggleEmailSetting(this)"></div>
-                    </div>
-                    <div class="email-setting-item">
-                        <div class="email-setting-label">Platform Updates</div>
-                        <div class="toggle-switch active" onclick="toggleEmailSetting(this)"></div>
-                    </div>
+                <div class="form-group">
+                    <label>Description (Optional)</label>
+                    <textarea id="requestDescription" placeholder="Tell the tutor what you need help with..."></textarea>
                 </div>
-            </div>
-        </div>
 
-        <!-- Active Tutoring Requests -->
-        <div class="card">
-            <div class="card-title">📝 Your Tutoring Requests</div>
-            <div class="tutoring-requests" id="requestsList">
-                <div style="color: var(--text-secondary); text-align: center; padding: 2rem;">
-                    <p>No active requests yet. Head to the dashboard to submit your first tutoring request!</p>
+                <div class="form-group">
+                    <label>Priority</label>
+                    <select id="requestPriority" required>
+                        <option value="medium" selected>Medium</option>
+                        <option value="low">Low</option>
+                        <option value="high">High</option>
+                    </select>
                 </div>
-            </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeRequestModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">Submit Request</button>
+                </div>
+            </form>
         </div>
     </div>
 
     <script src="auth.js"></script>
     <script>
         const API_URL = 'https://saintthunderbirdtutoring.onrender.com';
-        let selectedInterests = new Set(['math', 'science']);
-        let userGrade = '';
+        let user = getUser();
 
-        const user = getUser();
         if (!user || user.userType !== 'student') {
             window.location.href = 'login.html';
         }
@@ -630,84 +545,51 @@
         // Set student name
         document.getElementById('studentName').textContent = user.firstName;
 
-        // Load user's current preferences
-        if (user.tutorRequests) {
-            document.getElementById('requestsCount').textContent = user.tutorRequests.length;
+        // Load all data on page load
+        async function loadDashboard() {
+            await loadTutors();
+            await loadRequests();
+            await loadSessions();
         }
 
-        if (user.grade) {
-            document.getElementById('gradeLevel').value = user.grade;
-            userGrade = user.grade;
-        }
-
-        function toggleInterest(interest) {
-            const item = event.target.closest('.interest-item');
-            if (selectedInterests.has(interest)) {
-                selectedInterests.delete(interest);
-                item.classList.remove('selected');
-            } else {
-                selectedInterests.add(interest);
-                item.classList.add('selected');
-            }
-        }
-
-        function updateGrade() {
-            userGrade = document.getElementById('gradeLevel').value;
-        }
-
-        async function savePreferences() {
+        // Load available tutors
+        async function loadTutors() {
             try {
                 const token = localStorage.getItem('authToken');
-                const res = await fetch(`${API_URL}/api/tutor/update-student-preferences`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({
-                        interests: Array.from(selectedInterests),
-                        grade: userGrade
-                    })
+                const res = await fetch(`${API_URL}/api/tutor/available-tutors`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
                 });
 
                 const data = await res.json();
+                const container = document.getElementById('tutorsContainer');
 
-                if (data.success) {
-                    alert('✅ Preferences saved successfully!');
+                if (data.success && data.tutors.length > 0) {
+                    document.getElementById('tutorsCount').textContent = data.tutors.length;
+                    
+                    const html = data.tutors.map(tutor => `
+                        <div class="tutor-card">
+                            <div class="tutor-avatar">👨‍🏫</div>
+                            <div class="tutor-name">${tutor.firstName} ${tutor.lastName}</div>
+                            <div class="tutor-subjects">
+                                ${tutor.tutorProfile?.subjects?.map(s => `<div class="subject-badge">${s}</div>`).join('') || 'No subjects yet'}
+                            </div>
+                            <div class="tutor-actions">
+                                <button class="btn-primary" onclick="requestTutor('${tutor._id}', '${tutor.firstName}')">Request</button>
+                            </div>
+                        </div>
+                    `).join('');
+                    
+                    container.innerHTML = html;
                 } else {
-                    alert('❌ Error: ' + data.error);
+                    container.innerHTML = '<div class="empty-state">No tutors available yet</div>';
                 }
             } catch (error) {
-                alert('Error saving preferences: ' + error.message);
+                console.error('Error loading tutors:', error);
+                document.getElementById('tutorsContainer').innerHTML = '<div class="empty-state">Error loading tutors</div>';
             }
         }
 
-        function toggleEmailSetting(element) {
-            element.classList.toggle('active');
-        }
-
-        function goToStudentDashboard() {
-            window.location.href = 'student-dashboard.html';
-        }
-
-        function logout() {
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('user');
-            window.location.href = 'login.html';
-        }
-
-        // Initialize selected interests
-        const interests = ['math', 'science'];
-        interests.forEach(interest => {
-            const items = document.querySelectorAll('.interest-item');
-            items.forEach(item => {
-                if (item.getAttribute('onclick').includes(`'${interest}'`)) {
-                    item.classList.add('selected');
-                }
-            });
-        });
-
-        // Load requests
+        // Load student's requests
         async function loadRequests() {
             try {
                 const token = localStorage.getItem('authToken');
@@ -716,28 +598,138 @@
                 });
 
                 const data = await res.json();
+                const container = document.getElementById('requestsContainer');
 
                 if (data.success && data.requests.length > 0) {
+                    document.getElementById('requestsCount').textContent = data.requests.length;
+                    
                     const html = data.requests.map(req => `
                         <div class="request-item">
                             <div class="request-header">
                                 <div class="request-subject">${req.subject}</div>
                                 <div class="request-status ${req.status}">${req.status.toUpperCase()}</div>
                             </div>
-                            <div class="request-message">${req.description || 'No description provided'}</div>
-                            <div class="request-time">${new Date(req.createdAt).toLocaleDateString()}</div>
+                            <div class="request-description">${req.description || 'No description provided'}</div>
+                            <div style="font-size: 0.8rem; color: #9ca3af;">
+                                ${new Date(req.createdAt).toLocaleDateString()}
+                            </div>
                         </div>
                     `).join('');
-                    document.getElementById('requestsList').innerHTML = html;
-                    document.getElementById('requestsCount').textContent = data.requests.length;
+                    
+                    container.innerHTML = html;
+                } else {
+                    container.innerHTML = '<div class="empty-state">No requests yet. Create one to get started!</div>';
                 }
             } catch (error) {
                 console.error('Error loading requests:', error);
             }
         }
 
-        // Load data on page load
-        loadRequests();
+        // Load sessions
+        async function loadSessions() {
+            try {
+                const token = localStorage.getItem('authToken');
+                const res = await fetch(`${API_URL}/api/tutor/student-sessions`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('sessionsCount').textContent = data.sessions.length;
+                }
+            } catch (error) {
+                console.error('Error loading sessions:', error);
+            }
+        }
+
+        // Modal functions
+        function openRequestModal() {
+            document.getElementById('requestModal').classList.add('active');
+        }
+
+        function closeRequestModal() {
+            document.getElementById('requestModal').classList.remove('active');
+        }
+
+        // Submit new request
+        async function submitRequest(event) {
+            event.preventDefault();
+
+            const subject = document.getElementById('requestSubject').value;
+            const description = document.getElementById('requestDescription').value;
+            const priority = document.getElementById('requestPriority').value;
+
+            try {
+                const token = localStorage.getItem('authToken');
+                const res = await fetch(`${API_URL}/api/tutor/create-request`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ subject, description, priority })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    alert('✅ Request created successfully!');
+                    closeRequestModal();
+                    loadRequests();
+                } else {
+                    alert('❌ Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error submitting request: ' + error.message);
+            }
+        }
+
+        // Request a tutor
+        async function requestTutor(tutorId, tutorName) {
+            const subject = prompt('What subject do you need help with?');
+            if (!subject) return;
+
+            try {
+                const token = localStorage.getItem('authToken');
+                const res = await fetch(`${API_URL}/api/tutor/create-request`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        subject: subject,
+                        description: `Requested tutor: ${tutorName}`,
+                        priority: 'medium'
+                    })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    alert('✅ Request sent! ' + tutorName + ' will be notified.');
+                    loadRequests();
+                } else {
+                    alert('❌ Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        // Navigation
+        function goToProfile() {
+            window.location.href = 'student-profile.html';
+        }
+
+        function logout() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        }
+
+        // Load dashboard on page load
+        loadDashboard();
     </script>
 </body>
 </html>
