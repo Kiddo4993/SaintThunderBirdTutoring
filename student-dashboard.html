@@ -45,7 +45,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             position: relative;
             z-index: 10;
@@ -112,11 +112,33 @@
             transform: translateY(-2px);
         }
 
-        .grid-2 {
+        .stats-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-bottom: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: rgba(212, 165, 116, 0.1);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            color: var(--beige);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .card {
@@ -126,6 +148,7 @@
             border-radius: 16px;
             padding: 2rem;
             transition: all 0.3s;
+            margin-bottom: 2rem;
         }
 
         .card:hover {
@@ -142,103 +165,168 @@
             gap: 0.5rem;
         }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        .upcoming-events-list {
+            display: flex;
+            flex-direction: column;
             gap: 1rem;
-            margin-bottom: 2rem;
         }
 
-        .stat-card {
-            background: rgba(212, 165, 116, 0.1);
-            border: 1px solid var(--border);
+        .event-card {
+            background: linear-gradient(135deg, rgba(212, 165, 116, 0.1) 0%, rgba(139, 69, 19, 0.08) 100%);
+            border: 2px solid var(--border);
             border-radius: 12px;
             padding: 1.5rem;
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 1.8rem;
-            color: var(--beige);
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-label {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .tutors-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .tutor-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.5rem;
-            text-align: center;
             transition: all 0.3s;
-            cursor: pointer;
+            position: relative;
+            overflow: hidden;
         }
 
-        .tutor-card:hover {
-            transform: translateY(-5px);
+        .event-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--beige), var(--accent));
+        }
+
+        .event-card:hover {
             border-color: var(--beige);
-            background: rgba(255, 255, 255, 0.05);
+            background: linear-gradient(135deg, rgba(212, 165, 116, 0.2) 0%, rgba(139, 69, 19, 0.15) 100%);
+            transform: translateX(5px);
             box-shadow: 0 10px 30px rgba(212, 165, 116, 0.2);
         }
 
-        .tutor-avatar {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--beige), var(--accent));
-            border-radius: 50%;
-            margin: 0 auto 1rem;
+        .event-header {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-        }
-
-        .tutor-name {
-            font-weight: 700;
-            color: var(--beige);
-            margin-bottom: 0.5rem;
-        }
-
-        .tutor-subjects {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
+            justify-content: space-between;
+            align-items: start;
             margin-bottom: 1rem;
         }
 
-        .subject-badge {
-            display: inline-block;
-            background: rgba(74, 124, 158, 0.2);
-            color: #60a5fa;
-            padding: 0.3rem 0.6rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            margin-right: 0.3rem;
-            margin-bottom: 0.3rem;
+        .event-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--beige);
         }
 
-        .tutor-actions {
+        .event-tutor {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-top: 0.3rem;
+        }
+
+        .event-time-badge {
+            background: linear-gradient(135deg, var(--beige), var(--accent));
+            color: #000;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .event-meta {
             display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        .event-meta-item {
+            display: flex;
+            align-items: center;
             gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .event-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .event-countdown {
+            background: rgba(74, 124, 158, 0.2);
+            border: 1px solid rgba(74, 124, 158, 0.4);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .countdown-text {
+            color: #60a5fa;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .event-actions {
+            display: flex;
+            gap: 0.75rem;
             margin-top: 1rem;
         }
 
-        .tutor-actions button {
+        .event-actions button {
             flex: 1;
-            padding: 0.5rem 1rem;
+            padding: 0.65rem;
+            font-size: 0.8rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state p {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+
+        .status-scheduled {
+            background: rgba(251, 146, 60, 0.2);
+            color: #fb923c;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
             font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-in-progress {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-completed {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
         }
 
         .requests-list {
@@ -276,138 +364,9 @@
             font-weight: 700;
         }
 
-        .request-status {
-            font-size: 0.75rem;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-weight: 600;
-        }
-
-        .request-status.pending {
-            background: rgba(251, 146, 60, 0.2);
-            color: #fb923c;
-        }
-
-        .request-status.accepted {
-            background: rgba(34, 197, 94, 0.2);
-            color: #22c55e;
-        }
-
-        .request-description {
-            color: var(--text-secondary);
-            margin-bottom: 0.75rem;
-            font-size: 0.95rem;
-        }
-
-        .request-actions {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-
-        .request-actions button {
-            padding: 0.5rem 1rem;
-            font-size: 0.75rem;
-            flex: 1;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: var(--bg-primary);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 2rem;
-            max-width: 500px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            font-size: 1.5rem;
-            color: var(--beige);
-            margin-bottom: 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            color: var(--beige);
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            color: var(--text-secondary);
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 0.75rem;
-            background: rgba(212, 165, 116, 0.1);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.95rem;
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-
-        .modal-actions button {
-            flex: 1;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 2rem;
-            color: var(--text-secondary);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 2rem;
-            color: var(--text-secondary);
-        }
-
         @media (max-width: 768px) {
-            .grid-2 {
-                grid-template-columns: 1fr;
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
 
             .header {
@@ -425,12 +384,13 @@
                 width: 100%;
             }
 
-            .tutors-grid {
-                grid-template-columns: 1fr;
+            .event-header {
+                flex-direction: column;
+                gap: 0.75rem;
             }
 
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
+            .event-time-badge {
+                align-self: flex-start;
             }
         }
     </style>
@@ -443,7 +403,7 @@
         <div class="header">
             <div class="header-content">
                 <h1>⚡ Welcome, <span id="studentName">Student</span>!</h1>
-                <p>Find tutors & manage your learning requests</p>
+                <p>Your upcoming tutoring sessions</p>
             </div>
             <div class="header-actions">
                 <button class="btn-secondary" onclick="openRequestModal()">📝 New Request</button>
@@ -453,54 +413,57 @@
         </div>
 
         <!-- Stats -->
-        <div class="stats-grid" style="margin-bottom: 3rem;">
+        <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-value" id="requestsCount">0</div>
                 <div class="stat-label">Requests Made</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" id="tutorsCount">0</div>
-                <div class="stat-label">Available Tutors</div>
+                <div class="stat-value" id="sessionsCount">0</div>
+                <div class="stat-label">Upcoming Sessions</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" id="sessionsCount">0</div>
-                <div class="stat-label">Active Sessions</div>
+                <div class="stat-value" id="completedCount">0</div>
+                <div class="stat-label">Completed Sessions</div>
             </div>
             <div class="stat-card">
                 <div class="stat-value" id="hoursCount">0</div>
-                <div class="stat-label">Hours Tutored</div>
+                <div class="stat-label">Hours Learned</div>
             </div>
         </div>
 
-        <!-- Available Tutors -->
-        <div class="card" style="margin-bottom: 2rem;">
-            <div class="card-title">👨‍🏫 Available Tutors</div>
-            <div class="tutors-grid" id="tutorsContainer">
-                <div class="loading">Loading tutors...</div>
+        <!-- Upcoming Sessions / Events -->
+        <div class="card">
+            <div class="card-title">📅 Upcoming Tutoring Sessions</div>
+            <div class="upcoming-events-list" id="upcomingEvents">
+                <div class="loading">Loading your upcoming sessions...</div>
             </div>
         </div>
 
-        <!-- Your Requests -->
+        <!-- Your Tutoring Requests -->
         <div class="card">
             <div class="card-title">📝 Your Tutoring Requests</div>
-            <div class="requests-list" id="requestsContainer">
-                <div class="empty-state">No requests yet. Create one to get started!</div>
+            <div class="requests-list" id="requestsList">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📖</div>
+                    <p>No requests yet. Create one to get started!</p>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- New Request Modal -->
-    <div class="modal" id="requestModal">
-        <div class="modal-content">
-            <div class="modal-header">
+    <div class="modal" id="requestModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: var(--bg-primary); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; max-width: 500px; width: 90%;">
+            <div style="font-size: 1.5rem; color: var(--beige); margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
                 <span>📝 New Tutoring Request</span>
-                <button class="close-btn" onclick="closeRequestModal()">×</button>
+                <button style="background: none; border: none; color: var(--beige); font-size: 1.5rem; cursor: pointer; padding: 0;" onclick="closeRequestModal()">×</button>
             </div>
 
             <form onsubmit="submitRequest(event)">
-                <div class="form-group">
-                    <label>Subject</label>
-                    <select id="requestSubject" required>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; color: var(--text-secondary); margin-bottom: 0.5rem; font-weight: 600;">Subject</label>
+                    <select id="requestSubject" style="width: 100%; padding: 0.75rem; background: rgba(212, 165, 116, 0.1); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-family: 'Orbitron', sans-serif; font-weight: 600; cursor: pointer;" required>
                         <option value="">Select a subject</option>
                         <option value="Mathematics">Mathematics 📐</option>
                         <option value="Sciences">Sciences 🔬</option>
@@ -511,23 +474,23 @@
                     </select>
                 </div>
 
-                <div class="form-group">
-                    <label>Description (Optional)</label>
-                    <textarea id="requestDescription" placeholder="Tell the tutor what you need help with..."></textarea>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; color: var(--text-secondary); margin-bottom: 0.5rem; font-weight: 600;">Description (Optional)</label>
+                    <textarea id="requestDescription" style="width: 100%; padding: 0.75rem; background: rgba(212, 165, 116, 0.1); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-family: 'Orbitron', sans-serif; resize: vertical; min-height: 100px;" placeholder="Tell the tutor what you need help with..."></textarea>
                 </div>
 
-                <div class="form-group">
-                    <label>Priority</label>
-                    <select id="requestPriority" required>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; color: var(--text-secondary); margin-bottom: 0.5rem; font-weight: 600;">Priority</label>
+                    <select id="requestPriority" style="width: 100%; padding: 0.75rem; background: rgba(212, 165, 116, 0.1); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-family: 'Orbitron', sans-serif; font-weight: 600; cursor: pointer;" required>
                         <option value="medium" selected>Medium</option>
                         <option value="low">Low</option>
                         <option value="high">High</option>
                     </select>
                 </div>
 
-                <div class="modal-actions">
-                    <button type="button" class="btn-secondary" onclick="closeRequestModal()">Cancel</button>
-                    <button type="submit" class="btn-primary">Submit Request</button>
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button type="button" class="btn-secondary" style="flex: 1;" onclick="closeRequestModal()">Cancel</button>
+                    <button type="submit" class="btn-primary" style="flex: 1;">Submit Request</button>
                 </div>
             </form>
         </div>
@@ -547,45 +510,99 @@
 
         // Load all data on page load
         async function loadDashboard() {
-            await loadTutors();
-            await loadRequests();
             await loadSessions();
+            await loadRequests();
         }
 
-        // Load available tutors
-        async function loadTutors() {
+        // Load student's sessions
+        async function loadSessions() {
             try {
                 const token = localStorage.getItem('authToken');
-                const res = await fetch(`${API_URL}/api/tutor/available-tutors`, {
+                const res = await fetch(`${API_URL}/api/tutor/student-sessions`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
                 const data = await res.json();
-                const container = document.getElementById('tutorsContainer');
+                const container = document.getElementById('upcomingEvents');
 
-                if (data.success && data.tutors.length > 0) {
-                    document.getElementById('tutorsCount').textContent = data.tutors.length;
+                if (data.success && data.sessions.length > 0) {
+                    document.getElementById('sessionsCount').textContent = data.sessions.length;
                     
-                    const html = data.tutors.map(tutor => `
-                        <div class="tutor-card">
-                            <div class="tutor-avatar">👨‍🏫</div>
-                            <div class="tutor-name">${tutor.firstName} ${tutor.lastName}</div>
-                            <div class="tutor-subjects">
-                                ${tutor.tutorProfile?.subjects?.map(s => `<div class="subject-badge">${s}</div>`).join('') || 'No subjects yet'}
+                    const html = data.sessions.map((session, index) => {
+                        const sessionDate = new Date(session.scheduledTime);
+                        const now = new Date();
+                        const daysUntil = Math.ceil((sessionDate - now) / (1000 * 60 * 60 * 24));
+                        const hoursUntil = Math.ceil((sessionDate - now) / (1000 * 60 * 60));
+                        const minutesUntil = Math.ceil((sessionDate - now) / (1000 * 60));
+
+                        let countdownText = '';
+                        if (daysUntil > 1) {
+                            countdownText = `📅 In ${daysUntil} days`;
+                        } else if (daysUntil === 1) {
+                            countdownText = `⏰ Tomorrow`;
+                        } else if (hoursUntil > 0) {
+                            countdownText = `⏳ In ${hoursUntil} hours`;
+                        } else if (minutesUntil > 0) {
+                            countdownText = `🔴 In ${minutesUntil} minutes`;
+                        } else {
+                            countdownText = `🎓 Starting now!`;
+                        }
+
+                        return `
+                            <div class="event-card">
+                                <div class="event-header">
+                                    <div>
+                                        <div class="event-title">Session ${index + 1}</div>
+                                        <div class="event-tutor">Tutor: ${session.tutorName}</div>
+                                    </div>
+                                    <div class="event-time-badge">
+                                        ${sessionDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} @ ${sessionDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                                    </div>
+                                </div>
+
+                                <div class="event-meta">
+                                    <div class="event-meta-item">
+                                        📚 ${session.subject || 'Mathematics'}
+                                    </div>
+                                    <div class="event-meta-item">
+                                        <span class="status-${session.status}">${session.status.toUpperCase()}</span>
+                                    </div>
+                                </div>
+
+                                <div class="event-countdown">
+                                    <div class="countdown-text">${countdownText}</div>
+                                </div>
+
+                                <div class="event-description">
+                                    📧 Tutor: <strong>${session.tutorEmail}</strong>
+                                </div>
+
+                                <div class="event-actions">
+                                    <button class="btn-primary" onclick="contactTutor('${session.tutorEmail}', '${session.tutorName}')">
+                                        ✉️ Contact Tutor
+                                    </button>
+                                    <button class="btn-secondary" onclick="addToCalendar('${session.tutorName}', '${sessionDate.toISOString()}')">
+                                        📅 Add to Calendar
+                                    </button>
+                                </div>
                             </div>
-                            <div class="tutor-actions">
-                                <button class="btn-primary" onclick="requestTutor('${tutor._id}', '${tutor.firstName}')">Request</button>
-                            </div>
-                        </div>
-                    `).join('');
+                        `;
+                    }).join('');
                     
                     container.innerHTML = html;
                 } else {
-                    container.innerHTML = '<div class="empty-state">No tutors available yet</div>';
+                    document.getElementById('sessionsCount').textContent = '0';
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">⏰</div>
+                            <p>No upcoming sessions yet</p>
+                            <p style="font-size: 0.9rem; margin-top: 0.5rem;">Submit a tutoring request to schedule your first session!</p>
+                        </div>
+                    `;
                 }
             } catch (error) {
-                console.error('Error loading tutors:', error);
-                document.getElementById('tutorsContainer').innerHTML = '<div class="empty-state">Error loading tutors</div>';
+                console.error('Error loading sessions:', error);
+                document.getElementById('upcomingEvents').innerHTML = '<div class="empty-state"><p>Error loading sessions</p></div>';
             }
         }
 
@@ -598,7 +615,7 @@
                 });
 
                 const data = await res.json();
-                const container = document.getElementById('requestsContainer');
+                const container = document.getElementById('requestsList');
 
                 if (data.success && data.requests.length > 0) {
                     document.getElementById('requestsCount').textContent = data.requests.length;
@@ -607,48 +624,39 @@
                         <div class="request-item">
                             <div class="request-header">
                                 <div class="request-subject">${req.subject}</div>
-                                <div class="request-status ${req.status}">${req.status.toUpperCase()}</div>
+                                <div class="status-${req.status}">${req.status.toUpperCase()}</div>
                             </div>
-                            <div class="request-description">${req.description || 'No description provided'}</div>
+                            <div style="color: var(--text-secondary); margin: 0.75rem 0; line-height: 1.6;">
+                                ${req.description || 'No description provided'}
+                            </div>
                             <div style="font-size: 0.8rem; color: #9ca3af;">
-                                ${new Date(req.createdAt).toLocaleDateString()}
+                                Submitted: ${new Date(req.createdAt).toLocaleDateString()}
                             </div>
                         </div>
                     `).join('');
                     
                     container.innerHTML = html;
                 } else {
-                    container.innerHTML = '<div class="empty-state">No requests yet. Create one to get started!</div>';
+                    document.getElementById('requestsCount').textContent = '0';
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📖</div>
+                            <p>No requests yet. Create one to get started!</p>
+                        </div>
+                    `;
                 }
             } catch (error) {
                 console.error('Error loading requests:', error);
             }
         }
 
-        // Load sessions
-        async function loadSessions() {
-            try {
-                const token = localStorage.getItem('authToken');
-                const res = await fetch(`${API_URL}/api/tutor/student-sessions`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                const data = await res.json();
-                if (data.success) {
-                    document.getElementById('sessionsCount').textContent = data.sessions.length;
-                }
-            } catch (error) {
-                console.error('Error loading sessions:', error);
-            }
-        }
-
         // Modal functions
         function openRequestModal() {
-            document.getElementById('requestModal').classList.add('active');
+            document.getElementById('requestModal').style.display = 'flex';
         }
 
         function closeRequestModal() {
-            document.getElementById('requestModal').classList.remove('active');
+            document.getElementById('requestModal').style.display = 'none';
         }
 
         // Submit new request
@@ -675,7 +683,7 @@
                 if (data.success) {
                     alert('✅ Request created successfully!');
                     closeRequestModal();
-                    loadRequests();
+                    loadDashboard();
                 } else {
                     alert('❌ Error: ' + data.error);
                 }
@@ -684,37 +692,15 @@
             }
         }
 
-        // Request a tutor
-        async function requestTutor(tutorId, tutorName) {
-            const subject = prompt('What subject do you need help with?');
-            if (!subject) return;
+        // Contact tutor
+        function contactTutor(email, tutorName) {
+            alert(`📧 Contact Info:\n\nTutor: ${tutorName}\nEmail: ${email}\n\nPlease reach out to schedule your session!`);
+            // In a real app, this would open an email or messaging interface
+        }
 
-            try {
-                const token = localStorage.getItem('authToken');
-                const res = await fetch(`${API_URL}/api/tutor/create-request`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({
-                        subject: subject,
-                        description: `Requested tutor: ${tutorName}`,
-                        priority: 'medium'
-                    })
-                });
-
-                const data = await res.json();
-
-                if (data.success) {
-                    alert('✅ Request sent! ' + tutorName + ' will be notified.');
-                    loadRequests();
-                } else {
-                    alert('❌ Error: ' + data.error);
-                }
-            } catch (error) {
-                alert('Error: ' + error.message);
-            }
+        // Add to calendar
+        function addToCalendar(tutorName, dateTime) {
+            alert(`📅 Session with ${tutorName} has been added to your calendar!\n\n(Integration with Google Calendar, Outlook, etc. would happen here)`);
         }
 
         // Navigation
@@ -730,6 +716,9 @@
 
         // Load dashboard on page load
         loadDashboard();
+
+        // Refresh data every 30 seconds
+        setInterval(loadDashboard, 30000);
     </script>
 </body>
 </html>

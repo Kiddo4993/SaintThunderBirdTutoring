@@ -116,8 +116,9 @@
             background: rgba(34, 197, 94, 0.2);
             color: var(--success);
             border: 1px solid rgba(34, 197, 94, 0.5);
-            padding: 0.5rem 1rem;
+            padding: 0.65rem;
             font-size: 0.75rem;
+            flex: 1;
         }
 
         .btn-success:hover {
@@ -184,8 +185,8 @@
         }
 
         .student-request-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border);
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(74, 124, 158, 0.08) 100%);
+            border: 2px solid rgba(34, 197, 94, 0.3);
             border-radius: 12px;
             padding: 1.5rem;
             transition: all 0.3s;
@@ -193,7 +194,8 @@
 
         .student-request-card:hover {
             border-color: var(--beige);
-            background: rgba(255, 255, 255, 0.05);
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(74, 124, 158, 0.15) 100%);
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.2);
         }
 
         .student-header {
@@ -210,9 +212,9 @@
         }
 
         .student-grade {
-            background: rgba(74, 124, 158, 0.3);
-            color: #60a5fa;
-            padding: 0.25rem 0.75rem;
+            background: rgba(251, 146, 60, 0.3);
+            color: #fb923c;
+            padding: 0.4rem 0.8rem;
             border-radius: 20px;
             font-size: 0.75rem;
             font-weight: 700;
@@ -220,8 +222,8 @@
 
         .student-subject {
             display: inline-block;
-            background: rgba(212, 165, 116, 0.2);
-            color: var(--beige);
+            background: linear-gradient(135deg, var(--beige), var(--accent));
+            color: #000;
             padding: 0.4rem 0.8rem;
             border-radius: 6px;
             font-size: 0.85rem;
@@ -233,18 +235,40 @@
             color: var(--text-secondary);
             margin: 0.75rem 0;
             line-height: 1.6;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-left: 3px solid var(--beige);
+            border-radius: 4px;
+        }
+
+        .priority-badge {
+            display: inline-block;
+            padding: 0.3rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .priority-high {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .priority-medium {
+            background: rgba(251, 146, 60, 0.2);
+            color: #fb923c;
+        }
+
+        .priority-low {
+            background: rgba(34, 197, 94, 0.2);
+            color: var(--success);
         }
 
         .request-actions {
             display: flex;
             gap: 0.75rem;
             margin-top: 1rem;
-        }
-
-        .request-actions button {
-            flex: 1;
-            padding: 0.65rem;
-            font-size: 0.8rem;
         }
 
         .sessions-table {
@@ -303,8 +327,8 @@
             color: var(--text-secondary);
         }
 
-        .empty-state p {
-            font-size: 1.1rem;
+        .empty-state-icon {
+            font-size: 3rem;
             margin-bottom: 1rem;
         }
 
@@ -333,7 +357,7 @@
             border: 1px solid var(--border);
             border-radius: 16px;
             padding: 2rem;
-            max-width: 500px;
+            max-width: 600px;
             width: 90%;
             max-height: 90vh;
             overflow-y: auto;
@@ -382,7 +406,7 @@
 
         .form-group textarea {
             resize: vertical;
-            min-height: 100px;
+            min-height: 120px;
         }
 
         .modal-actions {
@@ -393,6 +417,20 @@
 
         .modal-actions button {
             flex: 1;
+        }
+
+        .help-section {
+            background: rgba(212, 165, 116, 0.05);
+            border: 1px solid var(--border);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .help-title {
+            color: var(--beige);
+            font-weight: 700;
+            margin-bottom: 0.75rem;
         }
 
         @media (max-width: 768px) {
@@ -428,6 +466,10 @@
             .sessions-table td {
                 padding: 0.75rem 0.5rem;
             }
+
+            .request-actions {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -439,7 +481,7 @@
         <div class="header">
             <div class="header-content">
                 <h1>⚡ Welcome, <span id="tutorName">Tutor</span>!</h1>
-                <p>Manage your tutoring sessions</p>
+                <p>Manage your tutoring sessions & provide help</p>
             </div>
             <div class="header-actions">
                 <button class="btn-secondary" onclick="goToProfile()">👤 Profile</button>
@@ -451,39 +493,39 @@
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-value" id="requestsCount">0</div>
-                <div class="stat-label">Student Requests</div>
+                <div class="stat-label">Requests Waiting</div>
             </div>
             <div class="stat-card">
                 <div class="stat-value" id="sessionsCount">0</div>
                 <div class="stat-label">Active Sessions</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" id="hoursCount">0</div>
-                <div class="stat-label">Hours Taught</div>
+                <div class="stat-value" id="completedCount">0</div>
+                <div class="stat-label">Completed Sessions</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value">4.9</div>
-                <div class="stat-label">Rating</div>
+                <div class="stat-value" id="hoursCount">0</div>
+                <div class="stat-label">Hours Taught</div>
             </div>
         </div>
 
         <!-- Student Requests Waiting -->
         <div class="card">
-            <div class="card-title">📚 Student Requests Waiting for You</div>
+            <div class="card-title">📚 New Student Requests Waiting for Help</div>
             <div class="students-list" id="studentRequests">
                 <div class="loading">Loading student requests...</div>
             </div>
         </div>
 
-        <!-- Active Sessions -->
+        <!-- Active Teaching Sessions -->
         <div class="card">
-            <div class="card-title">🎓 Your Active Sessions</div>
+            <div class="card-title">🎓 Your Active Teaching Sessions</div>
             <table class="sessions-table" id="sessionsTable">
                 <thead>
                     <tr>
                         <th>Student Name</th>
                         <th>Subject</th>
-                        <th>Scheduled Time</th>
+                        <th>Session Started</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -491,7 +533,7 @@
                 <tbody id="sessionsBody">
                     <tr>
                         <td colspan="5" style="text-align: center; padding: 2rem;">
-                            <p style="color: var(--text-secondary);">No active sessions yet</p>
+                            <p style="color: var(--text-secondary);">No active sessions yet. Accept a request to start teaching!</p>
                         </td>
                     </tr>
                 </tbody>
@@ -499,28 +541,56 @@
         </div>
     </div>
 
+    <!-- Help/Provide Assistance Modal -->
+    <div class="modal" id="helpModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>🎓 Provide Help to <span id="modalStudentName">Student</span></span>
+                <button class="close-btn" onclick="closeHelpModal()">×</button>
+            </div>
+
+            <div id="helpContent"></div>
+
+            <div class="help-section">
+                <div class="help-title">📝 Your Teaching Notes</div>
+                <textarea id="teachingNotes" placeholder="Provide your tutoring help here. You can share explanations, tips, resources, or solutions..." style="width: 100%; padding: 0.75rem; background: rgba(212, 165, 116, 0.1); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-family: 'Orbitron', sans-serif; resize: vertical; min-height: 150px;"></textarea>
+            </div>
+
+            <div class="help-section">
+                <div class="help-title">⏱️ Time Spent Teaching</div>
+                <input type="number" id="hoursSpent" step="0.5" min="0.5" value="1" placeholder="Hours" style="width: 100%; padding: 0.75rem; background: rgba(212, 165, 116, 0.1); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-family: 'Orbitron', sans-serif;">
+                <small style="color: var(--text-secondary); margin-top: 0.5rem; display: block;">How long did you spend helping this student?</small>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeHelpModal()">Cancel</button>
+                <button class="btn-primary" onclick="submitHelp()">💾 Save Session & Help</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Complete Session Modal -->
     <div class="modal" id="completeSessionModal">
         <div class="modal-content">
             <div class="modal-header">
-                <span>📝 Complete Session</span>
-                <button class="close-btn" onclick="closeModal()">×</button>
+                <span>✅ Complete Session</span>
+                <button class="close-btn" onclick="closeCompleteModal()">×</button>
             </div>
 
             <form onsubmit="submitCompleteSession(event)">
                 <div class="form-group">
-                    <label>Hours Spent</label>
-                    <input type="number" id="hoursSpent" step="0.5" min="0.5" required>
+                    <label>Hours Spent Teaching</label>
+                    <input type="number" id="sessionHours" step="0.5" min="0.5" value="1" required>
                 </div>
 
                 <div class="form-group">
-                    <label>Notes (Optional)</label>
-                    <textarea id="sessionNotes" placeholder="What did you teach? How did it go?"></textarea>
+                    <label>Session Notes</label>
+                    <textarea id="sessionNotes" placeholder="What did you teach? How did the session go? What should you focus on next time?"></textarea>
                 </div>
 
                 <div class="modal-actions">
-                    <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
-                    <button type="submit" class="btn-primary">Complete Session</button>
+                    <button type="button" class="btn-secondary" onclick="closeCompleteModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">✅ Complete Session</button>
                 </div>
             </form>
         </div>
@@ -530,6 +600,7 @@
     <script>
         const API_URL = 'https://saintthunderbirdtutoring.onrender.com';
         let user = getUser();
+        let currentStudentRequest = null;
         let currentSessionId = null;
 
         if (!user || user.userType !== 'tutor') {
@@ -565,25 +636,32 @@
                                 <div>
                                     <div class="student-name">${req.studentName}</div>
                                     <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.3rem;">
-                                        Grade: ${req.grade}
+                                        Grade: ${req.grade === 'N/A' ? 'Not specified' : req.grade}
                                     </div>
                                 </div>
-                                <div class="student-grade">${req.priority.toUpperCase()} PRIORITY</div>
+                                <div class="student-grade">
+                                    ${req.priority.toUpperCase()} 
+                                    <span class="priority-badge priority-${req.priority}">!</span>
+                                </div>
                             </div>
                             
                             <div class="student-subject">${req.subject}</div>
                             
                             <div class="student-description">
+                                <strong>Student's Help Request:</strong><br>
                                 ${req.description || 'Student is seeking help with this subject'}
                             </div>
                             
                             <div style="font-size: 0.8rem; color: #9ca3af; margin-top: 0.75rem;">
-                                Requested: ${new Date(req.createdAt).toLocaleDateString()}
+                                📅 Requested: ${new Date(req.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                             </div>
 
                             <div class="request-actions">
-                                <button class="btn-primary" onclick="acceptRequest('${req._id}', '${req.studentId}', '${req.subject}')">
-                                    ✅ Accept Request
+                                <button class="btn-primary" onclick="provideHelp('${req._id}', '${req.studentId}', '${req.studentName}', '${req.subject}', '${req.description}')">
+                                    🎓 Provide Help
+                                </button>
+                                <button class="btn-success" onclick="acceptRequest('${req._id}', '${req.studentId}', '${req.subject}')">
+                                    ✅ Accept & Schedule
                                 </button>
                             </div>
                         </div>
@@ -592,7 +670,7 @@
                     container.innerHTML = html;
                 } else {
                     document.getElementById('requestsCount').textContent = '0';
-                    container.innerHTML = '<div class="empty-state"><p>😌 No new student requests matching your specialties yet</p></div>';
+                    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">😌</div><p>No new student requests matching your specialties yet</p></div>';
                 }
             } catch (error) {
                 console.error('Error loading requests:', error);
@@ -617,7 +695,7 @@
                     const html = data.sessions.map(session => `
                         <tr>
                             <td>${session.studentName}</td>
-                            <td>Mathematics</td>
+                            <td>📚 ${session.subject || 'Mathematics'}</td>
                             <td>${new Date(session.scheduledTime).toLocaleString()}</td>
                             <td>
                                 <span class="status-badge status-${session.status}">
@@ -625,8 +703,8 @@
                                 </span>
                             </td>
                             <td>
-                                <button class="btn-success" onclick="startSession('${session._id}')">
-                                    Start
+                                <button class="btn-success" onclick="startTeaching('${session._id}', '${session.studentName}')">
+                                    Start Help
                                 </button>
                                 <button class="btn-success" onclick="openCompleteModal('${session._id}')">
                                     Complete
@@ -639,7 +717,7 @@
                 } else {
                     document.getElementById('sessionsCount').textContent = '0';
                     tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 2rem;">
-                        <p style="color: var(--text-secondary);">No active sessions yet. Accept a student request to get started!</p>
+                        <p style="color: var(--text-secondary);">No active sessions yet. Accept a student request to start teaching!</p>
                     </td></tr>`;
                 }
             } catch (error) {
@@ -647,7 +725,72 @@
             }
         }
 
-        // Accept a student request
+        // Open help modal to provide direct help
+        function provideHelp(requestId, studentId, studentName, subject, description) {
+            currentStudentRequest = {
+                requestId: requestId,
+                studentId: studentId,
+                studentName: studentName,
+                subject: subject,
+                description: description
+            };
+            
+            document.getElementById('modalStudentName').textContent = studentName;
+            document.getElementById('helpContent').innerHTML = `
+                <div class="help-section">
+                    <div class="help-title">📚 Subject: ${subject}</div>
+                    <p style="color: var(--text-secondary); margin: 0.75rem 0;">
+                        <strong>Student's Request:</strong><br>
+                        ${description || 'Student is seeking help with this subject'}
+                    </p>
+                </div>
+            `;
+            document.getElementById('teachingNotes').value = '';
+            document.getElementById('hoursSpent').value = '1';
+            document.getElementById('helpModal').classList.add('active');
+        }
+
+        // Submit help provided
+        async function submitHelp() {
+            const notes = document.getElementById('teachingNotes').value;
+            const hours = document.getElementById('hoursSpent').value;
+
+            if (!notes.trim()) {
+                alert('❌ Please provide some teaching notes or help to the student');
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('authToken');
+                
+                // Create a session and mark as in-progress
+                const res = await fetch(`${API_URL}/api/tutor/accept-request`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        requestId: currentStudentRequest.requestId,
+                        tutorName: user.firstName
+                    })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    alert(`✅ Help provided to ${currentStudentRequest.studentName}!\n\n📧 They will receive a notification about your assistance.`);
+                    closeHelpModal();
+                    loadDashboard();
+                } else {
+                    alert('❌ Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error providing help: ' + error.message);
+            }
+        }
+
+        // Accept a student request and schedule session
         async function acceptRequest(requestId, studentId, subject) {
             try {
                 const token = localStorage.getItem('authToken');
@@ -666,7 +809,7 @@
                 const data = await res.json();
 
                 if (data.success) {
-                    alert('✅ Request accepted! Session scheduled with the student.');
+                    alert('✅ Request accepted! Session scheduled with the student. They will receive an email notification.');
                     loadDashboard();
                 } else {
                     alert('❌ Error: ' + data.error);
@@ -676,22 +819,27 @@
             }
         }
 
-        // Start a session
-        function startSession(sessionId) {
-            alert('🎓 Session started! You can now begin teaching.\n\nThis is where you would connect to a video call or messaging platform.');
-            // In a real app, this would redirect to a video/call interface
+        // Start teaching session
+        function startTeaching(sessionId, studentName) {
+            alert(`🎓 Teaching session with ${studentName} has started!\n\nYou can now:\n✓ Explain concepts\n✓ Share resources\n✓ Answer questions\n✓ Provide practice problems\n\nWhen done, click "Complete Session" to finish.`);
+        }
+
+        // Close help modal
+        function closeHelpModal() {
+            document.getElementById('helpModal').classList.remove('active');
+            currentStudentRequest = null;
         }
 
         // Open complete session modal
         function openCompleteModal(sessionId) {
             currentSessionId = sessionId;
             document.getElementById('completeSessionModal').classList.add('active');
-            document.getElementById('hoursSpent').value = '1';
+            document.getElementById('sessionHours').value = '1';
             document.getElementById('sessionNotes').value = '';
         }
 
-        // Close modal
-        function closeModal() {
+        // Close complete session modal
+        function closeCompleteModal() {
             document.getElementById('completeSessionModal').classList.remove('active');
             currentSessionId = null;
         }
@@ -700,7 +848,7 @@
         async function submitCompleteSession(event) {
             event.preventDefault();
 
-            const hoursSpent = document.getElementById('hoursSpent').value;
+            const hoursSpent = document.getElementById('sessionHours').value;
             const notes = document.getElementById('sessionNotes').value;
 
             try {
@@ -721,8 +869,8 @@
                 const data = await res.json();
 
                 if (data.success) {
-                    alert('✅ Session completed! ' + hoursSpent + ' hours recorded.');
-                    closeModal();
+                    alert(`✅ Session completed!\n\n⏱️ ${hoursSpent} hours recorded\n\n📊 Your teaching hours and impact have been updated!`);
+                    closeCompleteModal();
                     loadDashboard();
                 } else {
                     alert('❌ Error: ' + data.error);

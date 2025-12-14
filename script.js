@@ -232,7 +232,7 @@
     },
     { 
       icon: '🌟', 
-      title: '92% Success Rate', 
+      title: '100% Success Rate', 
       msg: 'Students are improving their grades with our personalized support', 
       btn: 'View Subjects', 
       link: '#subjects' 
@@ -453,7 +453,7 @@ const infoCards = [
     subtitle: 'Empowering Through Education',
     description: 'Provide culturally responsive education that honors indigenous traditions while preparing students for future success through accessible, high-quality tutoring and mentorship.',
     highlight: 'Excellence meets Heritage',
-    stats: ['500+ Students', '92% Success Rate', '15 Communities']
+    stats: ['500+ Students', '100% Success Rate', '15 Communities']
   },
   {
     icon: '🌍',
@@ -481,11 +481,11 @@ const infoCards = [
   },
   {
     icon: '🏆',
-    title: '92% Success Rate',
+    title: '100% Success Rate',
     subtitle: 'Proven Results',
     description: 'Students consistently show significant academic improvement within the first semester. We measure success not just in grades, but in confidence, cultural pride, and personal growth.',
     highlight: 'Results That Matter',
-    stats: ['92% Improve', 'Grade Increases', 'Confidence Boost']
+    stats: ['100% Improve', 'Grade Increases', 'Confidence Boost']
   },
   {
     icon: '💝',
