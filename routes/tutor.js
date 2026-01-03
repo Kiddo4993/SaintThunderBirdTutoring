@@ -532,3 +532,47 @@ router.post('/update-specialties', authMiddleware, async (req, res) => {
 });
 
 module.exports = router;
+
+// SEND SESSION EMAIL WITH ZOOM LINK
+router.post('/send-session-email', authMiddleware, async (req, res) => {
+    try {
+        const { sessionId, studentName, tutorEmail } = req.body;
+        const tutor = await User.findById(req.user.userId);
+
+        if (!tutor) {
+            return res.status(404).json({ error: 'Tutor not found' });
+        }
+
+        // Generate a unique meeting ID for Zoom
+        const zoomMeetingId = Math.random().toString().substr(2, 9);
+        const zoomPassword = Math.random().toString(36).substr(2, 6).toUpperCase();
+
+        // Send email to tutor
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: tutor.email,
+            subject: `🎓 Teaching Session Started with ${studentName}! - Zoom Link Inside`,
+            html: `
+                <h2>🎓 Your Teaching Session Has Started!</h2>
+                <p><strong>Student:</strong> ${studentName}</p>
+                <h3>📹 Zoom Meeting Details</h3>
+                <p><strong>Meeting ID:</strong> ${zoomMeetingId}</p>
+                <p><strong>Password:</strong> ${zoomPassword}</p>
+                <p><a href="https://zoom.us/join">Join Zoom Meeting</a></p>
+            `
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) console.log('Email error:', error);
+        });
+
+        res.json({
+            success: true,
+            message: 'Session email sent with Zoom details',
+            zoomMeetingId: zoomMeetingId,
+            zoomPassword: zoomPassword
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});

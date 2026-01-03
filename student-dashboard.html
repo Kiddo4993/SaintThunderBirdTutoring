@@ -45,7 +45,7 @@
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
             position: relative;
             z-index: 10;
@@ -114,21 +114,33 @@
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 2rem;
             margin-bottom: 3rem;
         }
 
         .stat-card {
-            background: rgba(212, 165, 116, 0.1);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 2rem;
+            background: linear-gradient(135deg, rgba(212, 165, 116, 0.15) 0%, rgba(139, 69, 19, 0.1) 100%);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 2.5rem;
             text-align: center;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--beige);
+            background: linear-gradient(135deg, rgba(212, 165, 116, 0.25) 0%, rgba(139, 69, 19, 0.15) 100%);
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
         }
 
         .stat-value {
-            font-size: 2rem;
+            font-size: 2.5rem;
             color: var(--beige);
             font-weight: 700;
             margin-bottom: 0.5rem;
@@ -146,7 +158,7 @@
             backdrop-filter: blur(20px);
             border: 1px solid var(--border);
             border-radius: 16px;
-            padding: 2rem;
+            padding: 2.5rem;
             transition: all 0.3s;
             margin-bottom: 2rem;
         }
@@ -157,216 +169,291 @@
         }
 
         .card-title {
-            font-size: 1.5rem;
+            font-size: 2rem;
             color: var(--beige);
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-        }
-
-        .upcoming-events-list {
-            display: flex;
-            flex-direction: column;
             gap: 1rem;
         }
 
-        .event-card {
-            background: linear-gradient(135deg, rgba(212, 165, 116, 0.1) 0%, rgba(139, 69, 19, 0.08) 100%);
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            padding: 1.5rem;
+        .session-card {
+            background: linear-gradient(135deg, rgba(74, 124, 158, 0.15) 0%, rgba(59, 130, 246, 0.1) 100%);
+            border: 2px solid rgba(74, 124, 158, 0.4);
+            border-radius: 16px;
+            padding: 2rem;
             transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
+            margin-bottom: 1.5rem;
         }
 
-        .event-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--beige), var(--accent));
-        }
-
-        .event-card:hover {
+        .session-card:hover {
             border-color: var(--beige);
-            background: linear-gradient(135deg, rgba(212, 165, 116, 0.2) 0%, rgba(139, 69, 19, 0.15) 100%);
-            transform: translateX(5px);
-            box-shadow: 0 10px 30px rgba(212, 165, 116, 0.2);
+            background: linear-gradient(135deg, rgba(74, 124, 158, 0.25) 0%, rgba(59, 130, 246, 0.15) 100%);
+            box-shadow: 0 15px 40px rgba(74, 124, 158, 0.3);
+            transform: translateY(-5px);
         }
 
-        .event-header {
+        .session-header {
             display: flex;
             justify-content: space-between;
             align-items: start;
+            margin-bottom: 1.5rem;
+        }
+
+        .tutor-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--beige);
+            margin-bottom: 0.5rem;
+        }
+
+        .session-subject {
+            display: inline-block;
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            color: #fff;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 700;
             margin-bottom: 1rem;
         }
 
-        .event-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--beige);
-        }
-
-        .event-tutor {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-            margin-top: 0.3rem;
-        }
-
-        .event-time-badge {
-            background: linear-gradient(135deg, var(--beige), var(--accent));
-            color: #000;
-            padding: 0.5rem 1rem;
+        .session-time {
+            background: rgba(74, 124, 158, 0.3);
+            color: #60a5fa;
+            padding: 0.6rem 1.2rem;
             border-radius: 8px;
             font-weight: 700;
-            font-size: 0.9rem;
             white-space: nowrap;
         }
 
-        .event-meta {
-            display: flex;
-            gap: 1rem;
-            margin: 1rem 0;
-            flex-wrap: wrap;
+        .session-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
         }
 
-        .event-meta-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 0.5rem 0.75rem;
-            border-radius: 6px;
+        .info-item {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 3px solid #60a5fa;
+        }
+
+        .info-label {
+            color: var(--text-secondary);
             font-size: 0.85rem;
-            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
         }
 
-        .event-description {
-            color: var(--text-secondary);
-            line-height: 1.6;
+        .info-value {
+            color: #60a5fa;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .countdown {
+            background: rgba(59, 130, 246, 0.2);
+            border: 2px solid rgba(59, 130, 246, 0.5);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            color: #60a5fa;
+            font-weight: 600;
+            margin: 1rem 0;
+        }
+
+        .request-card {
+            background: linear-gradient(135deg, rgba(212, 165, 116, 0.15) 0%, rgba(139, 69, 19, 0.1) 100%);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s;
+            margin-bottom: 1.5rem;
+        }
+
+        .request-card:hover {
+            border-color: var(--beige);
+            background: linear-gradient(135deg, rgba(212, 165, 116, 0.25) 0%, rgba(139, 69, 19, 0.15) 100%);
+            transform: translateY(-5px);
+        }
+
+        .request-subject {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--beige), var(--accent));
+            color: #000;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 700;
             margin-bottom: 1rem;
         }
 
-        .event-countdown {
-            background: rgba(74, 124, 158, 0.2);
-            border: 1px solid rgba(74, 124, 158, 0.4);
-            padding: 1rem;
-            border-radius: 8px;
+        .request-description {
+            color: var(--text-secondary);
             margin: 1rem 0;
+            line-height: 1.8;
+            font-size: 1.05rem;
         }
 
-        .countdown-text {
-            color: #60a5fa;
-            font-weight: 600;
-            font-size: 0.95rem;
+        .request-status {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-right: 0.5rem;
         }
 
-        .event-actions {
-            display: flex;
-            gap: 0.75rem;
-            margin-top: 1rem;
+        .status-pending {
+            background: rgba(251, 146, 60, 0.2);
+            color: #fb923c;
         }
 
-        .event-actions button {
-            flex: 1;
-            padding: 0.65rem;
-            font-size: 0.8rem;
+        .status-accepted {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .new-request-btn {
+            background: linear-gradient(135deg, var(--beige), var(--accent));
+            color: #000;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            font-size: 1rem;
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+
+        .new-request-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(212, 165, 116, 0.4);
         }
 
         .empty-state {
             text-align: center;
-            padding: 3rem 1rem;
+            padding: 4rem 2rem;
             color: var(--text-secondary);
         }
 
         .empty-state-icon {
-            font-size: 3rem;
+            font-size: 5rem;
             margin-bottom: 1rem;
+            opacity: 0.7;
         }
 
-        .empty-state p {
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
+        .empty-state-text {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state-subtext {
+            font-size: 1rem;
+            opacity: 0.8;
         }
 
         .loading {
             text-align: center;
-            padding: 2rem;
+            padding: 3rem;
             color: var(--text-secondary);
+            font-size: 1.1rem;
         }
 
-        .status-scheduled {
-            background: rgba(251, 146, 60, 0.2);
-            color: #fb923c;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            display: inline-block;
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
         }
 
-        .status-in-progress {
-            background: rgba(59, 130, 246, 0.2);
-            color: #3b82f6;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            display: inline-block;
-        }
-
-        .status-completed {
-            background: rgba(34, 197, 94, 0.2);
-            color: #22c55e;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            display: inline-block;
-        }
-
-        .requests-list {
+        .modal.active {
             display: flex;
-            flex-direction: column;
-            gap: 1rem;
         }
 
-        .request-item {
-            background: rgba(255, 255, 255, 0.02);
-            border-left: 4px solid var(--blue);
-            border-radius: 8px;
-            padding: 1.5rem;
-            transition: all 0.3s;
+        .modal-content {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
-        .request-item:hover {
-            border-color: var(--beige);
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .request-header {
+        .modal-header {
+            font-size: 1.5rem;
+            color: var(--beige);
+            margin-bottom: 1.5rem;
             display: flex;
             justify-content: space-between;
-            align-items: start;
-            margin-bottom: 0.75rem;
+            align-items: center;
         }
 
-        .request-subject {
-            background: rgba(74, 124, 158, 0.3);
-            color: #60a5fa;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 700;
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--beige);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(212, 165, 116, 0.1);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.95rem;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .modal-actions button {
+            flex: 1;
         }
 
         @media (max-width: 768px) {
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
             }
 
             .header {
@@ -384,13 +471,21 @@
                 width: 100%;
             }
 
-            .event-header {
+            .session-header {
                 flex-direction: column;
                 gap: 0.75rem;
             }
 
-            .event-time-badge {
+            .session-time {
                 align-self: flex-start;
+            }
+
+            .session-info {
+                grid-template-columns: 1fr;
+            }
+
+            .card-title {
+                font-size: 1.5rem;
             }
         }
     </style>
@@ -403,10 +498,9 @@
         <div class="header">
             <div class="header-content">
                 <h1>⚡ Welcome, <span id="studentName">Student</span>!</h1>
-                <p>Your upcoming tutoring sessions</p>
+                <p>Request tutoring help and get connected with tutors</p>
             </div>
             <div class="header-actions">
-                <button class="btn-secondary" onclick="openRequestModal()">📝 New Request</button>
                 <button class="btn-secondary" onclick="goToProfile()">👤 Profile</button>
                 <button class="btn-secondary" onclick="logout()">🚪 Logout</button>
             </div>
@@ -415,55 +509,68 @@
         <!-- Stats -->
         <div class="stats-grid">
             <div class="stat-card">
+                <div class="stat-icon">📝</div>
                 <div class="stat-value" id="requestsCount">0</div>
                 <div class="stat-label">Requests Made</div>
             </div>
             <div class="stat-card">
+                <div class="stat-icon">🎓</div>
                 <div class="stat-value" id="sessionsCount">0</div>
                 <div class="stat-label">Upcoming Sessions</div>
             </div>
             <div class="stat-card">
+                <div class="stat-icon">✅</div>
                 <div class="stat-value" id="completedCount">0</div>
                 <div class="stat-label">Completed Sessions</div>
             </div>
             <div class="stat-card">
+                <div class="stat-icon">⏱️</div>
                 <div class="stat-value" id="hoursCount">0</div>
                 <div class="stat-label">Hours Learned</div>
             </div>
         </div>
 
-        <!-- Upcoming Sessions / Events -->
+        <!-- New Request Button -->
+        <button class="new-request-btn" onclick="openRequestModal()">📝 Request Tutoring Help</button>
+
+        <!-- Info Banner -->
+        <div style="background: rgba(59, 130, 246, 0.2); border: 2px solid rgba(59, 130, 246, 0.5); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; color: #60a5fa; font-weight: 600; text-align: center; font-size: 1.1rem;">
+            🎥 When a tutor accepts your request, they'll receive an email with a Zoom meeting link. The tutor will teach you on Zoom and you'll get all the session details!
+        </div>
+
+        <!-- Upcoming Sessions -->
         <div class="card">
-            <div class="card-title">📅 Upcoming Tutoring Sessions</div>
-            <div class="upcoming-events-list" id="upcomingEvents">
-                <div class="loading">Loading your upcoming sessions...</div>
+            <div class="card-title">📅 Upcoming Sessions</div>
+            <div id="upcomingSessions">
+                <div class="empty-state">
+                    <div class="empty-state-icon">⏰</div>
+                    <div class="empty-state-text">No upcoming sessions yet</div>
+                    <div class="empty-state-subtext">Submit a tutoring request to get started!</div>
+                </div>
             </div>
         </div>
 
-        <!-- Your Tutoring Requests -->
+        <!-- Your Requests -->
         <div class="card">
-            <div class="card-title">📝 Your Tutoring Requests</div>
-            <div class="requests-list" id="requestsList">
-                <div class="empty-state">
-                    <div class="empty-state-icon">📖</div>
-                    <p>No requests yet. Create one to get started!</p>
-                </div>
+            <div class="card-title">📝 Your Requests</div>
+            <div id="yourRequests">
+                <div class="loading">Loading requests...</div>
             </div>
         </div>
     </div>
 
     <!-- New Request Modal -->
-    <div class="modal" id="requestModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); z-index: 1000; align-items: center; justify-content: center;">
-        <div style="background: var(--bg-primary); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; max-width: 500px; width: 90%;">
-            <div style="font-size: 1.5rem; color: var(--beige); margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
-                <span>📝 New Tutoring Request</span>
-                <button style="background: none; border: none; color: var(--beige); font-size: 1.5rem; cursor: pointer; padding: 0;" onclick="closeRequestModal()">×</button>
+    <div class="modal" id="requestModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>📝 Request Tutoring Help</span>
+                <button class="close-btn" onclick="closeRequestModal()">×</button>
             </div>
 
             <form onsubmit="submitRequest(event)">
-                <div style="margin-bottom: 1.5rem;">
-                    <label style="display: block; color: var(--text-secondary); margin-bottom: 0.5rem; font-weight: 600;">Subject</label>
-                    <select id="requestSubject" style="width: 100%; padding: 0.75rem; background: rgba(212, 165, 116, 0.1); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-family: 'Orbitron', sans-serif; font-weight: 600; cursor: pointer;" required>
+                <div class="form-group">
+                    <label>Subject</label>
+                    <select id="requestSubject" required>
                         <option value="">Select a subject</option>
                         <option value="Mathematics">Mathematics 📐</option>
                         <option value="Sciences">Sciences 🔬</option>
@@ -474,23 +581,23 @@
                     </select>
                 </div>
 
-                <div style="margin-bottom: 1.5rem;">
-                    <label style="display: block; color: var(--text-secondary); margin-bottom: 0.5rem; font-weight: 600;">Description (Optional)</label>
-                    <textarea id="requestDescription" style="width: 100%; padding: 0.75rem; background: rgba(212, 165, 116, 0.1); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-family: 'Orbitron', sans-serif; resize: vertical; min-height: 100px;" placeholder="Tell the tutor what you need help with..."></textarea>
+                <div class="form-group">
+                    <label>What do you need help with? (Optional)</label>
+                    <textarea id="requestDescription" placeholder="Tell the tutor what specific topics you need help with..."></textarea>
                 </div>
 
-                <div style="margin-bottom: 1.5rem;">
-                    <label style="display: block; color: var(--text-secondary); margin-bottom: 0.5rem; font-weight: 600;">Priority</label>
-                    <select id="requestPriority" style="width: 100%; padding: 0.75rem; background: rgba(212, 165, 116, 0.1); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-family: 'Orbitron', sans-serif; font-weight: 600; cursor: pointer;" required>
+                <div class="form-group">
+                    <label>Priority</label>
+                    <select id="requestPriority" required>
                         <option value="medium" selected>Medium</option>
                         <option value="low">Low</option>
                         <option value="high">High</option>
                     </select>
                 </div>
 
-                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
-                    <button type="button" class="btn-secondary" style="flex: 1;" onclick="closeRequestModal()">Cancel</button>
-                    <button type="submit" class="btn-primary" style="flex: 1;">Submit Request</button>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeRequestModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">Submit Request</button>
                 </div>
             </form>
         </div>
@@ -523,12 +630,12 @@
                 });
 
                 const data = await res.json();
-                const container = document.getElementById('upcomingEvents');
+                const container = document.getElementById('upcomingSessions');
 
                 if (data.success && data.sessions.length > 0) {
                     document.getElementById('sessionsCount').textContent = data.sessions.length;
                     
-                    const html = data.sessions.map((session, index) => {
+                    const html = data.sessions.map(session => {
                         const sessionDate = new Date(session.scheduledTime);
                         const now = new Date();
                         const daysUntil = Math.ceil((sessionDate - now) / (1000 * 60 * 60 * 24));
@@ -549,41 +656,30 @@
                         }
 
                         return `
-                            <div class="event-card">
-                                <div class="event-header">
+                            <div class="session-card">
+                                <div class="session-header">
                                     <div>
-                                        <div class="event-title">Session ${index + 1}</div>
-                                        <div class="event-tutor">Tutor: ${session.tutorName}</div>
+                                        <div class="tutor-name">${session.tutorName}</div>
+                                        <div style="color: var(--text-secondary); font-size: 0.9rem;">Tutor</div>
                                     </div>
-                                    <div class="event-time-badge">
+                                    <div class="session-time">
                                         ${sessionDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} @ ${sessionDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                                     </div>
                                 </div>
 
-                                <div class="event-meta">
-                                    <div class="event-meta-item">
-                                        📚 ${session.subject || 'Mathematics'}
+                                <div class="session-subject">${session.subject || 'Mathematics'}</div>
+
+                                <div class="countdown">${countdownText}</div>
+
+                                <div class="session-info">
+                                    <div class="info-item">
+                                        <div class="info-label">Status</div>
+                                        <div class="info-value">${session.status.toUpperCase()}</div>
                                     </div>
-                                    <div class="event-meta-item">
-                                        <span class="status-${session.status}">${session.status.toUpperCase()}</span>
+                                    <div class="info-item">
+                                        <div class="info-label">Tutor Email</div>
+                                        <div class="info-value" style="font-size: 0.9rem;">${session.tutorEmail}</div>
                                     </div>
-                                </div>
-
-                                <div class="event-countdown">
-                                    <div class="countdown-text">${countdownText}</div>
-                                </div>
-
-                                <div class="event-description">
-                                    📧 Tutor: <strong>${session.tutorEmail}</strong>
-                                </div>
-
-                                <div class="event-actions">
-                                    <button class="btn-primary" onclick="contactTutor('${session.tutorEmail}', '${session.tutorName}')">
-                                        ✉️ Contact Tutor
-                                    </button>
-                                    <button class="btn-secondary" onclick="addToCalendar('${session.tutorName}', '${sessionDate.toISOString()}')">
-                                        📅 Add to Calendar
-                                    </button>
                                 </div>
                             </div>
                         `;
@@ -595,14 +691,13 @@
                     container.innerHTML = `
                         <div class="empty-state">
                             <div class="empty-state-icon">⏰</div>
-                            <p>No upcoming sessions yet</p>
-                            <p style="font-size: 0.9rem; margin-top: 0.5rem;">Submit a tutoring request to schedule your first session!</p>
+                            <div class="empty-state-text">No upcoming sessions yet</div>
+                            <div class="empty-state-subtext">Submit a tutoring request to get started!</div>
                         </div>
                     `;
                 }
             } catch (error) {
                 console.error('Error loading sessions:', error);
-                document.getElementById('upcomingEvents').innerHTML = '<div class="empty-state"><p>Error loading sessions</p></div>';
             }
         }
 
@@ -615,22 +710,22 @@
                 });
 
                 const data = await res.json();
-                const container = document.getElementById('requestsList');
+                const container = document.getElementById('yourRequests');
 
                 if (data.success && data.requests.length > 0) {
                     document.getElementById('requestsCount').textContent = data.requests.length;
                     
                     const html = data.requests.map(req => `
-                        <div class="request-item">
-                            <div class="request-header">
-                                <div class="request-subject">${req.subject}</div>
-                                <div class="status-${req.status}">${req.status.toUpperCase()}</div>
+                        <div class="request-card">
+                            <div class="request-subject">${req.subject}</div>
+                            <span class="request-status status-${req.status}">${req.status.toUpperCase()}</span>
+                            
+                            <div class="request-description">
+                                "${req.description || 'No additional details provided'}"
                             </div>
-                            <div style="color: var(--text-secondary); margin: 0.75rem 0; line-height: 1.6;">
-                                ${req.description || 'No description provided'}
-                            </div>
-                            <div style="font-size: 0.8rem; color: #9ca3af;">
-                                Submitted: ${new Date(req.createdAt).toLocaleDateString()}
+
+                            <div style="font-size: 0.85rem; color: #9ca3af;">
+                                📅 Submitted: ${new Date(req.createdAt).toLocaleDateString()}
                             </div>
                         </div>
                     `).join('');
@@ -641,7 +736,8 @@
                     container.innerHTML = `
                         <div class="empty-state">
                             <div class="empty-state-icon">📖</div>
-                            <p>No requests yet. Create one to get started!</p>
+                            <div class="empty-state-text">No requests yet</div>
+                            <div class="empty-state-subtext">Create your first request to find a tutor!</div>
                         </div>
                     `;
                 }
@@ -652,11 +748,11 @@
 
         // Modal functions
         function openRequestModal() {
-            document.getElementById('requestModal').style.display = 'flex';
+            document.getElementById('requestModal').classList.add('active');
         }
 
         function closeRequestModal() {
-            document.getElementById('requestModal').style.display = 'none';
+            document.getElementById('requestModal').classList.remove('active');
         }
 
         // Submit new request
@@ -681,26 +777,18 @@
                 const data = await res.json();
 
                 if (data.success) {
-                    alert('✅ Request created successfully!');
+                    alert('✅ Request submitted! Tutors will be notified and can accept your request.');
                     closeRequestModal();
                     loadDashboard();
+                    document.getElementById('requestSubject').value = '';
+                    document.getElementById('requestDescription').value = '';
+                    document.getElementById('requestPriority').value = 'medium';
                 } else {
                     alert('❌ Error: ' + data.error);
                 }
             } catch (error) {
                 alert('Error submitting request: ' + error.message);
             }
-        }
-
-        // Contact tutor
-        function contactTutor(email, tutorName) {
-            alert(`📧 Contact Info:\n\nTutor: ${tutorName}\nEmail: ${email}\n\nPlease reach out to schedule your session!`);
-            // In a real app, this would open an email or messaging interface
-        }
-
-        // Add to calendar
-        function addToCalendar(tutorName, dateTime) {
-            alert(`📅 Session with ${tutorName} has been added to your calendar!\n\n(Integration with Google Calendar, Outlook, etc. would happen here)`);
         }
 
         // Navigation
