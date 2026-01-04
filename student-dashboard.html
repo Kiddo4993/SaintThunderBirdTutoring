@@ -501,7 +501,6 @@
                 <p>Request tutoring help and get connected with tutors</p>
             </div>
             <div class="header-actions">
-                <button class="btn-secondary" onclick="goToProfile()">👤 Profile</button>
                 <button class="btn-secondary" onclick="logout()">🚪 Logout</button>
             </div>
         </div>
@@ -534,8 +533,14 @@
         <button class="new-request-btn" onclick="openRequestModal()">📝 Request Tutoring Help</button>
 
         <!-- Info Banner -->
-        <div style="background: rgba(59, 130, 246, 0.2); border: 2px solid rgba(59, 130, 246, 0.5); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; color: #60a5fa; font-weight: 600; text-align: center; font-size: 1.1rem;">
-            🎥 When a tutor accepts your request, they'll receive an email with a Zoom meeting link. The tutor will teach you on Zoom and you'll get all the session details!
+        <div style="background: rgba(59, 130, 246, 0.2); border: 2px solid rgba(59, 130, 246, 0.5); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; color: #60a5fa; font-weight: 600; font-size: 1.1rem;">
+            <div style="margin-bottom: 1rem;">
+                🎥 <strong>How It Works:</strong><br>
+                When a tutor accepts your request, they'll receive an email with a Zoom meeting link. The tutor will teach you on Zoom and you'll get all the session details!
+            </div>
+            <div style="border-top: 2px solid rgba(59, 130, 246, 0.5); padding-top: 1rem;">
+                💻 <strong>Requirements:</strong> You need a computer to receive online lessons via Zoom
+            </div>
         </div>
 
         <!-- Upcoming Sessions -->
@@ -792,10 +797,6 @@
         }
 
         // Navigation
-        function goToProfile() {
-            window.location.href = 'student-profile.html';
-        }
-
         function logout() {
             localStorage.removeItem('authToken');
             localStorage.removeItem('user');

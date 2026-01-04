@@ -347,7 +347,6 @@
                 <p>Accept student requests and teach on Zoom</p>
             </div>
             <div class="header-actions">
-                <button class="btn-secondary" onclick="goToProfile()">👤 Profile</button>
                 <button class="btn-secondary" onclick="logout()">🚪 Logout</button>
             </div>
         </div>
@@ -375,6 +374,12 @@
         <!-- Info Banner -->
         <div class="zoom-info">
             🎥 When you accept a request, you'll receive an email with your Zoom meeting link and password
+        </div>
+
+        <!-- Volunteer Hours Banner -->
+        <div style="background: rgba(34, 197, 94, 0.2); border: 2px solid rgba(34, 197, 94, 0.5); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; color: #22c55e; font-weight: 600; font-size: 1.1rem; text-align: center;">
+            👥 <strong>Free Volunteer Hours Available!</strong><br>
+            For every hour you tutor, you earn free volunteer hours. Email dylanduancanada@gmail.com to get your volunteer hours confirmed and added to your record.
         </div>
 
         <!-- Student Requests -->
@@ -528,10 +533,6 @@
         }
 
         // Navigation
-        function goToProfile() {
-            window.location.href = 'tutor-profile.html';
-        }
-
         function logout() {
             localStorage.removeItem('authToken');
             localStorage.removeItem('user');
