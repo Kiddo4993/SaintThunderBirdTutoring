@@ -659,55 +659,68 @@
             }
         });
 
-        document.getElementById('tutorSignupForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const password = document.getElementById('tutorPassword').value;
-            const confirmPassword = document.getElementById('tutorConfirmPassword').value;
-            
-            if (password !== confirmPassword) {
-                alert('❌ Passwords do not match!');
-                return;
-            }
+        // Replace the tutor form submission in your signup.html with this:
 
-            const firstName = document.getElementById('tutorFirstName').value;
-            const lastName = document.getElementById('tutorLastName').value;
-            const email = document.getElementById('tutorEmail').value;
+document.getElementById('tutorSignupForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const password = document.getElementById('tutorPassword').value;
+    const confirmPassword = document.getElementById('tutorConfirmPassword').value;
+    
+    if (password !== confirmPassword) {
+        alert('❌ Passwords do not match!');
+        return;
+    }
 
-            const subjects = Array.from(document.querySelectorAll('.tutor-subject:checked')).map(el => el.value);
+    const firstName = document.getElementById('tutorFirstName').value;
+    const lastName = document.getElementById('tutorLastName').value;
+    const email = document.getElementById('tutorEmail').value;
+    const education = document.getElementById('tutorEducation').value;
+    const experience = document.getElementById('tutorExperience').value;
+    const availability = document.getElementById('tutorAvailability').value;
+    const motivation = document.getElementById('tutorMotivation').value;
 
-            if (subjects.length === 0) {
-                alert('❌ Please select at least one subject you can teach!');
-                return;
-            }
+    // Get selected subjects
+    const subjects = Array.from(document.querySelectorAll('.tutor-subject:checked')).map(el => el.value);
 
-            try {
-                const res = await fetch('https://saintthunderbirdtutoring.onrender.com/api/auth/signup', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        firstName,
-                        lastName,
-                        email,
-                        password,
-                        userType: 'tutor'
-                    })
-                });
+    if (subjects.length === 0) {
+        alert('❌ Please select at least one subject you can teach!');
+        return;
+    }
 
-                const data = await res.json();
-                
-                if (data.success) {
-                    localStorage.setItem('authToken', data.token);
-                    localStorage.setItem('user', JSON.stringify(data.user));
-                    alert('✅ Application submitted! Please check your email for updates.');
-                    window.location.href = 'tutor-pending.html';
-                } else {
-                    alert('❌ Error: ' + data.error);
+    try {
+        const res = await fetch('https://saintthunderbirdtutoring.onrender.com/api/auth/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                firstName,
+                lastName,
+                email,
+                password,
+                userType: 'tutor',
+                tutorProfile: {
+                    subjects: subjects,
+                    experience: experience,
+                    availability: availability,
+                    motivation: motivation
                 }
-            } catch (error) {
-                alert('❌ Connection error: ' + error.message);
-            }
+            })
         });
+
+        const data = await res.json();
+        
+        if (data.success) {
+            localStorage.setItem('authToken', data.token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+            alert('✅ Application submitted! Please check your email for updates.');
+            window.location.href = 'tutor-pending.html';
+        } else {
+            alert('❌ Error: ' + data.error);
+        }
+    } catch (error) {
+        alert('❌ Connection error: ' + error.message);
+    }
+});
     </script>
 </body>
 </html>

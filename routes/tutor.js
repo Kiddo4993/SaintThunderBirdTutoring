@@ -576,3 +576,47 @@ router.post('/send-session-email', authMiddleware, async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+router.get('/stats', authMiddleware, async (req, res) => {
+    try {
+        const tutor = await User.findById(req.user.userId);
+        
+        const completedSessions = tutor.tutorSessions?.filter(
+            s => s.status === 'completed'
+        ).length || 0;
+        
+        const hoursTaught = tutor.tutorSessions?.reduce(
+            (sum, s) => sum + (s.hoursSpent || 0), 0
+        ) || 0;
+        
+        res.json({
+            success: true,
+            rating: 4.9,
+            sessionsCompleted: completedSessions,
+            hoursTaught: hoursTaught.toFixed(1)
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+// Calculate tutor stats
+function calculateTutorStats(tutor) {
+    const sessions = tutor.tutorSessions || [];
+    
+    return {
+        rating: 4.9, // TODO: Implement actual rating system
+        sessionsCompleted: sessions.filter(s => s.status === 'completed').length,
+        hoursTaught: sessions.reduce((sum, s) => sum + (s.hoursSpent || 0), 0),
+        totalRequests: sessions.length
+    };
+}
+
+// Calculate student stats
+function calculateStudentStats(student) {
+    const requests = student.tutorRequests || [];
+    
+    return {
+        requestsMade: requests.length,
+        completedSessions: requests.filter(r => r.status === 'completed').length,
+        hoursLearned: requests.reduce((sum, r) => sum + (r.hoursSpent || 0), 0)
+    };
+}

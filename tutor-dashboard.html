@@ -477,6 +477,16 @@
                 document.getElementById('studentRequests').innerHTML = '<div class="empty-state"><p>Error loading requests</p></div>';
             }
         }
+        async function loadTutorStats() {
+    const response = await fetch('/api/tutor/stats', {
+        headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await response.json();
+    
+    document.getElementById('rating').textContent = data.rating || '4.9';
+    document.getElementById('sessionsCompleted').textContent = data.sessionsCompleted || '0';
+    document.getElementById('hoursTaught').textContent = data.hoursTaught || '0';
+}
 
         // Get sessions count
         async function loadSessionsCount() {
