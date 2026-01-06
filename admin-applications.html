@@ -515,9 +515,7 @@
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify({ 
-                        adminSecret: process.env.ADMIN_SECRET || 'SaintThunderbird2025'
-                    })
+                    body: JSON.stringify({ })
                 });
 
                 const data = await response.json();
@@ -546,7 +544,6 @@
                         'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify({ 
-                        adminSecret: process.env.ADMIN_SECRET || 'SaintThunderbird2025',
                         reason: reason
                     })
                 });
