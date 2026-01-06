@@ -364,6 +364,8 @@ router.get('/requests', authMiddleware, async (req, res) => {
 });
 
 // ACCEPT A TUTORING REQUEST
+// FIND AND REPLACE THIS ENTIRE FUNCTION in routes/tutor.js
+
 router.post('/accept-request', authMiddleware, async (req, res) => {
     try {
         const { requestId, tutorName } = req.body;
@@ -379,13 +381,23 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
 
         const studentId = requestId.split('-')[0];
         
-        tutor.tutorSessions.push({
+        // Generate UNIQUE Zoom meeting ID for THIS session
+        const uniqueZoomId = Math.floor(Math.random() * 9000000000) + 1000000000;
+        const zoomPassword = 'Tutoring2025';
+        const zoomLink = `https://zoom.us/j/${uniqueZoomId}?pwd=${zoomPassword}`;
+
+        // Create session with unique Zoom ID
+        const session = {
             studentId: studentId,
             scheduledTime: new Date(Date.now() + 24 * 60 * 60 * 1000),
             status: 'scheduled',
-            createdAt: new Date()
-        });
+            createdAt: new Date(),
+            zoomMeetingId: uniqueZoomId,      // Store unique ID
+            zoomPassword: zoomPassword,        // Store password
+            zoomLink: zoomLink                 // Store full link
+        };
 
+        tutor.tutorSessions.push(session);
         await tutor.save();
 
         const student = await User.findById(studentId);
@@ -398,27 +410,81 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
             await student.save();
         }
 
+        // Send email to TUTOR with UNIQUE Zoom link
+        const tutorMailOptions = {
+            from: process.env.EMAIL_USER,
+            to: tutor.email,
+            subject: `🎓 New Student Session - Zoom Link Inside`,
+            html: `
+                <h2>📹 You Have a New Tutoring Session!</h2>
+                <p><strong>Student:</strong> ${student.firstName} ${student.lastName}</p>
+                <p><strong>Email:</strong> ${student.email}</p>
+                <p><strong>Scheduled:</strong> Tomorrow at your preferred time</p>
+
+                <h3>🎥 Zoom Meeting Details (UNIQUE TO THIS SESSION)</h3>
+                <p><strong>Meeting ID:</strong> ${uniqueZoomId}</p>
+                <p><strong>Password:</strong> ${zoomPassword}</p>
+                <p><strong>Join Link:</strong> <a href="${zoomLink}">${zoomLink}</a></p>
+
+                <h3>📋 Session Tips:</h3>
+                <ul>
+                    <li>✓ Join 5 minutes early to test audio/video</li>
+                    <li>✓ Have your screen sharing ready</li>
+                    <li>✓ Keep notes on session progress</li>
+                    <li>✓ Each session has its own unique Zoom room</li>
+                </ul>
+
+                <p>Good luck! 🌩️⚡</p>
+            `
+        };
+
+        transporter.sendMail(tutorMailOptions, (error, info) => {
+            if (error) console.log('Tutor email error:', error);
+        });
+
+        // Send email to STUDENT with UNIQUE Zoom link
         if (student) {
-            const mailOptions = {
+            const studentMailOptions = {
                 from: process.env.EMAIL_USER,
                 to: student.email,
-                subject: '✅ A Tutor Has Accepted Your Request!',
+                subject: `✅ Tutor ${tutor.firstName} Accepted Your Request!`,
                 html: `
-                    <h2>Great News, ${student.firstName}!</h2>
-                    <p><strong>${tutorName}</strong> has accepted your tutoring request!</p>
-                    <p>Your tutor will be reaching out soon to schedule a session.</p>
-                    <p>Get ready to level up your skills! 🚀</p>
+                    <h2>Great News!</h2>
+                    <p><strong>${tutor.firstName} ${tutor.lastName}</strong> has accepted your tutoring request!</p>
+                    
+                    <h3>📅 Session Details:</h3>
+                    <p><strong>Tutor:</strong> ${tutor.firstName} ${tutor.lastName}</p>
+                    <p><strong>Email:</strong> ${tutor.email}</p>
+                    <p><strong>Subjects:</strong> ${tutor.tutorProfile?.subjects?.join(', ') || 'Various'}</p>
+                    
+                    <h3>🎥 Zoom Information (UNIQUE TO YOUR SESSION)</h3>
+                    <p><strong>Meeting ID:</strong> ${uniqueZoomId}</p>
+                    <p><strong>Password:</strong> ${zoomPassword}</p>
+                    <p><strong>Join Link:</strong> <a href="${zoomLink}">${zoomLink}</a></p>
+                    
+                    <h3>💻 How to Prepare:</h3>
+                    <ul>
+                        <li>Make sure you have Zoom installed</li>
+                        <li>Test your microphone and camera beforehand</li>
+                        <li>Find a quiet place for your session</li>
+                        <li>Have your materials ready (books, notes, etc.)</li>
+                        <li>Each session has its own unique Zoom room</li>
+                    </ul>
+
+                    <p>Looking forward to working with you! 📚⚡</p>
                 `
             };
 
-            transporter.sendMail(mailOptions, (error, info) => {
-                if (error) console.log('Email error:', error);
+            transporter.sendMail(studentMailOptions, (error, info) => {
+                if (error) console.log('Student email error:', error);
             });
         }
 
         res.json({
             success: true,
-            message: 'Request accepted, session created'
+            message: 'Request accepted, unique Zoom link created and sent to both',
+            zoomLink: zoomLink,
+            zoomMeetingId: uniqueZoomId
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -534,18 +600,20 @@ router.post('/update-specialties', authMiddleware, async (req, res) => {
 module.exports = router;
 
 // SEND SESSION EMAIL WITH ZOOM LINK
+// SEND SESSION EMAIL WITH ZOOM LINK
 router.post('/send-session-email', authMiddleware, async (req, res) => {
     try {
-        const { sessionId, studentName, tutorEmail } = req.body;
+        const { studentId, studentName } = req.body;
         const tutor = await User.findById(req.user.userId);
 
         if (!tutor) {
             return res.status(404).json({ error: 'Tutor not found' });
         }
 
-        // Generate a unique meeting ID for Zoom
-        const zoomMeetingId = Math.random().toString().substr(2, 9);
-        const zoomPassword = Math.random().toString(36).substr(2, 6).toUpperCase();
+        // Your Zoom details
+        const zoomMeetingId = '918273645';        // 👈 REPLACE WITH YOUR MEETING ID
+        const zoomPassword = 'Tutoring2025';      // 👈 REPLACE WITH YOUR PASSWORD
+        const zoomLink = `https://zoom.us/j/${zoomMeetingId}?pwd=${zoomPassword}`;
 
         // Send email to tutor
         const mailOptions = {
@@ -558,7 +626,16 @@ router.post('/send-session-email', authMiddleware, async (req, res) => {
                 <h3>📹 Zoom Meeting Details</h3>
                 <p><strong>Meeting ID:</strong> ${zoomMeetingId}</p>
                 <p><strong>Password:</strong> ${zoomPassword}</p>
-                <p><a href="https://zoom.us/join">Join Zoom Meeting</a></p>
+                <p><strong>Join Link:</strong> <a href="${zoomLink}">Click here to join Zoom</a></p>
+
+                <h3>📋 Before You Start:</h3>
+                <ul>
+                    <li>✓ Check your microphone and camera work</li>
+                    <li>✓ Have your screen sharing ready</li>
+                    <li>✓ Make sure your internet is stable</li>
+                </ul>
+
+                <p>Good luck! 🌩️⚡</p>
             `
         };
 
@@ -570,7 +647,8 @@ router.post('/send-session-email', authMiddleware, async (req, res) => {
             success: true,
             message: 'Session email sent with Zoom details',
             zoomMeetingId: zoomMeetingId,
-            zoomPassword: zoomPassword
+            zoomPassword: zoomPassword,
+            zoomLink: zoomLink
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
