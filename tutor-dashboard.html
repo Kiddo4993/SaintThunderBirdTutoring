@@ -424,25 +424,17 @@
         // Set tutor name
         document.getElementById('tutorName').textContent = user.firstName;
 
-        // Load all data on page load
-        async function loadDashboard() {
-            await loadStudentRequests();
-            await loadSessionsCount();
-        }
         // Check if user is admin
-// Replace your checkIfAdmin function with this:
-
-// Check if user is admin
-function checkIfAdmin() {
+        function checkIfAdmin() {
             const adminBtn = document.getElementById('adminBtn');
-            console.log('Admin check - User email:', user.email); // Debug
+            console.log('Admin check - User email:', user.email);
             
             if (user && user.email === 'dylanduancanada@gmail.com') {
                 adminBtn.style.display = 'block';
-                console.log('✅ Admin button shown'); // Debug
+                console.log('✅ Admin button shown');
             } else {
                 adminBtn.style.display = 'none';
-                console.log('❌ Admin button hidden'); // Debug
+                console.log('❌ Admin button hidden');
             }
         }
 
@@ -453,6 +445,12 @@ function checkIfAdmin() {
 
         // Call checkIfAdmin right after user is loaded
         checkIfAdmin();
+
+        // Load all data on page load
+        async function loadDashboard() {
+            await loadStudentRequests();
+            await loadSessionsCount();
+        }
 
         // Load student requests
         async function loadStudentRequests() {
@@ -511,16 +509,6 @@ function checkIfAdmin() {
                 document.getElementById('studentRequests').innerHTML = '<div class="empty-state"><p>Error loading requests</p></div>';
             }
         }
-        async function loadTutorStats() {
-    const response = await fetch('/api/tutor/stats', {
-        headers: { 'Authorization': `Bearer ${token}` }
-    });
-    const data = await response.json();
-    
-    document.getElementById('rating').textContent = data.rating || '4.9';
-    document.getElementById('sessionsCompleted').textContent = data.sessionsCompleted || '0';
-    document.getElementById('hoursTaught').textContent = data.hoursTaught || '0';
-}
 
         // Get sessions count
         async function loadSessionsCount() {
