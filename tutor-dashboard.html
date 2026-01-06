@@ -415,178 +415,185 @@
     <script src="auth.js"></script>
     <script>
         const API_URL = 'https://saintthunderbirdtutoring.onrender.com';
-        let user = getUser();
+        
+        // Wait for page to load, THEN get user
+        document.addEventListener('DOMContentLoaded', function() {
+            let user = getUser();
 
-        if (!user || user.userType !== 'tutor') {
-            window.location.href = 'login.html';
-        }
-
-        // Set tutor name
-        document.getElementById('tutorName').textContent = user.firstName;
-
-        // Check if user is admin
-        function checkIfAdmin() {
-            const adminBtn = document.getElementById('adminBtn');
-            console.log('Admin check - User email:', user.email);
-            
-            if (user && user.email === 'dylanduancanada@gmail.com') {
-                adminBtn.style.display = 'block';
-                console.log('✅ Admin button shown');
-            } else {
-                adminBtn.style.display = 'none';
-                console.log('❌ Admin button hidden');
+            if (!user || user.userType !== 'tutor') {
+                window.location.href = 'login.html';
+                return;
             }
-        }
 
-        // Go to admin panel
-        function goToAdmin() {
-            window.location.href = 'admin-applications.html';
-        }
+            // Set tutor name
+            document.getElementById('tutorName').textContent = user.firstName;
 
-        // Call checkIfAdmin right after user is loaded
-        checkIfAdmin();
-
-        // Load all data on page load
-        async function loadDashboard() {
-            await loadStudentRequests();
-            await loadSessionsCount();
-        }
-
-        // Load student requests
-        async function loadStudentRequests() {
-            try {
-                const token = localStorage.getItem('authToken');
-                const res = await fetch(`${API_URL}/api/tutor/requests`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                const data = await res.json();
-                const container = document.getElementById('studentRequests');
-
-                if (data.success && data.requests.length > 0) {
-                    document.getElementById('requestsCount').textContent = data.requests.length;
-                    
-                    const html = data.requests.map(req => `
-                        <div class="student-request-card">
-                            <div class="student-name">${req.studentName}</div>
-                            
-                            <div class="student-subject">${req.subject}</div>
-                            
-                            <div class="student-description">
-                                "${req.description || 'Student is seeking help with this subject'}"
-                            </div>
-
-                            <div class="request-info">
-                                <div class="info-item">
-                                    <div class="info-label">Grade Level</div>
-                                    <div class="info-value">${req.grade === 'N/A' ? 'Not Specified' : req.grade}</div>
-                                </div>
-                                <div class="info-item">
-                                    <div class="info-label">Priority</div>
-                                    <div class="info-value">${req.priority.toUpperCase()}</div>
-                                </div>
-                            </div>
-
-                            <button class="accept-btn" onclick="acceptRequest('${req._id}', '${req.studentId}', '${req.studentName}', '${req.subject}')">
-                                ✅ Accept & Receive Zoom Link
-                            </button>
-                        </div>
-                    `).join('');
-                    
-                    container.innerHTML = html;
-                } else {
-                    document.getElementById('requestsCount').textContent = '0';
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <div class="empty-state-icon">😌</div>
-                            <div class="empty-state-text">No student requests yet</div>
-                            <div class="empty-state-subtext">Check back soon or make sure your specialties are set in your profile</div>
-                        </div>
-                    `;
-                }
-            } catch (error) {
-                console.error('Error loading requests:', error);
-                document.getElementById('studentRequests').innerHTML = '<div class="empty-state"><p>Error loading requests</p></div>';
-            }
-        }
-
-        // Get sessions count
-        async function loadSessionsCount() {
-            try {
-                const token = localStorage.getItem('authToken');
-                const res = await fetch(`${API_URL}/api/tutor/sessions`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                const data = await res.json();
-
-                if (data.success && data.sessions.length > 0) {
-                    document.getElementById('sessionsCount').textContent = data.sessions.length;
-                } else {
-                    document.getElementById('sessionsCount').textContent = '0';
-                }
-            } catch (error) {
-                console.error('Error loading sessions:', error);
-            }
-        }
-
-        // Accept request and get Zoom link
-        async function acceptRequest(requestId, studentId, studentName, subject) {
-            try {
-                const token = localStorage.getItem('authToken');
+            // Check if user is admin
+            function checkIfAdmin() {
+                const adminBtn = document.getElementById('adminBtn');
+                console.log('User:', user);
+                console.log('User email:', user.email);
+                console.log('Is admin?:', user.email === 'dylanduancanada@gmail.com');
                 
-                // Accept the request
-                const res = await fetch(`${API_URL}/api/tutor/accept-request`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({
-                        requestId: requestId,
-                        tutorName: user.firstName
-                    })
-                });
+                if (user && user.email === 'dylanduancanada@gmail.com') {
+                    adminBtn.style.display = 'block';
+                    console.log('✅ Admin button shown');
+                } else {
+                    adminBtn.style.display = 'none';
+                    console.log('❌ Admin button hidden');
+                }
+            }
 
-                const data = await res.json();
+            // Go to admin panel
+            function goToAdmin() {
+                window.location.href = 'admin-applications.html';
+            }
 
-                if (data.success) {
-                    // Send email with Zoom link
-                    await fetch(`${API_URL}/api/tutor/send-session-email`, {
+            // Call checkIfAdmin
+            checkIfAdmin();
+
+            // Load all data on page load
+            async function loadDashboard() {
+                await loadStudentRequests();
+                await loadSessionsCount();
+            }
+
+            // Load student requests
+            async function loadStudentRequests() {
+                try {
+                    const token = localStorage.getItem('authToken');
+                    const res = await fetch(`${API_URL}/api/tutor/requests`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    const data = await res.json();
+                    const container = document.getElementById('studentRequests');
+
+                    if (data.success && data.requests.length > 0) {
+                        document.getElementById('requestsCount').textContent = data.requests.length;
+                        
+                        const html = data.requests.map(req => `
+                            <div class="student-request-card">
+                                <div class="student-name">${req.studentName}</div>
+                                
+                                <div class="student-subject">${req.subject}</div>
+                                
+                                <div class="student-description">
+                                    "${req.description || 'Student is seeking help with this subject'}"
+                                </div>
+
+                                <div class="request-info">
+                                    <div class="info-item">
+                                        <div class="info-label">Grade Level</div>
+                                        <div class="info-value">${req.grade === 'N/A' ? 'Not Specified' : req.grade}</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Priority</div>
+                                        <div class="info-value">${req.priority.toUpperCase()}</div>
+                                    </div>
+                                </div>
+
+                                <button class="accept-btn" onclick="acceptRequest('${req._id}', '${req.studentId}', '${req.studentName}', '${req.subject}')">
+                                    ✅ Accept & Receive Zoom Link
+                                </button>
+                            </div>
+                        `).join('');
+                        
+                        container.innerHTML = html;
+                    } else {
+                        document.getElementById('requestsCount').textContent = '0';
+                        container.innerHTML = `
+                            <div class="empty-state">
+                                <div class="empty-state-icon">😌</div>
+                                <div class="empty-state-text">No student requests yet</div>
+                                <div class="empty-state-subtext">Check back soon or make sure your specialties are set in your profile</div>
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    console.error('Error loading requests:', error);
+                    document.getElementById('studentRequests').innerHTML = '<div class="empty-state"><p>Error loading requests</p></div>';
+                }
+            }
+
+            // Get sessions count
+            async function loadSessionsCount() {
+                try {
+                    const token = localStorage.getItem('authToken');
+                    const res = await fetch(`${API_URL}/api/tutor/sessions`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    const data = await res.json();
+
+                    if (data.success && data.sessions.length > 0) {
+                        document.getElementById('sessionsCount').textContent = data.sessions.length;
+                    } else {
+                        document.getElementById('sessionsCount').textContent = '0';
+                    }
+                } catch (error) {
+                    console.error('Error loading sessions:', error);
+                }
+            }
+
+            // Accept request and get Zoom link
+            async function acceptRequest(requestId, studentId, studentName, subject) {
+                try {
+                    const token = localStorage.getItem('authToken');
+                    
+                    // Accept the request
+                    const res = await fetch(`${API_URL}/api/tutor/accept-request`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${token}`
                         },
                         body: JSON.stringify({
-                            sessionId: requestId,
-                            studentName: studentName,
-                            tutorEmail: user.email
+                            requestId: requestId,
+                            tutorName: user.firstName
                         })
                     });
 
-                    alert(`✅ Request Accepted!\n\n📧 Zoom meeting details have been emailed to: ${user.email}\n\n👤 Student: ${studentName}\n📚 Subject: ${subject}\n\nCheck your email for the Zoom link!`);
-                    loadDashboard();
-                } else {
-                    alert('❌ Error: ' + data.error);
+                    const data = await res.json();
+
+                    if (data.success) {
+                        // Send email with Zoom link
+                        await fetch(`${API_URL}/api/tutor/send-session-email`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify({
+                                sessionId: requestId,
+                                studentName: studentName,
+                                tutorEmail: user.email
+                            })
+                        });
+
+                        alert(`✅ Request Accepted!\n\n📧 Zoom meeting details have been emailed to: ${user.email}\n\n👤 Student: ${studentName}\n📚 Subject: ${subject}\n\nCheck your email for the Zoom link!`);
+                        loadDashboard();
+                    } else {
+                        alert('❌ Error: ' + data.error);
+                    }
+                } catch (error) {
+                    alert('Error accepting request: ' + error.message);
                 }
-            } catch (error) {
-                alert('Error accepting request: ' + error.message);
             }
-        }
 
-        // Navigation
-        function logout() {
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('user');
-            window.location.href = 'login.html';
-        }
+            // Navigation
+            function logout() {
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('user');
+                window.location.href = 'login.html';
+            }
 
-        // Load dashboard on page load
-        loadDashboard();
-        
-        // Refresh data every 30 seconds
-        setInterval(loadDashboard, 30000);
+            // Load dashboard on page load
+            loadDashboard();
+            
+            // Refresh data every 30 seconds
+            setInterval(loadDashboard, 30000);
+        });
     </script>
 </body>
 </html>
