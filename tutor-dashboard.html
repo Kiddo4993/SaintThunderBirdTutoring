@@ -433,14 +433,16 @@
 // Replace your checkIfAdmin function with this:
 
 // Check if user is admin
-        function checkIfAdmin() {
+function checkIfAdmin() {
             const adminBtn = document.getElementById('adminBtn');
-            const user = JSON.parse(localStorage.getItem('user'));
+            console.log('Admin check - User email:', user.email); // Debug
             
             if (user && user.email === 'dylanduancanada@gmail.com') {
                 adminBtn.style.display = 'block';
+                console.log('✅ Admin button shown'); // Debug
             } else {
                 adminBtn.style.display = 'none';
+                console.log('❌ Admin button hidden'); // Debug
             }
         }
 
@@ -448,6 +450,8 @@
         function goToAdmin() {
             window.location.href = 'admin-applications.html';
         }
+
+        // Call checkIfAdmin right after user is loaded
         checkIfAdmin();
 
         // Load student requests
