@@ -345,6 +345,7 @@
     </style>
 </head>
 <body>
+    
 
  
     <div class="mesh-gradient"></div>
@@ -415,7 +416,27 @@
     <script src="auth.js"></script>
     <script>
         const API_URL = 'https://saintthunderbirdtutoring.onrender.com';
-        
+        document.addEventListener('DOMContentLoaded', function() {
+    const user = getUser();
+    
+    if (user && user.email === 'dylanduancanada@gmail.com') {
+        // Redirect admin to admin applications page
+        window.location.href = 'admin-applications.html';
+        return;
+    }
+    
+    // Continue with normal tutor dashboard for regular tutors
+    if (!user || user.userType !== 'tutor') {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    // Set tutor name
+    document.getElementById('tutorName').textContent = user.firstName;
+
+    // Load all data on page load
+    loadDashboard();
+});
         // Wait for DOM to load FIRST
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOM loaded, initializing dashboard...');

@@ -135,6 +135,27 @@ router.get('/profile', authMiddleware, async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+router.get('/all-users', authMiddleware, async (req, res) => {
+    try {
+        const adminUser = await User.findById(req.user.userId);
+        
+        // Check if user is admin
+        if (adminUser.email !== 'dylanduancanada@gmail.com') {
+            return res.status(403).json({ error: 'Only admin can view all users' });
+        }
+
+        // Get all users with their data
+        const users = await User.find().select('-password');
+
+        res.json({
+            success: true,
+            users: users
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 
 module.exports = router;
 
