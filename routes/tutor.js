@@ -13,6 +13,15 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+// Verify transporter is working
+transporter.verify((error, success) => {
+    if (error) {
+        console.error('❌ Email transporter error:', error);
+    } else {
+        console.log('✅ Email transporter ready');
+    }
+});
+
 // Middleware to check if user is authenticated
 const authMiddleware = (req, res, next) => {
     const token = req.headers.authorization?.split(' ')[1];
@@ -28,7 +37,7 @@ const authMiddleware = (req, res, next) => {
     }
 };
 
-// APPLY AS TUTOR - SENDS EMAIL FOR APPROVAL
+// ===== APPLY AS TUTOR - SENDS EMAIL FOR APPROVAL =====
 router.post('/apply-tutor', authMiddleware, async (req, res) => {
     try {
         const { name, age } = req.body;
@@ -77,9 +86,9 @@ router.post('/apply-tutor', authMiddleware, async (req, res) => {
 
         transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
-                console.log('Email error:', error);
+                console.error('❌ Email error:', error);
             } else {
-                console.log('Email sent:', info.response);
+                console.log('✅ Email sent:', info.response);
             }
         });
 
@@ -93,7 +102,7 @@ router.post('/apply-tutor', authMiddleware, async (req, res) => {
     }
 });
 
-// ADMIN: APPROVE TUTOR
+// ===== ADMIN: APPROVE TUTOR =====
 router.get('/approve/:userId', async (req, res) => {
     try {
         const { userId } = req.params;
@@ -125,7 +134,7 @@ router.get('/approve/:userId', async (req, res) => {
         };
 
         transporter.sendMail(mailOptions, (error, info) => {
-            if (error) console.log('Email error:', error);
+            if (error) console.error('❌ Email error:', error);
         });
 
         res.json({
@@ -138,7 +147,7 @@ router.get('/approve/:userId', async (req, res) => {
     }
 });
 
-// ADMIN: DENY TUTOR
+// ===== ADMIN: DENY TUTOR =====
 router.get('/deny/:userId', async (req, res) => {
     try {
         const { userId } = req.params;
@@ -168,7 +177,7 @@ router.get('/deny/:userId', async (req, res) => {
         };
 
         transporter.sendMail(mailOptions, (error, info) => {
-            if (error) console.log('Email error:', error);
+            if (error) console.error('❌ Email error:', error);
         });
 
         res.json({
@@ -276,9 +285,10 @@ router.get('/student-sessions', authMiddleware, async (req, res) => {
                             _id: session._id,
                             tutorName: `${tutor.firstName} ${tutor.lastName}`,
                             tutorEmail: tutor.email,
-                            subject: 'Mathematics',
+                            subject: session.subject || 'Mathematics',
                             scheduledTime: session.scheduledTime,
-                            status: session.status
+                            status: session.status,
+                            zoomLink: session.zoomLink
                         });
                     }
                 });
@@ -318,6 +328,32 @@ router.post('/update-student-preferences', authMiddleware, async (req, res) => {
     }
 });
 
+// GET STUDENT STATS
+router.get('/student-stats', authMiddleware, async (req, res) => {
+    try {
+        const student = await User.findById(req.user.userId);
+
+        if (!student || student.userType !== 'student') {
+            return res.status(403).json({ error: 'Only students can view their stats' });
+        }
+
+        const requestsMade = student.tutorRequests?.length || 0;
+        const upcomingSessions = student.tutorRequests?.filter(r => r.status === 'accepted').length || 0;
+        const completedSessions = student.tutorRequests?.filter(r => r.status === 'completed').length || 0;
+        const hoursLearned = student.tutorRequests?.reduce((sum, r) => sum + (r.hoursSpent || 0), 0) || 0;
+
+        res.json({
+            success: true,
+            requestsMade,
+            upcomingSessions,
+            completedSessions,
+            hoursLearned: hoursLearned.toFixed(1)
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // ===== TUTOR ENDPOINTS =====
 
 // GET ALL REQUESTS FOR TUTORS IN THEIR SUBJECTS
@@ -344,6 +380,7 @@ router.get('/requests', authMiddleware, async (req, res) => {
                         _id: `${student._id}-${req.createdAt}`,
                         studentId: student._id,
                         studentName: `${student.firstName} ${student.lastName}`,
+                        studentEmail: student.email,
                         grade: student.grade || 'N/A',
                         subject: req.subject,
                         description: req.description,
@@ -363,9 +400,7 @@ router.get('/requests', authMiddleware, async (req, res) => {
     }
 });
 
-// ACCEPT A TUTORING REQUEST
-// FIND AND REPLACE THIS ENTIRE FUNCTION in routes/tutor.js
-
+// ===== ACCEPT A TUTORING REQUEST =====
 router.post('/accept-request', authMiddleware, async (req, res) => {
     try {
         const { requestId, tutorName } = req.body;
@@ -380,28 +415,43 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
         }
 
         const studentId = requestId.split('-')[0];
+        const student = await User.findById(studentId);
+
+        if (!student) {
+            return res.status(404).json({ error: 'Student not found' });
+        }
         
         // Generate UNIQUE Zoom meeting ID for THIS session
         const uniqueZoomId = Math.floor(Math.random() * 9000000000) + 1000000000;
         const zoomPassword = 'Tutoring2025';
         const zoomLink = `https://zoom.us/j/${uniqueZoomId}?pwd=${zoomPassword}`;
 
+        // Find the request subject
+        let requestSubject = 'Mathematics';
+        if (student.tutorRequests) {
+            const foundReq = student.tutorRequests.find(r => r.status === 'pending');
+            if (foundReq) {
+                requestSubject = foundReq.subject;
+            }
+        }
+
         // Create session with unique Zoom ID
         const session = {
             studentId: studentId,
+            subject: requestSubject,
             scheduledTime: new Date(Date.now() + 24 * 60 * 60 * 1000),
             status: 'scheduled',
             createdAt: new Date(),
-            zoomMeetingId: uniqueZoomId,      // Store unique ID
-            zoomPassword: zoomPassword,        // Store password
-            zoomLink: zoomLink                 // Store full link
+            zoomMeetingId: uniqueZoomId,
+            zoomPassword: zoomPassword,
+            zoomLink: zoomLink
         };
 
         tutor.tutorSessions.push(session);
         await tutor.save();
 
-        const student = await User.findById(studentId);
-        if (student && student.tutorRequests) {
+        // Update student request status
+        if (student.tutorRequests) {
             student.tutorRequests.forEach(req => {
                 if (req.status === 'pending') {
                     req.status = 'accepted';
@@ -410,83 +460,106 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
             await student.save();
         }
 
-        // Send email to TUTOR with UNIQUE Zoom link
+        // ===== EMAIL TO TUTOR =====
         const tutorMailOptions = {
             from: process.env.EMAIL_USER,
             to: tutor.email,
             subject: `🎓 New Student Session - Zoom Link Inside`,
             html: `
-                <h2>📹 You Have a New Tutoring Session!</h2>
-                <p><strong>Student:</strong> ${student.firstName} ${student.lastName}</p>
-                <p><strong>Email:</strong> ${student.email}</p>
-                <p><strong>Scheduled:</strong> Tomorrow at your preferred time</p>
+                <div style="font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px;">
+                    <div style="background: white; padding: 30px; border-radius: 10px; max-width: 600px; margin: 0 auto;">
+                        <h2 style="color: #8b4513;">📹 You Have a New Tutoring Session!</h2>
+                        <p><strong>Student:</strong> ${student.firstName} ${student.lastName}</p>
+                        <p><strong>Email:</strong> ${student.email}</p>
+                        <p><strong>Subject:</strong> ${requestSubject}</p>
+                        <p><strong>Scheduled:</strong> Tomorrow at your preferred time</p>
 
-                <h3>🎥 Zoom Meeting Details (UNIQUE TO THIS SESSION)</h3>
-                <p><strong>Meeting ID:</strong> ${uniqueZoomId}</p>
-                <p><strong>Password:</strong> ${zoomPassword}</p>
-                <p><strong>Join Link:</strong> <a href="${zoomLink}">${zoomLink}</a></p>
+                        <h3 style="color: #8b4513;">🎥 Zoom Meeting Details (UNIQUE TO THIS SESSION)</h3>
+                        <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #d4a574; margin: 20px 0;">
+                            <p><strong>Meeting ID:</strong> ${uniqueZoomId}</p>
+                            <p><strong>Password:</strong> ${zoomPassword}</p>
+                            <p><strong>Join Link:</strong> <a href="${zoomLink}" style="color: #d4a574; font-weight: bold;">${zoomLink}</a></p>
+                        </div>
 
-                <h3>📋 Session Tips:</h3>
-                <ul>
-                    <li>✓ Join 5 minutes early to test audio/video</li>
-                    <li>✓ Have your screen sharing ready</li>
-                    <li>✓ Keep notes on session progress</li>
-                    <li>✓ Each session has its own unique Zoom room</li>
-                </ul>
+                        <h3 style="color: #8b4513;">📋 Session Tips:</h3>
+                        <ul>
+                            <li>✓ Join 5 minutes early to test audio/video</li>
+                            <li>✓ Have your screen sharing ready</li>
+                            <li>✓ Keep notes on session progress</li>
+                            <li>✓ Each session has its own unique Zoom room</li>
+                        </ul>
 
-                <p>Good luck! 🌩️⚡</p>
+                        <p>Good luck! 🌩️⚡</p>
+                        <p style="color: #888; font-size: 12px;">Saint Thunderbird Tutoring Platform</p>
+                    </div>
+                </div>
             `
         };
 
         transporter.sendMail(tutorMailOptions, (error, info) => {
-            if (error) console.log('Tutor email error:', error);
+            if (error) {
+                console.error('❌ Tutor email error:', error);
+            } else {
+                console.log('✅ Tutor email sent');
+            }
         });
 
-        // Send email to STUDENT with UNIQUE Zoom link
-        if (student) {
-            const studentMailOptions = {
-                from: process.env.EMAIL_USER,
-                to: student.email,
-                subject: `✅ Tutor ${tutor.firstName} Accepted Your Request!`,
-                html: `
-                    <h2>Great News!</h2>
-                    <p><strong>${tutor.firstName} ${tutor.lastName}</strong> has accepted your tutoring request!</p>
-                    
-                    <h3>📅 Session Details:</h3>
-                    <p><strong>Tutor:</strong> ${tutor.firstName} ${tutor.lastName}</p>
-                    <p><strong>Email:</strong> ${tutor.email}</p>
-                    <p><strong>Subjects:</strong> ${tutor.tutorProfile?.subjects?.join(', ') || 'Various'}</p>
-                    
-                    <h3>🎥 Zoom Information (UNIQUE TO YOUR SESSION)</h3>
-                    <p><strong>Meeting ID:</strong> ${uniqueZoomId}</p>
-                    <p><strong>Password:</strong> ${zoomPassword}</p>
-                    <p><strong>Join Link:</strong> <a href="${zoomLink}">${zoomLink}</a></p>
-                    
-                    <h3>💻 How to Prepare:</h3>
-                    <ul>
-                        <li>Make sure you have Zoom installed</li>
-                        <li>Test your microphone and camera beforehand</li>
-                        <li>Find a quiet place for your session</li>
-                        <li>Have your materials ready (books, notes, etc.)</li>
-                        <li>Each session has its own unique Zoom room</li>
-                    </ul>
+        // ===== EMAIL TO STUDENT =====
+        const studentMailOptions = {
+            from: process.env.EMAIL_USER,
+            to: student.email,
+            subject: `✅ Tutor ${tutor.firstName} Accepted Your Request!`,
+            html: `
+                <div style="font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px;">
+                    <div style="background: white; padding: 30px; border-radius: 10px; max-width: 600px; margin: 0 auto;">
+                        <h2 style="color: #8b4513;">Great News!</h2>
+                        <p><strong>${tutor.firstName} ${tutor.lastName}</strong> has accepted your tutoring request!</p>
+                        
+                        <h3 style="color: #8b4513;">📅 Session Details:</h3>
+                        <p><strong>Tutor:</strong> ${tutor.firstName} ${tutor.lastName}</p>
+                        <p><strong>Email:</strong> ${tutor.email}</p>
+                        <p><strong>Subject:</strong> ${requestSubject}</p>
+                        <p><strong>Subjects Taught:</strong> ${tutor.tutorProfile?.subjects?.join(', ') || 'Various'}</p>
+                        
+                        <h3 style="color: #8b4513;">🎥 Zoom Information (UNIQUE TO YOUR SESSION)</h3>
+                        <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #d4a574; margin: 20px 0;">
+                            <p><strong>Meeting ID:</strong> ${uniqueZoomId}</p>
+                            <p><strong>Password:</strong> ${zoomPassword}</p>
+                            <p><strong>Join Link:</strong> <a href="${zoomLink}" style="color: #d4a574; font-weight: bold;">${zoomLink}</a></p>
+                        </div>
+                        
+                        <h3 style="color: #8b4513;">💻 How to Prepare:</h3>
+                        <ul>
+                            <li>Make sure you have Zoom installed</li>
+                            <li>Test your microphone and camera beforehand</li>
+                            <li>Find a quiet place for your session</li>
+                            <li>Have your materials ready (books, notes, etc.)</li>
+                            <li>Each session has its own unique Zoom room</li>
+                        </ul>
 
-                    <p>Looking forward to working with you! 📚⚡</p>
-                `
-            };
+                        <p>Looking forward to working with you! 📚⚡</p>
+                        <p style="color: #888; font-size: 12px;">Saint Thunderbird Tutoring Platform</p>
+                    </div>
+                </div>
+            `
+        };
 
-            transporter.sendMail(studentMailOptions, (error, info) => {
-                if (error) console.log('Student email error:', error);
-            });
-        }
+        transporter.sendMail(studentMailOptions, (error, info) => {
+            if (error) {
+                console.error('❌ Student email error:', error);
+            } else {
+                console.log('✅ Student email sent');
+            }
+        });
 
         res.json({
             success: true,
-            message: 'Request accepted, unique Zoom link created and sent to both',
+            message: 'Request accepted! Zoom links sent to both tutor and student',
             zoomLink: zoomLink,
             zoomMeetingId: uniqueZoomId
         });
     } catch (error) {
+        console.error('Error in accept-request:', error);
         res.status(500).json({ error: error.message });
     }
 });
@@ -509,9 +582,10 @@ router.get('/sessions', authMiddleware, async (req, res) => {
                         _id: session._id,
                         studentName: `${student.firstName} ${student.lastName}`,
                         studentEmail: student.email,
-                        subject: 'Mathematics',
+                        subject: session.subject || 'Mathematics',
                         scheduledTime: session.scheduledTime,
-                        status: session.status
+                        status: session.status,
+                        zoomLink: session.zoomLink
                     });
                 }
             }
@@ -597,63 +671,7 @@ router.post('/update-specialties', authMiddleware, async (req, res) => {
     }
 });
 
-module.exports = router;
-
-// SEND SESSION EMAIL WITH ZOOM LINK
-// SEND SESSION EMAIL WITH ZOOM LINK
-router.post('/send-session-email', authMiddleware, async (req, res) => {
-    try {
-        const { studentId, studentName } = req.body;
-        const tutor = await User.findById(req.user.userId);
-
-        if (!tutor) {
-            return res.status(404).json({ error: 'Tutor not found' });
-        }
-
-        // Your Zoom details
-        const zoomMeetingId = '918273645';        // 👈 REPLACE WITH YOUR MEETING ID
-        const zoomPassword = 'Tutoring2025';      // 👈 REPLACE WITH YOUR PASSWORD
-        const zoomLink = `https://zoom.us/j/${zoomMeetingId}?pwd=${zoomPassword}`;
-
-        // Send email to tutor
-        const mailOptions = {
-            from: process.env.EMAIL_USER,
-            to: tutor.email,
-            subject: `🎓 Teaching Session Started with ${studentName}! - Zoom Link Inside`,
-            html: `
-                <h2>🎓 Your Teaching Session Has Started!</h2>
-                <p><strong>Student:</strong> ${studentName}</p>
-                <h3>📹 Zoom Meeting Details</h3>
-                <p><strong>Meeting ID:</strong> ${zoomMeetingId}</p>
-                <p><strong>Password:</strong> ${zoomPassword}</p>
-                <p><strong>Join Link:</strong> <a href="${zoomLink}">Click here to join Zoom</a></p>
-
-                <h3>📋 Before You Start:</h3>
-                <ul>
-                    <li>✓ Check your microphone and camera work</li>
-                    <li>✓ Have your screen sharing ready</li>
-                    <li>✓ Make sure your internet is stable</li>
-                </ul>
-
-                <p>Good luck! 🌩️⚡</p>
-            `
-        };
-
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) console.log('Email error:', error);
-        });
-
-        res.json({
-            success: true,
-            message: 'Session email sent with Zoom details',
-            zoomMeetingId: zoomMeetingId,
-            zoomPassword: zoomPassword,
-            zoomLink: zoomLink
-        });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
+// GET TUTOR STATS
 router.get('/stats', authMiddleware, async (req, res) => {
     try {
         const tutor = await User.findById(req.user.userId);
@@ -676,25 +694,5 @@ router.get('/stats', authMiddleware, async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-// Calculate tutor stats
-function calculateTutorStats(tutor) {
-    const sessions = tutor.tutorSessions || [];
-    
-    return {
-        rating: 4.9, // TODO: Implement actual rating system
-        sessionsCompleted: sessions.filter(s => s.status === 'completed').length,
-        hoursTaught: sessions.reduce((sum, s) => sum + (s.hoursSpent || 0), 0),
-        totalRequests: sessions.length
-    };
-}
 
-// Calculate student stats
-function calculateStudentStats(student) {
-    const requests = student.tutorRequests || [];
-    
-    return {
-        requestsMade: requests.length,
-        completedSessions: requests.filter(r => r.status === 'completed').length,
-        hoursLearned: requests.reduce((sum, r) => sum + (r.hoursSpent || 0), 0)
-    };
-}
+module.exports = router;
