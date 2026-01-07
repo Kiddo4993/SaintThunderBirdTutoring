@@ -617,7 +617,7 @@
 
     <script src="auth.js"></script>
     <script>
-        const API_URL = 'https://saintthunderbirdtutoring.onrender.com';
+        const API_URL = 'https://saintthunderbirdtutoring.onrender.com/api';
         let user = getUser();
 
         if (!user || user.userType !== 'student') {
@@ -637,7 +637,7 @@
         async function loadSessions() {
             try {
                 const token = localStorage.getItem('authToken');
-                const res = await fetch(`${API_URL}/api/tutor/student-sessions`, {
+                const res = await fetch(`${API_URL}/tutor/student-sessions`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
@@ -717,7 +717,7 @@
         async function loadRequests() {
             try {
                 const token = localStorage.getItem('authToken');
-                const res = await fetch(`${API_URL}/api/tutor/my-requests`, {
+                const res = await fetch(`${API_URL}/tutor/my-requests`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
@@ -760,12 +760,29 @@
 
         // Modal functions
         function openRequestModal() {
-            document.getElementById('requestModal').classList.add('active');
+            console.log('Opening request modal...');
+            const modal = document.getElementById('requestModal');
+            if (modal) {
+                modal.classList.add('active');
+            } else {
+                console.error('Modal element not found!');
+            }
         }
 
         function closeRequestModal() {
-            document.getElementById('requestModal').classList.remove('active');
+            const modal = document.getElementById('requestModal');
+            if (modal) {
+                modal.classList.remove('active');
+            }
         }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(event) {
+            const modal = document.getElementById('requestModal');
+            if (event.target === modal) {
+                closeRequestModal();
+            }
+        });
 
         // Submit new request
         async function submitRequest(event) {
@@ -775,9 +792,14 @@
             const description = document.getElementById('requestDescription').value;
             const priority = document.getElementById('requestPriority').value;
 
+            if (!subject) {
+                alert('❌ Please select a subject');
+                return;
+            }
+
             try {
                 const token = localStorage.getItem('authToken');
-                const res = await fetch(`${API_URL}/api/tutor/create-request`, {
+                const res = await fetch(`${API_URL}/tutor/create-request`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -789,17 +811,22 @@
                 const data = await res.json();
 
                 if (data.success) {
-                    alert('✅ Request submitted! Tutors will be notified and can accept your request.');
+                    alert('✅ Request submitted! Tutors will be notified.');
                     closeRequestModal();
-                    loadDashboard();
+                    
+                    // Clear form
                     document.getElementById('requestSubject').value = '';
                     document.getElementById('requestDescription').value = '';
                     document.getElementById('requestPriority').value = 'medium';
+                    
+                    // Reload dashboard
+                    loadDashboard();
                 } else {
-                    alert('❌ Error: ' + data.error);
+                    alert('❌ Error: ' + (data.error || 'Failed to submit request'));
                 }
             } catch (error) {
-                alert('Error submitting request: ' + error.message);
+                console.error('Error submitting request:', error);
+                alert('❌ Error submitting request: ' + error.message);
             }
         }
 
@@ -811,10 +838,11 @@
         }
 
         // Load dashboard on page load
-        loadDashboard();
-
-        // Refresh data every 30 seconds
-        setInterval(loadDashboard, 30000);
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboard();
+            // Refresh data every 30 seconds
+            setInterval(loadDashboard, 30000);
+        });
     </script>
 </body>
 </html>
