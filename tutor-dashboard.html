@@ -415,173 +415,91 @@
 
     <script src="auth.js"></script>
     <script>
-        const API_URL = 'https://saintthunderbirdtutoring.onrender.com';
-        document.addEventListener('DOMContentLoaded', function() {
-    const user = getUser();
+        // FIX 1: Ensure API_URL points to the correct base
+        const API_URL = 'https://saintthunderbirdtutoring.onrender.com/api';
     
-    if (user && user.email === 'dylanduancanada@gmail.com') {
-        // Redirect admin to admin applications page
-        window.location.href = 'admin-applications.html';
-        return;
-    }
-    
-    // Continue with normal tutor dashboard for regular tutors
-    if (!user || user.userType !== 'tutor') {
-        window.location.href = 'login.html';
-        return;
-    }
-
-    // Set tutor name
-    document.getElementById('tutorName').textContent = user.firstName;
-
-    // Load all data on page load
-    loadDashboard();
-});
-        // Wait for DOM to load FIRST
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded, initializing dashboard...');
+            const user = getUser();
             
-            let user = getUser();
-            console.log('User from getUser():', user);
-            
-            if (!user || user.userType !== 'tutor') {
-                console.log('Not a tutor, redirecting to login');
+            // Safety check: if no user, go to login
+            if (!user) {
                 window.location.href = 'login.html';
                 return;
             }
     
-            // Set tutor name
-            document.getElementById('tutorName').textContent = user.firstName;
-    
-            // CHECK ADMIN - RIGHT AFTER USER LOADS
-            checkIfAdmin(user);
+            // Admin Redirect Logic
+            if (user.email === 'dylanduancanada@gmail.com') {
+                const adminBtn = document.getElementById('adminBtn');
+                if (adminBtn) adminBtn.style.display = 'inline-block';
+            }
             
-            // Load all data
+            // Ensure only tutors (or admin) stay here
+            if (user.userType !== 'tutor' && user.email !== 'dylanduancanada@gmail.com') {
+                window.location.href = 'login.html';
+                return;
+            }
+    
+            document.getElementById('tutorName').textContent = user.firstName;
             loadDashboard();
         });
     
-        // Check if user is admin
-        function checkIfAdmin(user) {
-            console.log('checkIfAdmin called with user:', user);
-            const adminBtn = document.getElementById('adminBtn');
-            console.log('Admin button element:', adminBtn);
-            
-            if (!adminBtn) {
-                console.error('❌ Admin button element NOT found in HTML!');
-                return;
-            }
-            
-            console.log('User email:', user?.email);
-            console.log('Is dylanduancanada@gmail.com?', user?.email === 'dylanduancanada@gmail.com');
-            
-            if (user && user.email === 'dylanduancanada@gmail.com') {
-                adminBtn.style.display = 'inline-block';
-                console.log('✅ Admin button SHOWN');
-            } else {
-                adminBtn.style.display = 'none';
-                console.log('❌ Admin button HIDDEN');
-            }
-        }
-    
-        function goToAdmin() {
-            window.location.href = 'admin-applications.html';
-        }
-    
-        // Rest of your existing functions below...
         async function loadDashboard() {
             const token = localStorage.getItem('authToken');
             
-            try {
-                const response = await fetch(`${API_URL}/user`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                
-                if (!response.ok) throw new Error('Failed to load user data');
-                
-                const userData = await response.json();
-                console.log('Loaded user data:', userData);
-                
-                // Update stats
-                loadTutorStats();
-                loadStudentRequests();
-                loadUpcomingSessions();
-                
-            } catch (error) {
-                console.error('Error loading dashboard:', error);
-            }
+            // Load everything at once
+            loadTutorStats(token);
+            loadStudentRequests(token);
+            loadUpcomingSessions(token);
         }
     
-        // Load tutor stats
-        async function loadTutorStats() {
-            const token = localStorage.getItem('authToken');
-            const statsContainer = document.querySelector('.stats-grid');
-            
-            if (!statsContainer) return;
-            
+        // FIX 2: Updated to fetch from the specific stats endpoint
+        async function loadTutorStats(token) {
             try {
                 const response = await fetch(`${API_URL}/tutor-stats`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                
                 if (response.ok) {
                     const stats = await response.json();
-                    
-                    // Update stat cards
-                    document.querySelectorAll('.stat-card').forEach((card, index) => {
-                        const values = [stats.rating || '4.9', stats.sessionsCompleted || 0, stats.hoursTaught || 0];
-                        const numbers = card.querySelector('.stat-number');
-                        if (numbers) numbers.textContent = values[index];
-                    });
+                    const statNumbers = document.querySelectorAll('.stat-number');
+                    if (statNumbers.length >= 3) {
+                        statNumbers[0].textContent = stats.rating || '5.0';
+                        statNumbers[1].textContent = stats.sessionsCompleted || 0;
+                        statNumbers[2].textContent = stats.hoursTaught || 0;
+                    }
                 }
-            } catch (error) {
-                console.error('Error loading stats:', error);
-            }
+            } catch (error) { console.error('Stats error:', error); }
         }
     
-        // Load student requests
-        async function loadStudentRequests() {
-            const token = localStorage.getItem('authToken');
-            const requestsContainer = document.querySelector('.requests-list');
-            
-            if (!requestsContainer) return;
-            
+        // FIX 3: Load real student requests from the DB
+        async function loadStudentRequests(token) {
+            const container = document.querySelector('.requests-list');
             try {
                 const response = await fetch(`${API_URL}/tutor/requests`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
+                const requests = await response.json();
                 
-                if (response.ok) {
-                    const requests = await response.json();
-                    displayRequests(requests, requestsContainer);
+                if (requests.length === 0) {
+                    container.innerHTML = '<p>No student requests yet</p>';
+                    return;
                 }
-            } catch (error) {
-                console.error('Error loading requests:', error);
-            }
-        }
     
-        function displayRequests(requests, container) {
-            if (!requests || requests.length === 0) {
-                container.innerHTML = '<p style="color: #888;">No student requests yet</p>';
-                return;
-            }
-            
-            container.innerHTML = requests.map(req => `
-                <div class="request-card">
-                    <div class="request-header">
-                        <h4>${req.studentName || 'Student'}</h4>
-                        <span class="subject-tag">${req.subject}</span>
+                container.innerHTML = requests.map(req => `
+                    <div class="request-card">
+                        <div class="request-header">
+                            <h4>${req.studentName}</h4>
+                            <span class="subject-tag">${req.subject}</span>
+                        </div>
+                        <p class="request-text">${req.description}</p>
+                        <button class="btn-primary" onclick="acceptRequest('${req._id}')">✅ Accept & Generate Zoom</button>
                     </div>
-                    <p class="request-text">${req.description}</p>
-                    <p class="request-date">Requested: ${new Date(req.createdAt).toLocaleDateString()}</p>
-                    <button class="btn-primary" onclick="acceptRequest('${req._id}')">✅ Accept & Receive Zoom Link</button>
-                </div>
-            `).join('');
+                `).join('');
+            } catch (error) { console.error('Request load error:', error); }
         }
     
+        // FIX 4: The "Automation" Trigger
         async function acceptRequest(requestId) {
             const token = localStorage.getItem('authToken');
-            let user = getUser();
-            
             try {
                 const response = await fetch(`${API_URL}/tutor/accept-request`, {
                     method: 'POST',
@@ -589,77 +507,44 @@
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify({
-                        requestId: requestId,
-                        tutorName: `${user.firstName} ${user.lastName}`
-                    })
+                    body: JSON.stringify({ requestId })
                 });
                 
-                const data = await response.json();
-                
                 if (response.ok) {
-                    alert('✅ Request accepted! Zoom link has been sent via email to both you and the student.');
-                    loadStudentRequests();
-                    loadUpcomingSessions();
-                } else {
-                    alert(`❌ Error: ${data.error}`);
+                    alert('✅ Accepted! Zoom link created and emails sent.');
+                    loadDashboard(); // Refresh the lists
                 }
-            } catch (error) {
-                console.error('Error accepting request:', error);
-                alert('❌ Error accepting request. Check console.');
-            }
+            } catch (error) { alert('Failed to accept request'); }
         }
     
-        // Load upcoming sessions
-        async function loadUpcomingSessions() {
-            const token = localStorage.getItem('authToken');
-            const sessionsContainer = document.querySelector('.sessions-list');
-            
-            if (!sessionsContainer) return;
-            
+        // FIX 5: Show the sessions that now have Zoom links
+        async function loadUpcomingSessions(token) {
+            const container = document.querySelector('.sessions-list');
             try {
                 const response = await fetch(`${API_URL}/tutor/sessions`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
+                const sessions = await response.json();
                 
-                if (response.ok) {
-                    const sessions = await response.json();
-                    displaySessions(sessions, sessionsContainer);
+                if (sessions.length === 0) {
+                    container.innerHTML = '<p>No upcoming sessions</p>';
+                    return;
                 }
-            } catch (error) {
-                console.error('Error loading sessions:', error);
-            }
-        }
     
-        function displaySessions(sessions, container) {
-            if (!sessions || sessions.length === 0) {
-                container.innerHTML = '<p style="color: #888;">No upcoming sessions</p>';
-                return;
-            }
-            
-            container.innerHTML = sessions.map(session => {
-                const sessionDate = new Date(session.sessionDate);
-                const daysUntil = Math.ceil((sessionDate - new Date()) / (1000 * 60 * 60 * 24));
-                
-                return `
+                container.innerHTML = sessions.map(session => `
                     <div class="session-card">
-                        <div class="session-header">
-                            <h4>${session.studentName}</h4>
-                            <span class="subject-tag">${session.subject}</span>
-                        </div>
-                        <p><strong>📅 Date:</strong> ${sessionDate.toLocaleDateString()} at ${sessionDate.toLocaleTimeString()}</p>
-                        <p><strong>📧 Student Email:</strong> ${session.studentEmail}</p>
-                        <p><strong>⏰ Time Until Session:</strong> ${daysUntil} days away</p>
-                        <p><strong>Status:</strong> ✅ Scheduled</p>
+                        <h4>${session.studentName} - ${session.subject}</h4>
+                        <p>Zoom: <a href="${session.zoomLink}" target="_blank" style="color: var(--beige)">Join Meeting</a></p>
+                        <p>Status: ✅ Scheduled</p>
                     </div>
-                `;
-            }).join('');
+                `).join('');
+            } catch (error) { console.error('Session load error:', error); }
         }
     
         function logout() {
             localStorage.removeItem('authToken');
             localStorage.removeItem('user');
-            window.location.href = 'login.html';
+            window.location.href = 'index.html';
         }
     </script>
 </body>

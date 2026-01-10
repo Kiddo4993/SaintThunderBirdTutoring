@@ -1,67 +1,18 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
-    firstName: {
-        type: String,
-        required: true,
-        trim: true
-    },
-    lastName: {
-        type: String,
-        required: true,
-        trim: true
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-        lowercase: true,
-        match: /.+\@.+\..+/
-    },
-    password: {
-        type: String,
-        required: true,
-        minlength: 6
-    },
-    userType: {
-        type: String,
-        enum: ['student', 'tutor'],
-        required: true
-    },
-    tutorApplication: {
-        name: String,
-        age: Number,
-        status: {
-            type: String,
-            enum: ['pending', 'approved', 'denied'],
-            default: 'pending'
-        },
-        appliedAt: Date,
-        approvedAt: Date
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now
-    }
-});
-
-// Hash password before saving
-userSchema.pre('save', async function(next) {
-    if (!this.isModified('password')) return next();
-    
-    try {
-        const salt = await bcrypt.genSalt(10);
-        this.password = await bcrypt.hash(this.password, salt);
-        next();
-    } catch (error) {
-        next(error);
-    }
-});
-
-// Method to compare passwords
-userSchema.methods.comparePassword = async function(candidatePassword) {
-    return await bcrypt.compare(candidatePassword, this.password);
-};
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    userType: { type: String, enum: ['student', 'tutor', 'admin'], required: true },
+    // Tutors are 'pending' until admin approves them
+    status: { type: String, enum: ['pending', 'active', 'denied'], default: 'active' },
+    // Profile details
+    subjects: [String],
+    bio: String,
+    availability: String,
+    motivation: String
+}, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);
