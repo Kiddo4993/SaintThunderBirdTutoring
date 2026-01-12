@@ -244,16 +244,22 @@ router.get('/my-requests', authMiddleware, async (req, res) => {
 });
 
 // GET AVAILABLE TUTORS (for students)
+// GET AVAILABLE TUTORS (for students)
 router.get('/available-tutors', authMiddleware, async (req, res) => {
     try {
-        const tutors = await User.find({ userType: 'tutor' });
+        // UPDATED: Only show tutors who are explicitly APPROVED
+        const tutors = await User.find({ 
+            userType: 'tutor',
+            'tutorApplication.status': 'approved' 
+        });
 
         const availableTutors = tutors.map(tutor => ({
             _id: tutor._id,
             firstName: tutor.firstName,
             lastName: tutor.lastName,
             email: tutor.email,
-            tutorProfile: tutor.tutorProfile
+            // Add safety check (|| {}) in case profile is empty
+            tutorProfile: tutor.tutorProfile || { subjects: [], bio: '' } 
         }));
 
         res.json({
@@ -694,5 +700,78 @@ router.get('/stats', authMiddleware, async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+// ==========================================
+// ADMIN PANEL ROUTES
+// ==========================================
 
+// 1. GET ALL PENDING APPLICATIONS
+router.get('/pending-applications', authMiddleware, async (req, res) => {
+    try {
+        // Security Check: Only Dylan can see this
+        const user = await User.findById(req.user.userId);
+        if (user.email !== 'dylanduancanada@gmail.com') {
+            return res.status(403).json({ error: 'Unauthorized: Admin access only' });
+        }
+
+        const applications = await User.find({ 
+            'tutorApplication.status': 'pending' 
+        });
+
+        res.json({ success: true, applications });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// 2. APPROVE TUTOR (Via Admin Panel Button)
+router.post('/approve-tutor/:userId', authMiddleware, async (req, res) => {
+    try {
+        // Security Check
+        const admin = await User.findById(req.user.userId);
+        if (admin.email !== 'dylanduancanada@gmail.com') {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+
+        const { userId } = req.params;
+        const user = await User.findByIdAndUpdate(
+            userId,
+            {
+                userType: 'tutor',
+                'tutorApplication.status': 'approved',
+                'tutorApplication.approvedAt': new Date(),
+                // Initialize default profile if empty
+                'tutorProfile': { 
+                    subjects: user.tutorApplication?.subjects || ['General'],
+                    bio: "I am ready to help!"
+                }
+            },
+            { new: true }
+        );
+        
+        res.json({ success: true, message: 'Approved successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// 3. DENY TUTOR (Via Admin Panel Button)
+router.post('/deny-tutor/:userId', authMiddleware, async (req, res) => {
+    try {
+        // Security Check
+        const admin = await User.findById(req.user.userId);
+        if (admin.email !== 'dylanduancanada@gmail.com') {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+
+        const { userId } = req.params;
+        await User.findByIdAndUpdate(
+            userId,
+            { $unset: { tutorApplication: 1 } } // Removes the application
+        );
+
+        res.json({ success: true, message: 'Application denied' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
 module.exports = router;

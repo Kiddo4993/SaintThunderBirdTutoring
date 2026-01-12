@@ -640,3 +640,72 @@ function openDetailedCard(index) {
   showInfoCard();
   if (infoMenuElement) infoMenuElement.classList.remove('active');
 }
+/* ====== DYNAMIC DATA LOADING (Add this to the bottom of script.js) ====== */
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadTutors();
+});
+
+async function loadTutors() {
+  // 1. Find the container where you want the boxes to appear
+  const container = document.getElementById('tutors-container');
+  
+  // If this page doesn't have the container, stop running (prevents errors)
+  if (!container) return;
+
+  try {
+      // 2. Fetch data from the backend
+      // Note: You need to be logged in (have a token) for this to work
+      const token = localStorage.getItem('token');
+      
+      const response = await fetch('/api/tutor/available-tutors', {
+          method: 'GET',
+          headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}` 
+          }
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+          // 3. Clear any placeholder text
+          container.innerHTML = '';
+
+          // 4. Generate a box for each tutor
+          if (data.tutors.length === 0) {
+              container.innerHTML = '<p>No tutors available right now.</p>';
+              return;
+          }
+
+          data.tutors.forEach(tutor => {
+              const subjects = tutor.tutorProfile?.subjects?.join(', ') || 'General Help';
+              const bio = tutor.tutorProfile?.bio || 'Ready to help you learn!';
+              
+              const card = `
+                  <div class="glass-card tutor-card">
+                      <div class="tutor-header">
+                          <div class="tutor-avatar">${tutor.firstName.charAt(0)}</div>
+                          <div>
+                              <h3>${tutor.firstName} ${tutor.lastName}</h3>
+                              <span class="subject-badge">${subjects}</span>
+                          </div>
+                      </div>
+                      <p class="tutor-bio">${bio}</p>
+                      <button onclick="requestTutor('${tutor._id}')" class="btn-primary">Request Help</button>
+                  </div>
+              `;
+              container.innerHTML += card;
+          });
+      }
+  } catch (error) {
+      console.error('Error loading tutors:', error);
+  }
+}
+
+// Function to handle the "Request Help" button click
+function requestTutor(tutorId) {
+  // Store the ID so we know who they chose, then redirect to request form
+  localStorage.setItem('selectedTutorId', tutorId);
+  window.location.href = 'request-help.html'; 
+}

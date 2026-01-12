@@ -145,7 +145,59 @@
             font-weight: 700;
             margin-bottom: 0.5rem;
         }
+/* ADD THIS TO YOUR CSS */
+.tutors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
 
+.tutor-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.tutor-card:hover {
+    border-color: var(--beige);
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-5px);
+}
+
+.tutor-avatar {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--beige), var(--accent));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #000;
+    margin-bottom: 1rem;
+}
+
+.tutor-subjects {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
+.subject-tag {
+    background: rgba(74, 124, 158, 0.2);
+    color: #60a5fa;
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
         .stat-label {
             font-size: 0.9rem;
             color: var(--text-secondary);
@@ -558,6 +610,12 @@
                     <div class="empty-state-icon">⏰</div>
                     <div class="empty-state-text">No upcoming sessions yet</div>
                     <div class="empty-state-subtext">Submit a tutoring request to get started!</div>
+                    <div class="card">
+                        <div class="card-title">👨‍🏫 Available Tutors</div>
+                        <div id="tutors-container" class="tutors-grid">
+                            <div class="loading">Loading available tutors...</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -634,11 +692,79 @@
     document.getElementById('studentName').textContent = user.firstName;
 
     // Load all data on page load
-    async function loadDashboard() {
-        console.log('📊 Loading dashboard...');
-        await loadSessions();
-        await loadRequests();
+    // UPDATE THIS FUNCTION
+async function loadDashboard() {
+    console.log('📊 Loading dashboard...');
+    await loadSessions();
+    await loadRequests();
+    await loadTutors(); // <--- ADD THIS LINE
+}
+// ADD THIS NEW FUNCTION
+async function loadTutors() {
+    try {
+        const token = localStorage.getItem('authToken');
+        // This endpoint must match your routes/tutor.js
+        const url = `${API_URL}/tutor/available-tutors`; 
+        console.log('📍 Fetching tutors from:', url);
+        
+        const res = await fetch(url, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        const data = await res.json();
+        const container = document.getElementById('tutors-container');
+
+        if (data.success && data.tutors && data.tutors.length > 0) {
+            const html = data.tutors.map(tutor => {
+                // Handle subjects list safely
+                const subjects = tutor.tutorProfile?.subjects || ['General Help'];
+                const subjectsHtml = subjects.map(s => `<span class="subject-tag">${s}</span>`).join('');
+                
+                // Get initials for avatar
+                const initials = (tutor.firstName[0] + tutor.lastName[0]).toUpperCase();
+
+                return `
+                    <div class="tutor-card">
+                        <div>
+                            <div class="session-header" style="margin-bottom: 0.5rem;">
+                                <div class="tutor-avatar">${initials}</div>
+                                <div style="flex: 1; margin-left: 1rem;">
+                                    <h3 style="color: var(--beige); margin-bottom: 0.2rem;">${tutor.firstName} ${tutor.lastName}</h3>
+                                    <div style="color: var(--text-secondary); font-size: 0.85rem;">${tutor.email}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="tutor-subjects">
+                                ${subjectsHtml}
+                            </div>
+                            
+                            <p style="color: #ccc; font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.5;">
+                                ${tutor.tutorProfile?.bio || "I am ready to help you succeed in your studies!"}
+                            </p>
+                        </div>
+                        
+                        <button class="btn-primary" style="width: 100%; margin-top: auto;" onclick="openRequestModal()">
+                            Request Help
+                        </button>
+                    </div>
+                `;
+            }).join('');
+            
+            container.innerHTML = html;
+        } else {
+            container.innerHTML = `
+                <div class="empty-state" style="grid-column: 1 / -1;">
+                    <div class="empty-state-icon">👨‍🏫</div>
+                    <div class="empty-state-text">No tutors available right now</div>
+                    <div class="empty-state-subtext">Check back later!</div>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('❌ Error loading tutors:', error);
+        document.getElementById('tutors-container').innerHTML = '<div class="loading">Error loading tutors</div>';
     }
+}
 
     // Load student's sessions
     async function loadSessions() {

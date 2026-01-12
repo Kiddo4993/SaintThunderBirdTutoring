@@ -546,6 +546,44 @@
             localStorage.removeItem('user');
             window.location.href = 'index.html';
         }
+        // ==========================================
+// 👑 ADMIN ACCESS BUTTON (Only for Dylan)
+// ==========================================
+const currentUser = JSON.parse(localStorage.getItem('user'));
+
+if (currentUser && currentUser.email === 'dylanduancanada@gmail.com') {
+    // 1. Create the button
+    const adminBtn = document.createElement('button');
+    adminBtn.innerHTML = '👑 Admin Panel';
+    
+    // 2. Style it to look awesome
+    Object.assign(adminBtn.style, {
+        backgroundColor: '#8b4513',
+        color: 'white',
+        border: '1px solid #d4a574',
+        padding: '0.8rem 1.5rem',
+        borderRadius: '8px',
+        fontWeight: 'bold',
+        cursor: 'pointer',
+        marginLeft: '1rem',
+        fontFamily: "'Orbitron', sans-serif",
+        textTransform: 'uppercase',
+        boxShadow: '0 0 10px rgba(139, 69, 19, 0.5)' // Glow effect
+    });
+
+    // 3. Make it clickable
+    adminBtn.onclick = () => {
+        window.location.href = 'admin-applications.html';
+    };
+
+    // 4. Attach it to the Header
+    // (This looks for the logout button area or the main header)
+    const headerLocation = document.querySelector('.header-actions') || document.querySelector('header');
+    
+    if (headerLocation) {
+        headerLocation.appendChild(adminBtn);
+    }
+}
     </script>
 </body>
 </html>
