@@ -4,23 +4,42 @@ const nodemailer = require('nodemailer');
 const User = require('../models/User');
 const router = express.Router();
 
-// Setup email transporter
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD
-    }
-});
+// Setup email transporter with better error handling
+let transporter;
 
-// Verify transporter is working
-transporter.verify((error, success) => {
-    if (error) {
-        console.error('❌ Email transporter error:', error);
-    } else {
-        console.log('✅ Email transporter ready');
-    }
-});
+try {
+    transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASSWORD // Should be an App Password, not regular password
+        },
+        // Add timeout and retry options
+        pool: true,
+        maxConnections: 1,
+        maxMessages: 3
+    });
+
+    // Verify transporter is working
+    transporter.verify((error, success) => {
+        if (error) {
+            console.error('❌ Email transporter error:', error.message);
+            console.error('💡 Make sure EMAIL_USER and EMAIL_PASSWORD are set in environment variables');
+            console.error('💡 For Gmail, use an App Password (not your regular password)');
+        } else {
+            console.log('✅ Email transporter ready');
+        }
+    });
+} catch (error) {
+    console.error('❌ Failed to create email transporter:', error.message);
+    // Create a dummy transporter to prevent crashes
+    transporter = {
+        sendMail: (options, callback) => {
+            console.error('❌ Email not configured. Cannot send email:', options.to);
+            if (callback) callback(new Error('Email transporter not configured'), null);
+        }
+    };
+}
 
 // Middleware to check if user is authenticated
 const authMiddleware = (req, res, next) => {
@@ -86,9 +105,11 @@ router.post('/apply-tutor', authMiddleware, async (req, res) => {
 
         transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
-                console.error('❌ Email error:', error);
+                console.error('❌ Application email error:', error.message);
+                console.error('Full error:', error);
             } else {
-                console.log('✅ Email sent:', info.response);
+                console.log('✅ Application email sent successfully to:', 'dylanduancanada@gmail.com');
+                console.log('Message ID:', info.messageId);
             }
         });
 
@@ -134,7 +155,12 @@ router.get('/approve/:userId', async (req, res) => {
         };
 
         transporter.sendMail(mailOptions, (error, info) => {
-            if (error) console.error('❌ Email error:', error);
+            if (error) {
+                console.error('❌ Approval email error:', error.message);
+                console.error('Full error:', error);
+            } else {
+                console.log('✅ Approval email sent successfully to:', user.email);
+            }
         });
 
         res.json({
@@ -177,7 +203,12 @@ router.get('/deny/:userId', async (req, res) => {
         };
 
         transporter.sendMail(mailOptions, (error, info) => {
-            if (error) console.error('❌ Email error:', error);
+            if (error) {
+                console.error('❌ Denial email error:', error.message);
+                console.error('Full error:', error);
+            } else {
+                console.log('✅ Denial email sent successfully to:', user.email);
+            }
         });
 
         res.json({
@@ -280,22 +311,50 @@ router.get('/student-sessions', authMiddleware, async (req, res) => {
             return res.status(403).json({ error: 'Only students can view their sessions' });
         }
 
-        const tutors = await User.find({ userType: 'tutor' });
         const sessions = [];
-
+        
+        // Get sessions from student's studentSessions array
+        if (student.studentSessions && student.studentSessions.length > 0) {
+            for (const session of student.studentSessions) {
+                // Get tutor info
+                const tutor = await User.findById(session.tutorId);
+                if (tutor) {
+                    sessions.push({
+                        _id: session._id,
+                        tutorName: session.tutorName || `${tutor.firstName} ${tutor.lastName}`,
+                        tutorEmail: tutor.email,
+                        subject: session.subject || 'Mathematics',
+                        scheduledTime: session.scheduledTime,
+                        status: session.status,
+                        zoomLink: session.zoomLink,
+                        zoomMeetingId: session.zoomMeetingId,
+                        zoomPassword: session.zoomPassword
+                    });
+                }
+            }
+        }
+        
+        // Also check tutor sessions for backward compatibility
+        const tutors = await User.find({ userType: 'tutor' });
         for (const tutor of tutors) {
             if (tutor.tutorSessions) {
                 tutor.tutorSessions.forEach(session => {
                     if (session.studentId.toString() === student._id.toString()) {
-                        sessions.push({
-                            _id: session._id,
-                            tutorName: `${tutor.firstName} ${tutor.lastName}`,
-                            tutorEmail: tutor.email,
-                            subject: session.subject || 'Mathematics',
-                            scheduledTime: session.scheduledTime,
-                            status: session.status,
-                            zoomLink: session.zoomLink
-                        });
+                        // Check if we already have this session
+                        const exists = sessions.find(s => s._id && s._id.toString() === session._id.toString());
+                        if (!exists) {
+                            sessions.push({
+                                _id: session._id,
+                                tutorName: `${tutor.firstName} ${tutor.lastName}`,
+                                tutorEmail: tutor.email,
+                                subject: session.subject || 'Mathematics',
+                                scheduledTime: session.scheduledTime,
+                                status: session.status,
+                                zoomLink: session.zoomLink,
+                                zoomMeetingId: session.zoomMeetingId,
+                                zoomPassword: session.zoomPassword
+                            });
+                        }
                     }
                 });
             }
@@ -303,7 +362,9 @@ router.get('/student-sessions', authMiddleware, async (req, res) => {
 
         res.json({
             success: true,
-            sessions: sessions.filter(s => new Date(s.scheduledTime) > new Date())
+            sessions: sessions
+                .filter(s => new Date(s.scheduledTime) > new Date())
+                .sort((a, b) => new Date(a.scheduledTime) - new Date(b.scheduledTime))
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -344,9 +405,21 @@ router.get('/student-stats', authMiddleware, async (req, res) => {
         }
 
         const requestsMade = student.tutorRequests?.length || 0;
-        const upcomingSessions = student.tutorRequests?.filter(r => r.status === 'accepted').length || 0;
-        const completedSessions = student.tutorRequests?.filter(r => r.status === 'completed').length || 0;
-        const hoursLearned = student.tutorRequests?.reduce((sum, r) => sum + (r.hoursSpent || 0), 0) || 0;
+        
+        // Count upcoming sessions from studentSessions array
+        const upcomingSessions = student.studentSessions?.filter(s => 
+            s.status === 'scheduled' && new Date(s.scheduledTime) > new Date()
+        ).length || 0;
+        
+        // Count completed sessions
+        const completedSessions = student.studentSessions?.filter(s => 
+            s.status === 'completed'
+        ).length || 0;
+        
+        // Calculate hours learned from completed sessions
+        const hoursLearned = student.studentSessions?.reduce((sum, s) => 
+            sum + (s.hoursSpent || 0), 0
+        ) || 0;
 
         res.json({
             success: true,
@@ -456,15 +529,45 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
         tutor.tutorSessions.push(session);
         await tutor.save();
 
-        // Update student request status
+        // Update student request status - find the specific request that matches
         if (student.tutorRequests) {
-            student.tutorRequests.forEach(req => {
-                if (req.status === 'pending') {
-                    req.status = 'accepted';
+            // Find the pending request that matches the subject
+            const matchingRequest = student.tutorRequests.find(req => 
+                req.status === 'pending' && req.subject === requestSubject
+            );
+            
+            if (matchingRequest) {
+                matchingRequest.status = 'accepted';
+                matchingRequest.acceptedAt = new Date();
+                matchingRequest.tutorId = tutor._id;
+            } else {
+                // Fallback: update first pending request
+                const firstPending = student.tutorRequests.find(req => req.status === 'pending');
+                if (firstPending) {
+                    firstPending.status = 'accepted';
+                    firstPending.acceptedAt = new Date();
+                    firstPending.tutorId = tutor._id;
                 }
-            });
+            }
             await student.save();
         }
+        
+        // Also create a session entry for the student (using studentSessions field)
+        if (!student.studentSessions) {
+            student.studentSessions = [];
+        }
+        student.studentSessions.push({
+            tutorId: tutor._id,
+            tutorName: `${tutor.firstName} ${tutor.lastName}`,
+            subject: requestSubject,
+            scheduledTime: session.scheduledTime,
+            status: 'scheduled',
+            zoomLink: zoomLink,
+            zoomMeetingId: uniqueZoomId,
+            zoomPassword: zoomPassword,
+            createdAt: new Date()
+        });
+        await student.save();
 
         // ===== EMAIL TO TUTOR =====
         const tutorMailOptions = {
@@ -504,9 +607,11 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
 
         transporter.sendMail(tutorMailOptions, (error, info) => {
             if (error) {
-                console.error('❌ Tutor email error:', error);
+                console.error('❌ Tutor email error:', error.message);
+                console.error('Full error:', error);
             } else {
-                console.log('✅ Tutor email sent');
+                console.log('✅ Tutor email sent successfully to:', tutor.email);
+                console.log('Message ID:', info.messageId);
             }
         });
 
@@ -552,9 +657,11 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
 
         transporter.sendMail(studentMailOptions, (error, info) => {
             if (error) {
-                console.error('❌ Student email error:', error);
+                console.error('❌ Student email error:', error.message);
+                console.error('Full error:', error);
             } else {
-                console.log('✅ Student email sent');
+                console.log('✅ Student email sent successfully to:', student.email);
+                console.log('Message ID:', info.messageId);
             }
         });
 

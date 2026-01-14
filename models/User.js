@@ -36,12 +36,29 @@ const userSchema = new mongoose.Schema({
         priority: String,
         status: { type: String, default: 'pending' },
         createdAt: { type: Date, default: Date.now },
+        acceptedAt: Date,
+        tutorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
         hoursSpent: Number
     }],
 
-    // EMBEDDED SESSIONS
+    // EMBEDDED SESSIONS (for tutors)
     tutorSessions: [{
         studentId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        subject: String,
+        scheduledTime: Date,
+        status: { type: String, default: 'scheduled' },
+        zoomLink: String,
+        zoomMeetingId: String,
+        zoomPassword: String,
+        hoursSpent: Number,
+        createdAt: { type: Date, default: Date.now },
+        completedAt: Date
+    }],
+    
+    // EMBEDDED SESSIONS (for students - mirrors tutor sessions)
+    studentSessions: [{
+        tutorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        tutorName: String,
         subject: String,
         scheduledTime: Date,
         status: { type: String, default: 'scheduled' },

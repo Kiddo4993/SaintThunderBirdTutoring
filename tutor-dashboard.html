@@ -452,52 +452,79 @@
             loadUpcomingSessions(token);
         }
     
-        // FIX 2: Updated to fetch from the specific stats endpoint
+        // Load tutor stats from correct endpoint
         async function loadTutorStats(token) {
             try {
-                const response = await fetch(`${API_URL}/tutor-stats`, {
+                const response = await fetch(`${API_URL}/tutor/stats`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
+                
                 if (response.ok) {
-                    const stats = await response.json();
-                    const statNumbers = document.querySelectorAll('.stat-number');
-                    if (statNumbers.length >= 3) {
-                        statNumbers[0].textContent = stats.rating || '5.0';
-                        statNumbers[1].textContent = stats.sessionsCompleted || 0;
-                        statNumbers[2].textContent = stats.hoursTaught || 0;
+                    const data = await response.json();
+                    if (data.success) {
+                        // Update stats cards
+                        document.getElementById('requestsCount').textContent = '0'; // Will be updated by loadStudentRequests
+                        document.getElementById('sessionsCount').textContent = data.sessionsCompleted || 0;
+                        document.getElementById('hoursCount').textContent = data.hoursTaught || '0';
                     }
                 }
-            } catch (error) { console.error('Stats error:', error); }
+            } catch (error) { 
+                console.error('Stats error:', error);
+            }
         }
     
-        // FIX 3: Load real student requests from the DB
+        // Load real student requests from the DB
         async function loadStudentRequests(token) {
-            const container = document.querySelector('.requests-list');
+            const container = document.getElementById('studentRequests');
             try {
                 const response = await fetch(`${API_URL}/tutor/requests`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                const requests = await response.json();
                 
-                if (requests.length === 0) {
-                    container.innerHTML = '<p>No student requests yet</p>';
-                    return;
-                }
-    
-                container.innerHTML = requests.map(req => `
-                    <div class="request-card">
-                        <div class="request-header">
-                            <h4>${req.studentName}</h4>
-                            <span class="subject-tag">${req.subject}</span>
+                const data = await response.json();
+                
+                if (data.success && data.requests && data.requests.length > 0) {
+                    document.getElementById('requestsCount').textContent = data.requests.length;
+                    
+                    container.innerHTML = data.requests.map(req => `
+                        <div class="student-request-card">
+                            <div class="student-name">${req.studentName}</div>
+                            <div class="student-subject">${req.subject}</div>
+                            <div class="student-description">${req.description || 'No additional details provided'}</div>
+                            
+                            <div class="request-info">
+                                <div class="info-item">
+                                    <div class="info-label">Student Email</div>
+                                    <div class="info-value" style="font-size: 0.9rem;">${req.studentEmail}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Priority</div>
+                                    <div class="info-value">${req.priority || 'medium'}</div>
+                                </div>
+                            </div>
+                            
+                            <button class="accept-btn" onclick="acceptRequest('${req._id}')">
+                                ✅ Accept Request & Generate Zoom Meeting
+                            </button>
                         </div>
-                        <p class="request-text">${req.description}</p>
-                        <button class="btn-primary" onclick="acceptRequest('${req._id}')">✅ Accept & Generate Zoom</button>
-                    </div>
-                `).join('');
-            } catch (error) { console.error('Request load error:', error); }
+                    `).join('');
+                } else {
+                    document.getElementById('requestsCount').textContent = '0';
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📝</div>
+                            <div class="empty-state-text">No student requests yet</div>
+                            <div class="empty-state-subtext">Students will appear here when they request help in your subjects</div>
+                        </div>
+                    `;
+                }
+            } catch (error) { 
+                console.error('Request load error:', error);
+                container.innerHTML = '<div class="loading">Error loading requests</div>';
+            }
         }
     
-        // FIX 4: The "Automation" Trigger
+        // Accept request and trigger email automation
         async function acceptRequest(requestId) {
             const token = localStorage.getItem('authToken');
             try {
@@ -510,35 +537,37 @@
                     body: JSON.stringify({ requestId })
                 });
                 
-                if (response.ok) {
-                    alert('✅ Accepted! Zoom link created and emails sent.');
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    alert('✅ Request accepted! Zoom meeting created and emails sent to both you and the student.');
                     loadDashboard(); // Refresh the lists
+                } else {
+                    alert('❌ Error: ' + (data.error || 'Failed to accept request'));
                 }
-            } catch (error) { alert('Failed to accept request'); }
+            } catch (error) { 
+                console.error('Accept request error:', error);
+                alert('❌ Error accepting request: ' + error.message);
+            }
         }
     
-        // FIX 5: Show the sessions that now have Zoom links
+        // Load upcoming sessions with Zoom links
         async function loadUpcomingSessions(token) {
-            const container = document.querySelector('.sessions-list');
             try {
                 const response = await fetch(`${API_URL}/tutor/sessions`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                const sessions = await response.json();
                 
-                if (sessions.length === 0) {
-                    container.innerHTML = '<p>No upcoming sessions</p>';
-                    return;
+                const data = await response.json();
+                
+                if (data.success && data.sessions && data.sessions.length > 0) {
+                    document.getElementById('sessionsCount').textContent = data.sessions.length;
+                } else {
+                    document.getElementById('sessionsCount').textContent = '0';
                 }
-    
-                container.innerHTML = sessions.map(session => `
-                    <div class="session-card">
-                        <h4>${session.studentName} - ${session.subject}</h4>
-                        <p>Zoom: <a href="${session.zoomLink}" target="_blank" style="color: var(--beige)">Join Meeting</a></p>
-                        <p>Status: ✅ Scheduled</p>
-                    </div>
-                `).join('');
-            } catch (error) { console.error('Session load error:', error); }
+            } catch (error) { 
+                console.error('Session load error:', error);
+            }
         }
     
         function logout() {

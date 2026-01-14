@@ -13,10 +13,17 @@ app.use(cors());
 // Serve Static Files (HTML/CSS/JS)
 app.use(express.static(path.join(__dirname, './')));
 
-// Database Connection
-mongoose.connect(process.env.MONGODB_URI)
+// Database Connection with better error handling for Render
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/saintthunderbird', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+})
     .then(() => console.log('✅ MongoDB Connected'))
-    .catch(err => console.error('❌ MongoDB Error:', err));
+    .catch(err => {
+        console.error('❌ MongoDB Error:', err.message);
+        console.error('💡 Make sure MONGODB_URI is set in your environment variables');
+        // Don't crash the server, but log the error
+    });
 
 // --- ROUTE IMPORTS ---
 // This connects the separate files you made
