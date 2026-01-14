@@ -411,6 +411,14 @@
                 <div class="loading">Loading requests...</div>
             </div>
         </div>
+
+        <!-- My Sessions -->
+        <div class="card">
+            <div class="card-title">📅 My Sessions</div>
+            <div id="mySessions">
+                <div class="loading">Loading sessions...</div>
+            </div>
+        </div>
     </div>
 
     <script src="auth.js"></script>
@@ -459,55 +467,96 @@
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.success) {
-                        // Update stats cards
-                        document.getElementById('requestsCount').textContent = '0'; // Will be updated by loadStudentRequests
-                        document.getElementById('sessionsCount').textContent = data.sessionsCompleted || 0;
-                        document.getElementById('hoursCount').textContent = data.hoursTaught || '0';
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('📊 Tutor stats:', data);
+                
+                if (data.success) {
+                    // Update stats cards (requestsCount will be updated by loadStudentRequests)
+                    const sessionsCountEl = document.getElementById('sessionsCount');
+                    const hoursCountEl = document.getElementById('hoursCount');
+                    
+                    if (sessionsCountEl) {
+                        sessionsCountEl.textContent = data.sessionsCompleted || 0;
+                    }
+                    if (hoursCountEl) {
+                        hoursCountEl.textContent = data.hoursTaught || '0';
                     }
                 }
             } catch (error) { 
-                console.error('Stats error:', error);
+                console.error('❌ Stats error:', error);
             }
         }
     
         // Load real student requests from the DB
         async function loadStudentRequests(token) {
             const container = document.getElementById('studentRequests');
+            if (!container) {
+                console.error('❌ Container #studentRequests not found');
+                return;
+            }
+            
             try {
                 const response = await fetch(`${API_URL}/tutor/requests`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const data = await response.json();
+                console.log('📦 Requests data:', data);
                 
                 if (data.success && data.requests && data.requests.length > 0) {
                     document.getElementById('requestsCount').textContent = data.requests.length;
                     
-                    container.innerHTML = data.requests.map(req => `
+                    container.innerHTML = data.requests.map(req => {
+                        // Escape HTML to prevent XSS
+                        const escapeHtml = (text) => {
+                            const div = document.createElement('div');
+                            div.textContent = text;
+                            return div.innerHTML;
+                        };
+                        
+                        const timeLabels = {
+                            '30min': '30 minutes',
+                            '1hour': '1 hour',
+                            '1.5hours': '1.5 hours',
+                            '2hours': '2 hours'
+                        };
+                        const timeLabel = timeLabels[req.requestedTime] || req.requestedTime || 'Not specified';
+                        
+                        return `
                         <div class="student-request-card">
-                            <div class="student-name">${req.studentName}</div>
-                            <div class="student-subject">${req.subject}</div>
-                            <div class="student-description">${req.description || 'No additional details provided'}</div>
+                            <div class="student-name">${escapeHtml(req.studentName || 'Unknown Student')}</div>
+                            <div class="student-subject">${escapeHtml(req.subject || 'General')}</div>
+                            <div class="student-description">${escapeHtml(req.description || 'No additional details provided')}</div>
                             
                             <div class="request-info">
                                 <div class="info-item">
                                     <div class="info-label">Student Email</div>
-                                    <div class="info-value" style="font-size: 0.9rem;">${req.studentEmail}</div>
+                                    <div class="info-value" style="font-size: 0.9rem;">${escapeHtml(req.studentEmail || 'N/A')}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Session Duration</div>
+                                    <div class="info-value">${escapeHtml(timeLabel)}</div>
                                 </div>
                                 <div class="info-item">
                                     <div class="info-label">Priority</div>
-                                    <div class="info-value">${req.priority || 'medium'}</div>
+                                    <div class="info-value">${escapeHtml(req.priority || 'medium')}</div>
                                 </div>
                             </div>
                             
-                            <button class="accept-btn" onclick="acceptRequest('${req._id}')">
+                            <button class="accept-btn" onclick="acceptRequest('${req._id.replace(/'/g, "\\'")}')">
                                 ✅ Accept Request & Generate Zoom Meeting
                             </button>
                         </div>
-                    `).join('');
+                    `;
+                    }).join('');
                 } else {
                     document.getElementById('requestsCount').textContent = '0';
                     container.innerHTML = `
@@ -519,15 +568,34 @@
                     `;
                 }
             } catch (error) { 
-                console.error('Request load error:', error);
-                container.innerHTML = '<div class="loading">Error loading requests</div>';
+                console.error('❌ Request load error:', error);
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⚠️</div>
+                        <div class="empty-state-text">Error loading requests</div>
+                        <div class="empty-state-subtext">${error.message}</div>
+                    </div>
+                `;
             }
         }
     
         // Accept request and trigger email automation
         async function acceptRequest(requestId) {
+            if (!requestId) {
+                alert('❌ Invalid request ID');
+                return;
+            }
+            
             const token = localStorage.getItem('authToken');
+            if (!token) {
+                alert('❌ Not authenticated. Please log in again.');
+                window.location.href = 'login.html';
+                return;
+            }
+            
             try {
+                console.log('📝 Accepting request:', requestId);
+                
                 const response = await fetch(`${API_URL}/tutor/accept-request`, {
                     method: 'POST',
                     headers: {
@@ -538,35 +606,137 @@
                 });
                 
                 const data = await response.json();
+                console.log('📦 Accept response:', data);
                 
                 if (response.ok && data.success) {
                     alert('✅ Request accepted! Zoom meeting created and emails sent to both you and the student.');
-                    loadDashboard(); // Refresh the lists
+                    // Refresh the dashboard
+                    loadDashboard();
                 } else {
-                    alert('❌ Error: ' + (data.error || 'Failed to accept request'));
+                    const errorMsg = data.error || data.message || 'Failed to accept request';
+                    console.error('❌ Accept error:', errorMsg);
+                    alert('❌ Error: ' + errorMsg);
                 }
             } catch (error) { 
-                console.error('Accept request error:', error);
+                console.error('❌ Accept request error:', error);
                 alert('❌ Error accepting request: ' + error.message);
             }
         }
     
         // Load upcoming sessions with Zoom links
         async function loadUpcomingSessions(token) {
+            const container = document.getElementById('mySessions');
+            if (!container) return;
+            
             try {
                 const response = await fetch(`${API_URL}/tutor/sessions`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 
                 const data = await response.json();
+                console.log('📦 Sessions data:', data);
                 
                 if (data.success && data.sessions && data.sessions.length > 0) {
                     document.getElementById('sessionsCount').textContent = data.sessions.length;
+                    
+                    container.innerHTML = data.sessions.map(session => {
+                        const sessionDate = new Date(session.scheduledTime);
+                        const isPast = sessionDate < new Date();
+                        const isCompleted = session.status === 'completed';
+                        
+                        return `
+                            <div class="student-request-card" style="margin-bottom: 1.5rem;">
+                                <div class="student-name">${session.studentName || 'Unknown Student'}</div>
+                                <div class="student-subject">${session.subject || 'General'}</div>
+                                
+                                <div class="request-info">
+                                    <div class="info-item">
+                                        <div class="info-label">Student Email</div>
+                                        <div class="info-value" style="font-size: 0.9rem;">${session.studentEmail || 'N/A'}</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Scheduled Time</div>
+                                        <div class="info-value" style="font-size: 0.9rem;">${sessionDate.toLocaleString()}</div>
+                                    </div>
+                                </div>
+                                
+                                ${session.zoomLink ? `
+                                    <div style="background: rgba(59, 130, 246, 0.2); border: 2px solid rgba(59, 130, 246, 0.5); padding: 1rem; border-radius: 8px; margin: 1rem 0; text-align: center;">
+                                        <a href="${session.zoomLink}" target="_blank" style="display: inline-block; background: linear-gradient(135deg, #60a5fa, #3b82f6); color: white; padding: 0.75rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 700;">
+                                            🎥 Join Zoom Meeting
+                                        </a>
+                                    </div>
+                                ` : ''}
+                                
+                                ${isCompleted ? `
+                                    <div style="background: rgba(34, 197, 94, 0.2); border: 2px solid rgba(34, 197, 94, 0.5); padding: 1rem; border-radius: 8px; text-align: center; color: #22c55e; font-weight: 600;">
+                                        ✅ Session Completed
+                                    </div>
+                                ` : isPast ? `
+                                    <div style="margin-top: 1rem;">
+                                        <label style="display: block; color: var(--text-secondary); margin-bottom: 0.5rem; font-weight: 600;">Hours Spent:</label>
+                                        <input type="number" id="hours-${session._id}" min="0.5" max="10" step="0.5" value="1" style="width: 100px; padding: 0.5rem; background: rgba(212, 165, 116, 0.1); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); margin-right: 1rem;">
+                                        <button class="accept-btn" onclick="completeSession('${session._id}')" style="width: auto; display: inline-block; margin-top: 0;">
+                                            ✅ Mark as Completed
+                                        </button>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `;
+                    }).join('');
                 } else {
                     document.getElementById('sessionsCount').textContent = '0';
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📅</div>
+                            <div class="empty-state-text">No sessions yet</div>
+                            <div class="empty-state-subtext">Accept a student request to create a session</div>
+                        </div>
+                    `;
                 }
             } catch (error) { 
-                console.error('Session load error:', error);
+                console.error('❌ Session load error:', error);
+                container.innerHTML = '<div class="loading">Error loading sessions</div>';
+            }
+        }
+        
+        // Complete a session
+        async function completeSession(sessionId) {
+            const hoursInput = document.getElementById(`hours-${sessionId}`);
+            const hoursSpent = parseFloat(hoursInput?.value) || 1;
+            
+            if (hoursSpent <= 0) {
+                alert('❌ Please enter a valid number of hours');
+                return;
+            }
+            
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                alert('❌ Not authenticated. Please log in again.');
+                    return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/tutor/complete-session`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ sessionId, hoursSpent })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    alert(`✅ Session completed! ${hoursSpent} hour(s) logged. Admin has been notified.`);
+                    loadDashboard(); // Refresh
+                } else {
+                    alert('❌ Error: ' + (data.error || 'Failed to complete session'));
+                }
+            } catch (error) {
+                console.error('❌ Complete session error:', error);
+                alert('❌ Error: ' + error.message);
             }
         }
     

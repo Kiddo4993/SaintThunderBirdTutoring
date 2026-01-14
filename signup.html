@@ -528,28 +528,50 @@
                     <label>Subjects You Can Teach (Select Multiple)</label>
                     <div class="subjects-grid">
                         <div class="subject-item">
-                            <input type="checkbox" id="tutorMath" value="math" class="tutor-subject">
+                            <input type="checkbox" id="tutorMath" value="Mathematics" class="tutor-subject">
                             <label for="tutorMath">Mathematics</label>
                         </div>
                         <div class="subject-item">
-                            <input type="checkbox" id="tutorScience" value="science" class="tutor-subject">
+                            <input type="checkbox" id="tutorScience" value="Sciences" class="tutor-subject">
                             <label for="tutorScience">Sciences</label>
                         </div>
                         <div class="subject-item">
-                            <input type="checkbox" id="tutorLanguages" value="languages" class="tutor-subject">
+                            <input type="checkbox" id="tutorLanguages" value="Languages" class="tutor-subject">
                             <label for="tutorLanguages">Languages</label>
                         </div>
                         <div class="subject-item">
-                            <input type="checkbox" id="tutorSocial" value="social" class="tutor-subject">
+                            <input type="checkbox" id="tutorSocial" value="Social Studies" class="tutor-subject">
                             <label for="tutorSocial">Social Studies</label>
                         </div>
                         <div class="subject-item">
-                            <input type="checkbox" id="tutorTech" value="technology" class="tutor-subject">
+                            <input type="checkbox" id="tutorTech" value="Technology" class="tutor-subject">
                             <label for="tutorTech">Technology</label>
                         </div>
                         <div class="subject-item">
-                            <input type="checkbox" id="tutorArts" value="arts" class="tutor-subject">
+                            <input type="checkbox" id="tutorArts" value="Arts & Culture" class="tutor-subject">
                             <label for="tutorArts">Arts & Culture</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Session Durations You Can Offer (Select Multiple)</label>
+                    <div class="subjects-grid">
+                        <div class="subject-item">
+                            <input type="checkbox" id="tutorTime30" value="30min" class="tutor-time">
+                            <label for="tutorTime30">30 minutes</label>
+                        </div>
+                        <div class="subject-item">
+                            <input type="checkbox" id="tutorTime1" value="1hour" class="tutor-time">
+                            <label for="tutorTime1">1 hour</label>
+                        </div>
+                        <div class="subject-item">
+                            <input type="checkbox" id="tutorTime1.5" value="1.5hours" class="tutor-time">
+                            <label for="tutorTime1.5">1.5 hours</label>
+                        </div>
+                        <div class="subject-item">
+                            <input type="checkbox" id="tutorTime2" value="2hours" class="tutor-time">
+                            <label for="tutorTime2">2 hours</label>
                         </div>
                     </div>
                 </div>
@@ -682,9 +704,15 @@ document.getElementById('tutorSignupForm').addEventListener('submit', async func
 
     // Get selected subjects
     const subjects = Array.from(document.querySelectorAll('.tutor-subject:checked')).map(el => el.value);
+    const availableTimes = Array.from(document.querySelectorAll('.tutor-time:checked')).map(el => el.value);
 
     if (subjects.length === 0) {
         alert('❌ Please select at least one subject you can teach!');
+        return;
+    }
+
+    if (availableTimes.length === 0) {
+        alert('❌ Please select at least one session duration you can offer!');
         return;
     }
 
@@ -700,6 +728,7 @@ document.getElementById('tutorSignupForm').addEventListener('submit', async func
                 userType: 'tutor',
                 tutorProfile: {
                     subjects: subjects,
+                    availableTimes: availableTimes,
                     experience: experience,
                     availability: availability,
                     motivation: motivation

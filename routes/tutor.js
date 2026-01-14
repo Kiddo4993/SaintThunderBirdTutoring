@@ -225,34 +225,111 @@ router.get('/deny/:userId', async (req, res) => {
 // CREATE A TUTORING REQUEST (Student)
 router.post('/create-request', authMiddleware, async (req, res) => {
     try {
-        const { subject, description, priority } = req.body;
+        const { subject, description, priority, requestedTime } = req.body;
+        
+        // Validate required fields
+        if (!subject) {
+            return res.status(400).json({ 
+                success: false,
+                error: 'Subject is required' 
+            });
+        }
+
+        if (!requestedTime) {
+            return res.status(400).json({ 
+                success: false,
+                error: 'Session duration is required' 
+            });
+        }
+
         const student = await User.findById(req.user.userId);
 
         if (!student) {
-            return res.status(404).json({ error: 'Student not found' });
+            return res.status(404).json({ 
+                success: false,
+                error: 'Student not found' 
+            });
+        }
+
+        if (student.userType !== 'student') {
+            return res.status(403).json({ 
+                success: false,
+                error: 'Only students can create requests' 
+            });
         }
 
         if (!student.tutorRequests) {
             student.tutorRequests = [];
         }
 
-        student.tutorRequests.push({
+        const newRequest = {
             subject,
-            description,
+            description: description || '',
             priority: priority || 'medium',
+            requestedTime: requestedTime,
             createdAt: new Date(),
             status: 'pending'
-        });
+        };
 
+        student.tutorRequests.push(newRequest);
         await student.save();
+
+        console.log('✅ Request created for student:', student.email, 'Subject:', subject);
+
+        // ===== EMAIL TO ADMIN WHEN STUDENT CREATES REQUEST =====
+        const adminMailOptions = {
+            from: process.env.EMAIL_USER,
+            to: 'dylanduancanada@gmail.com',
+            subject: `📝 New Tutoring Request - ${student.firstName} ${student.lastName}`,
+            html: `
+                <div style="font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px;">
+                    <div style="background: white; padding: 30px; border-radius: 10px; max-width: 600px; margin: 0 auto;">
+                        <h2 style="color: #8b4513;">📝 New Tutoring Request</h2>
+                        
+                        <h3 style="color: #8b4513; margin-top: 20px;">👨‍🎓 Student Information:</h3>
+                        <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #d4a574; margin: 10px 0;">
+                            <p><strong>Name:</strong> ${student.firstName} ${student.lastName}</p>
+                            <p><strong>Email:</strong> ${student.email}</p>
+                            <p><strong>Total Requests Made (This Student):</strong> ${student.tutorRequests?.length || 0}</p>
+                            <p><strong>Total Hours Learned (This Student):</strong> ${(student.studentSessions?.reduce((sum, s) => sum + (s.hoursSpent || 0), 0) || 0).toFixed(1)} hours</p>
+                        </div>
+
+                        <h3 style="color: #8b4513; margin-top: 20px;">📚 Request Details:</h3>
+                        <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #d4a574; margin: 10px 0;">
+                            <p><strong>Subject:</strong> ${subject}</p>
+                            <p><strong>Session Duration:</strong> ${requestedTime === '30min' ? '30 minutes' : requestedTime === '1hour' ? '1 hour' : requestedTime === '1.5hours' ? '1.5 hours' : requestedTime === '2hours' ? '2 hours' : requestedTime}</p>
+                            <p><strong>Description:</strong> ${description || 'No description provided'}</p>
+                            <p><strong>Priority:</strong> ${priority || 'medium'}</p>
+                            <p><strong>Requested At:</strong> ${new Date().toLocaleString()}</p>
+                        </div>
+
+                        <p style="margin-top: 20px; color: #888; font-size: 12px;">
+                            Waiting for a tutor to accept this request. Hours will be tracked individually for this student.
+                        </p>
+                    </div>
+                </div>
+            `
+        };
+
+        transporter.sendMail(adminMailOptions, (error, info) => {
+            if (error) {
+                console.error('❌ Admin notification error:', error.message);
+            } else {
+                console.log('✅ Admin notified of new request');
+            }
+        });
 
         res.json({
             success: true,
             message: 'Request created successfully',
-            request: student.tutorRequests[student.tutorRequests.length - 1]
+            request: newRequest
         });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error('❌ Error creating request:', error);
+        res.status(500).json({ 
+            success: false,
+            error: error.message 
+        });
     }
 });
 
@@ -445,6 +522,7 @@ router.get('/requests', authMiddleware, async (req, res) => {
         }
 
         const tutorSubjects = tutor.tutorProfile?.subjects || [];
+        const tutorAvailableTimes = tutor.tutorProfile?.availableTimes || [];
 
         const students = await User.find({
             userType: 'student',
@@ -453,21 +531,31 @@ router.get('/requests', authMiddleware, async (req, res) => {
 
         const requests = [];
         students.forEach(student => {
-            student.tutorRequests?.forEach(req => {
-                if (req.status === 'pending' && tutorSubjects.includes(req.subject)) {
-                    requests.push({
-                        _id: `${student._id}-${req.createdAt}`,
-                        studentId: student._id,
-                        studentName: `${student.firstName} ${student.lastName}`,
-                        studentEmail: student.email,
-                        grade: student.grade || 'N/A',
-                        subject: req.subject,
-                        description: req.description,
-                        priority: req.priority,
-                        createdAt: req.createdAt
-                    });
-                }
-            });
+            if (student.tutorRequests && Array.isArray(student.tutorRequests)) {
+                student.tutorRequests.forEach((req, index) => {
+                    // Check if request matches tutor's subjects AND time availability
+                    const subjectMatches = tutorSubjects.includes(req.subject);
+                    const timeMatches = tutorAvailableTimes.length === 0 || tutorAvailableTimes.includes(req.requestedTime);
+                    
+                    if (req.status === 'pending' && subjectMatches && timeMatches) {
+                        // Create a reliable requestId using studentId and request index
+                        const requestId = `${student._id}-${index}-${req.createdAt ? new Date(req.createdAt).getTime() : Date.now()}`;
+                        requests.push({
+                            _id: requestId,
+                            studentId: student._id,
+                            requestIndex: index, // Store index for easier lookup
+                            studentName: `${student.firstName} ${student.lastName}`,
+                            studentEmail: student.email,
+                            grade: student.grade || 'N/A',
+                            subject: req.subject,
+                            description: req.description,
+                            priority: req.priority,
+                            requestedTime: req.requestedTime,
+                            createdAt: req.createdAt
+                        });
+                    }
+                });
+            }
         });
 
         res.json({
@@ -493,26 +581,44 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
             tutor.tutorSessions = [];
         }
 
-        const studentId = requestId.split('-')[0];
+        // Parse requestId format: "studentId-index-timestamp"
+        const parts = requestId.split('-');
+        const studentId = parts[0];
+        const requestIndex = parseInt(parts[1]); // Get the index from requestId
+        
         const student = await User.findById(studentId);
 
         if (!student) {
             return res.status(404).json({ error: 'Student not found' });
         }
         
+        // Find the specific request using the index
+        let matchingRequest = null;
+        let requestSubject = 'Mathematics';
+        
+        if (student.tutorRequests && Array.isArray(student.tutorRequests) && student.tutorRequests.length > 0) {
+            // Use index if valid, otherwise find first pending request
+            if (!isNaN(requestIndex) && requestIndex >= 0 && requestIndex < student.tutorRequests.length) {
+                const req = student.tutorRequests[requestIndex];
+                if (req && req.status === 'pending') {
+                    matchingRequest = req;
+                }
+            }
+            
+            // Fallback: find first pending request
+            if (!matchingRequest) {
+                matchingRequest = student.tutorRequests.find(req => req.status === 'pending');
+            }
+            
+            if (matchingRequest) {
+                requestSubject = matchingRequest.subject || 'Mathematics';
+            }
+        }
+        
         // Generate UNIQUE Zoom meeting ID for THIS session
         const uniqueZoomId = Math.floor(Math.random() * 9000000000) + 1000000000;
         const zoomPassword = 'Tutoring2025';
         const zoomLink = `https://zoom.us/j/${uniqueZoomId}?pwd=${zoomPassword}`;
-
-        // Find the request subject
-        let requestSubject = 'Mathematics';
-        if (student.tutorRequests) {
-            const foundReq = student.tutorRequests.find(r => r.status === 'pending');
-            if (foundReq) {
-                requestSubject = foundReq.subject;
-            }
-        }
 
         // Create session with unique Zoom ID
         const session = {
@@ -529,27 +635,14 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
         tutor.tutorSessions.push(session);
         await tutor.save();
 
-        // Update student request status - find the specific request that matches
-        if (student.tutorRequests) {
-            // Find the pending request that matches the subject
-            const matchingRequest = student.tutorRequests.find(req => 
-                req.status === 'pending' && req.subject === requestSubject
-            );
-            
-            if (matchingRequest) {
-                matchingRequest.status = 'accepted';
-                matchingRequest.acceptedAt = new Date();
-                matchingRequest.tutorId = tutor._id;
-            } else {
-                // Fallback: update first pending request
-                const firstPending = student.tutorRequests.find(req => req.status === 'pending');
-                if (firstPending) {
-                    firstPending.status = 'accepted';
-                    firstPending.acceptedAt = new Date();
-                    firstPending.tutorId = tutor._id;
-                }
-            }
+        // Update student request status - use the matching request we found earlier
+        if (matchingRequest) {
+            matchingRequest.status = 'accepted';
+            matchingRequest.acceptedAt = new Date();
+            matchingRequest.tutorId = tutor._id;
             await student.save();
+        } else {
+            console.warn('⚠️ No matching request found to update status');
         }
         
         // Also create a session entry for the student (using studentSessions field)
@@ -665,6 +758,45 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
             }
         });
 
+        // ===== EMAIL TO ADMIN WHEN REQUEST IS ACCEPTED =====
+        const adminMailOptions = {
+            from: process.env.EMAIL_USER,
+            to: 'dylanduancanada@gmail.com',
+            subject: `🔔 New Session Created - ${tutor.firstName} ${tutor.lastName} & ${student.firstName} ${student.lastName}`,
+            html: `
+                <div style="font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px;">
+                    <div style="background: white; padding: 30px; border-radius: 10px; max-width: 600px; margin: 0 auto;">
+                        <h2 style="color: #8b4513;">🔔 New Tutoring Session Created</h2>
+                        
+                        <h3 style="color: #8b4513; margin-top: 20px;">👨‍🏫 Tutor:</h3>
+                        <p><strong>Name:</strong> ${tutor.firstName} ${tutor.lastName}</p>
+                        <p><strong>Email:</strong> ${tutor.email}</p>
+                        
+                        <h3 style="color: #8b4513; margin-top: 20px;">👨‍🎓 Student:</h3>
+                        <p><strong>Name:</strong> ${student.firstName} ${student.lastName}</p>
+                        <p><strong>Email:</strong> ${student.email}</p>
+                        
+                        <h3 style="color: #8b4513; margin-top: 20px;">📚 Session Details:</h3>
+                        <p><strong>Subject:</strong> ${requestSubject}</p>
+                        <p><strong>Scheduled Time:</strong> ${new Date(session.scheduledTime).toLocaleString()}</p>
+                        <p><strong>Zoom Meeting ID:</strong> ${uniqueZoomId}</p>
+                        
+                        <p style="margin-top: 20px; color: #888; font-size: 12px;">
+                            Session hours will be tracked individually for each user.
+                        </p>
+                    </div>
+                </div>
+            `
+        };
+
+        transporter.sendMail(adminMailOptions, (error, info) => {
+            if (error) {
+                console.error('❌ Admin notification error:', error.message);
+            } else {
+                console.log('✅ Admin notification sent for new session');
+            }
+        });
+
         res.json({
             success: true,
             message: 'Request accepted! Zoom links sent to both tutor and student',
@@ -698,15 +830,18 @@ router.get('/sessions', authMiddleware, async (req, res) => {
                         subject: session.subject || 'Mathematics',
                         scheduledTime: session.scheduledTime,
                         status: session.status,
-                        zoomLink: session.zoomLink
+                        zoomLink: session.zoomLink,
+                        hoursSpent: session.hoursSpent,
+                        completedAt: session.completedAt
                     });
                 }
             }
         }
 
+        // Return ALL sessions (not just upcoming) so tutors can see and complete past sessions
         res.json({
             success: true,
-            sessions: sessions.filter(s => new Date(s.scheduledTime) > new Date())
+            sessions: sessions.sort((a, b) => new Date(b.scheduledTime) - new Date(a.scheduledTime))
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -743,20 +878,94 @@ router.post('/complete-session', authMiddleware, async (req, res) => {
             return res.status(403).json({ error: 'Only tutors can complete sessions' });
         }
 
+        let completedSession = null;
+        let student = null;
+
         if (tutor.tutorSessions) {
             tutor.tutorSessions.forEach(session => {
                 if (session._id.toString() === sessionId) {
                     session.status = 'completed';
                     session.hoursSpent = hoursSpent || 1;
                     session.completedAt = new Date();
+                    completedSession = session;
                 }
             });
             await tutor.save();
+
+            // Also update student's session
+            if (completedSession) {
+                student = await User.findById(completedSession.studentId);
+                if (student && student.studentSessions) {
+                    student.studentSessions.forEach(session => {
+                        if (session.tutorId && session.tutorId.toString() === tutor._id.toString() && 
+                            session.subject === completedSession.subject &&
+                            session.status === 'scheduled') {
+                            session.status = 'completed';
+                            session.hoursSpent = hoursSpent || 1;
+                            session.completedAt = new Date();
+                        }
+                    });
+                    await student.save();
+                }
+            }
+        }
+
+        // ===== EMAIL TO ADMIN WITH INDIVIDUAL USER DATA =====
+        if (completedSession && student) {
+            const adminMailOptions = {
+                from: process.env.EMAIL_USER,
+                to: 'dylanduancanada@gmail.com',
+                subject: `📊 Session Completed - ${tutor.firstName} ${tutor.lastName} & ${student.firstName} ${student.lastName}`,
+                html: `
+                    <div style="font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px;">
+                        <div style="background: white; padding: 30px; border-radius: 10px; max-width: 600px; margin: 0 auto;">
+                            <h2 style="color: #8b4513;">📊 Session Completed - Individual Tracking</h2>
+                            
+                            <h3 style="color: #8b4513; margin-top: 20px;">👨‍🏫 Tutor Information:</h3>
+                            <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #d4a574; margin: 10px 0;">
+                                <p><strong>Name:</strong> ${tutor.firstName} ${tutor.lastName}</p>
+                                <p><strong>Email:</strong> ${tutor.email}</p>
+                                <p><strong>Total Hours Taught (This Tutor):</strong> ${(tutor.tutorSessions?.reduce((sum, s) => sum + (s.hoursSpent || 0), 0) || 0).toFixed(1)} hours</p>
+                                <p><strong>Total Sessions Completed (This Tutor):</strong> ${tutor.tutorSessions?.filter(s => s.status === 'completed').length || 0}</p>
+                            </div>
+
+                            <h3 style="color: #8b4513; margin-top: 20px;">👨‍🎓 Student Information:</h3>
+                            <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #d4a574; margin: 10px 0;">
+                                <p><strong>Name:</strong> ${student.firstName} ${student.lastName}</p>
+                                <p><strong>Email:</strong> ${student.email}</p>
+                                <p><strong>Total Hours Learned (This Student):</strong> ${(student.studentSessions?.reduce((sum, s) => sum + (s.hoursSpent || 0), 0) || 0).toFixed(1)} hours</p>
+                                <p><strong>Total Sessions Completed (This Student):</strong> ${student.studentSessions?.filter(s => s.status === 'completed').length || 0}</p>
+                            </div>
+
+                            <h3 style="color: #8b4513; margin-top: 20px;">📝 Session Details:</h3>
+                            <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #d4a574; margin: 10px 0;">
+                                <p><strong>Subject:</strong> ${completedSession.subject || 'N/A'}</p>
+                                <p><strong>Hours Spent:</strong> ${hoursSpent || 1} hour(s)</p>
+                                <p><strong>Completed At:</strong> ${new Date().toLocaleString()}</p>
+                                <p><strong>Scheduled Time:</strong> ${completedSession.scheduledTime ? new Date(completedSession.scheduledTime).toLocaleString() : 'N/A'}</p>
+                            </div>
+
+                            <p style="margin-top: 20px; color: #888; font-size: 12px;">
+                                This is an automated notification from Saint Thunderbird Tutoring Platform.<br>
+                                Each user's hours are tracked individually.
+                            </p>
+                        </div>
+                    </div>
+                `
+            };
+
+            transporter.sendMail(adminMailOptions, (error, info) => {
+                if (error) {
+                    console.error('❌ Admin email error:', error.message);
+                } else {
+                    console.log('✅ Admin notification sent successfully');
+                }
+            });
         }
 
         res.json({
             success: true,
-            message: 'Session completed'
+            message: 'Session completed and admin notified'
         });
     } catch (error) {
         res.status(500).json({ error: error.message });

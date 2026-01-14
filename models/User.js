@@ -26,7 +26,8 @@ const userSchema = new mongoose.Schema({
         subjects: [String],
         bio: String,
         availability: String,
-        motivation: String
+        motivation: String,
+        availableTimes: [String] // e.g., ['30min', '1hour', '1.5hours', '2hours']
     },
 
     // EMBEDDED REQUESTS (If you want to keep them inside the User object)
@@ -34,6 +35,7 @@ const userSchema = new mongoose.Schema({
         subject: String,
         description: String,
         priority: String,
+        requestedTime: String, // e.g., '30min', '1hour', '1.5hours', '2hours'
         status: { type: String, default: 'pending' },
         createdAt: { type: Date, default: Date.now },
         acceptedAt: Date,

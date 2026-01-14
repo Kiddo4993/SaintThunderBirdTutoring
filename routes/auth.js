@@ -31,7 +31,7 @@ router.post('/signup', async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const user = new User({
+        const userData = {
             firstName,
             lastName,
             email,
@@ -39,7 +39,14 @@ router.post('/signup', async (req, res) => {
             userType,
             // If tutor, status is pending. If student, status is active.
             tutorApplication: userType === 'tutor' ? { status: 'pending', appliedAt: new Date() } : undefined
-        });
+        };
+
+        // If tutor profile data is provided, add it
+        if (req.body.tutorProfile && userType === 'tutor') {
+            userData.tutorProfile = req.body.tutorProfile;
+        }
+
+        const user = new User(userData);
 
         await user.save();
 
