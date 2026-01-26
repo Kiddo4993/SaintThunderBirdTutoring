@@ -31,12 +31,18 @@ try {
         }
     });
 } catch (error) {
-    console.error('❌ Failed to create email transporter:', error.message);
+    console.error('❌ FAILED TO CREATE EMAIL TRANSPORTER:', error.message);
+    console.error('💡 This usually means your EMAIL_USER or EMAIL_PASSWORD in .env is incorrect.');
+    console.error('💡 Double check you are using an "App Password" for Gmail, not your login password.');
+    console.error('💡 Full error:', error);
+
     // Create a dummy transporter to prevent crashes
     transporter = {
         sendMail: (options, callback) => {
-            console.error('❌ Email not configured. Cannot send email:', options.to);
-            if (callback) callback(new Error('Email transporter not configured'), null);
+            console.error('❌ [EMAIL FAILED] Email service not configured properly.');
+            console.error('   Attempted to send to:', options.to);
+            console.error('   Subject:', options.subject);
+            if (callback) callback(new Error('Email transporter not configured properly. Check server logs.'), null);
         }
     };
 }
@@ -226,35 +232,35 @@ router.get('/deny/:userId', async (req, res) => {
 router.post('/create-request', authMiddleware, async (req, res) => {
     try {
         const { subject, description, priority, requestedTime } = req.body;
-        
+
         // Validate required fields
         if (!subject) {
-            return res.status(400).json({ 
+            return res.status(400).json({
                 success: false,
-                error: 'Subject is required' 
+                error: 'Subject is required'
             });
         }
 
         if (!requestedTime) {
-            return res.status(400).json({ 
+            return res.status(400).json({
                 success: false,
-                error: 'Session duration is required' 
+                error: 'Session duration is required'
             });
         }
 
         const student = await User.findById(req.user.userId);
 
         if (!student) {
-            return res.status(404).json({ 
+            return res.status(404).json({
                 success: false,
-                error: 'Student not found' 
+                error: 'Student not found'
             });
         }
 
         if (student.userType !== 'student') {
-            return res.status(403).json({ 
+            return res.status(403).json({
                 success: false,
-                error: 'Only students can create requests' 
+                error: 'Only students can create requests'
             });
         }
 
@@ -326,9 +332,9 @@ router.post('/create-request', authMiddleware, async (req, res) => {
         });
     } catch (error) {
         console.error('❌ Error creating request:', error);
-        res.status(500).json({ 
+        res.status(500).json({
             success: false,
-            error: error.message 
+            error: error.message
         });
     }
 });
@@ -356,9 +362,9 @@ router.get('/my-requests', authMiddleware, async (req, res) => {
 router.get('/available-tutors', authMiddleware, async (req, res) => {
     try {
         // UPDATED: Only show tutors who are explicitly APPROVED
-        const tutors = await User.find({ 
+        const tutors = await User.find({
             userType: 'tutor',
-            'tutorApplication.status': 'approved' 
+            'tutorApplication.status': 'approved'
         });
 
         const availableTutors = tutors.map(tutor => ({
@@ -367,7 +373,7 @@ router.get('/available-tutors', authMiddleware, async (req, res) => {
             lastName: tutor.lastName,
             email: tutor.email,
             // Add safety check (|| {}) in case profile is empty
-            tutorProfile: tutor.tutorProfile || { subjects: [], bio: '' } 
+            tutorProfile: tutor.tutorProfile || { subjects: [], bio: '' }
         }));
 
         res.json({
@@ -389,7 +395,7 @@ router.get('/student-sessions', authMiddleware, async (req, res) => {
         }
 
         const sessions = [];
-        
+
         // Get sessions from student's studentSessions array
         if (student.studentSessions && student.studentSessions.length > 0) {
             for (const session of student.studentSessions) {
@@ -410,7 +416,7 @@ router.get('/student-sessions', authMiddleware, async (req, res) => {
                 }
             }
         }
-        
+
         // Also check tutor sessions for backward compatibility
         const tutors = await User.find({ userType: 'tutor' });
         for (const tutor of tutors) {
@@ -452,10 +458,10 @@ router.get('/student-sessions', authMiddleware, async (req, res) => {
 router.post('/update-student-preferences', authMiddleware, async (req, res) => {
     try {
         const { interests, grade } = req.body;
-        
+
         const student = await User.findByIdAndUpdate(
             req.user.userId,
-            { 
+            {
                 grade: grade,
                 interests: interests
             },
@@ -482,19 +488,19 @@ router.get('/student-stats', authMiddleware, async (req, res) => {
         }
 
         const requestsMade = student.tutorRequests?.length || 0;
-        
+
         // Count upcoming sessions from studentSessions array
-        const upcomingSessions = student.studentSessions?.filter(s => 
+        const upcomingSessions = student.studentSessions?.filter(s =>
             s.status === 'scheduled' && new Date(s.scheduledTime) > new Date()
         ).length || 0;
-        
+
         // Count completed sessions
-        const completedSessions = student.studentSessions?.filter(s => 
+        const completedSessions = student.studentSessions?.filter(s =>
             s.status === 'completed'
         ).length || 0;
-        
+
         // Calculate hours learned from completed sessions
-        const hoursLearned = student.studentSessions?.reduce((sum, s) => 
+        const hoursLearned = student.studentSessions?.reduce((sum, s) =>
             sum + (s.hoursSpent || 0), 0
         ) || 0;
 
@@ -536,7 +542,7 @@ router.get('/requests', authMiddleware, async (req, res) => {
                     // Check if request matches tutor's subjects AND time availability
                     const subjectMatches = tutorSubjects.includes(req.subject);
                     const timeMatches = tutorAvailableTimes.length === 0 || tutorAvailableTimes.includes(req.requestedTime);
-                    
+
                     if (req.status === 'pending' && subjectMatches && timeMatches) {
                         // Create a reliable requestId using studentId and request index
                         const requestId = `${student._id}-${index}-${req.createdAt ? new Date(req.createdAt).getTime() : Date.now()}`;
@@ -585,17 +591,17 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
         const parts = requestId.split('-');
         const studentId = parts[0];
         const requestIndex = parseInt(parts[1]); // Get the index from requestId
-        
+
         const student = await User.findById(studentId);
 
         if (!student) {
             return res.status(404).json({ error: 'Student not found' });
         }
-        
+
         // Find the specific request using the index
         let matchingRequest = null;
         let requestSubject = 'Mathematics';
-        
+
         if (student.tutorRequests && Array.isArray(student.tutorRequests) && student.tutorRequests.length > 0) {
             // Use index if valid, otherwise find first pending request
             if (!isNaN(requestIndex) && requestIndex >= 0 && requestIndex < student.tutorRequests.length) {
@@ -604,17 +610,17 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
                     matchingRequest = req;
                 }
             }
-            
+
             // Fallback: find first pending request
             if (!matchingRequest) {
                 matchingRequest = student.tutorRequests.find(req => req.status === 'pending');
             }
-            
+
             if (matchingRequest) {
                 requestSubject = matchingRequest.subject || 'Mathematics';
             }
         }
-        
+
         // Generate UNIQUE Zoom meeting ID for THIS session
         const uniqueZoomId = Math.floor(Math.random() * 9000000000) + 1000000000;
         const zoomPassword = 'Tutoring2025';
@@ -644,7 +650,7 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
         } else {
             console.warn('⚠️ No matching request found to update status');
         }
-        
+
         // Also create a session entry for the student (using studentSessions field)
         if (!student.studentSessions) {
             student.studentSessions = [];
@@ -897,7 +903,7 @@ router.post('/complete-session', authMiddleware, async (req, res) => {
                 student = await User.findById(completedSession.studentId);
                 if (student && student.studentSessions) {
                     student.studentSessions.forEach(session => {
-                        if (session.tutorId && session.tutorId.toString() === tutor._id.toString() && 
+                        if (session.tutorId && session.tutorId.toString() === tutor._id.toString() &&
                             session.subject === completedSession.subject &&
                             session.status === 'scheduled') {
                             session.status = 'completed';
@@ -976,7 +982,7 @@ router.post('/complete-session', authMiddleware, async (req, res) => {
 router.post('/update-specialties', authMiddleware, async (req, res) => {
     try {
         const { subjects } = req.body;
-        
+
         const tutor = await User.findByIdAndUpdate(
             req.user.userId,
             { 'tutorProfile.subjects': subjects },
@@ -997,15 +1003,15 @@ router.post('/update-specialties', authMiddleware, async (req, res) => {
 router.get('/stats', authMiddleware, async (req, res) => {
     try {
         const tutor = await User.findById(req.user.userId);
-        
+
         const completedSessions = tutor.tutorSessions?.filter(
             s => s.status === 'completed'
         ).length || 0;
-        
+
         const hoursTaught = tutor.tutorSessions?.reduce(
             (sum, s) => sum + (s.hoursSpent || 0), 0
         ) || 0;
-        
+
         res.json({
             success: true,
             rating: 4.9,
@@ -1029,8 +1035,8 @@ router.get('/pending-applications', authMiddleware, async (req, res) => {
             return res.status(403).json({ error: 'Unauthorized: Admin access only' });
         }
 
-        const applications = await User.find({ 
-            'tutorApplication.status': 'pending' 
+        const applications = await User.find({
+            'tutorApplication.status': 'pending'
         });
 
         res.json({ success: true, applications });
@@ -1056,14 +1062,14 @@ router.post('/approve-tutor/:userId', authMiddleware, async (req, res) => {
                 'tutorApplication.status': 'approved',
                 'tutorApplication.approvedAt': new Date(),
                 // Initialize default profile if empty
-                'tutorProfile': { 
+                'tutorProfile': {
                     subjects: user.tutorApplication?.subjects || ['General'],
                     bio: "I am ready to help!"
                 }
             },
             { new: true }
         );
-        
+
         res.json({ success: true, message: 'Approved successfully' });
     } catch (error) {
         res.status(500).json({ error: error.message });

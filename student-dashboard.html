@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard - Saint Thunderbird</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <style>
         * {
@@ -36,7 +38,7 @@
             position: fixed;
             width: 100%;
             height: 100%;
-            background: 
+            background:
                 radial-gradient(at 20% 30%, rgba(212, 165, 116, 0.1) 0%, transparent 50%),
                 radial-gradient(at 80% 70%, rgba(139, 69, 19, 0.08) 0%, transparent 50%);
             filter: blur(60px);
@@ -145,59 +147,61 @@
             font-weight: 700;
             margin-bottom: 0.5rem;
         }
-/* ADD THIS TO YOUR CSS */
-.tutors-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
-}
 
-.tutor-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.5rem;
-    transition: all 0.3s;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
+        /* ADD THIS TO YOUR CSS */
+        .tutors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
 
-.tutor-card:hover {
-    border-color: var(--beige);
-    background: rgba(255, 255, 255, 0.08);
-    transform: translateY(-5px);
-}
+        .tutor-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
 
-.tutor-avatar {
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(135deg, var(--beige), var(--accent));
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #000;
-    margin-bottom: 1rem;
-}
+        .tutor-card:hover {
+            border-color: var(--beige);
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-5px);
+        }
 
-.tutor-subjects {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin: 1rem 0;
-}
+        .tutor-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--beige), var(--accent));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 1rem;
+        }
 
-.subject-tag {
-    background: rgba(74, 124, 158, 0.2);
-    color: #60a5fa;
-    padding: 0.25rem 0.6rem;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: 600;
-}
+        .tutor-subjects {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .subject-tag {
+            background: rgba(74, 124, 158, 0.2);
+            color: #60a5fa;
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
         .stat-label {
             font-size: 0.9rem;
             color: var(--text-secondary);
@@ -542,6 +546,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="mesh-gradient"></div>
 
@@ -585,10 +590,12 @@
         <button class="new-request-btn" onclick="openRequestModal()">📝 Request Tutoring Help</button>
 
         <!-- Info Banner -->
-        <div style="background: rgba(59, 130, 246, 0.2); border: 2px solid rgba(59, 130, 246, 0.5); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; color: #60a5fa; font-weight: 600; font-size: 1.1rem;">
+        <div
+            style="background: rgba(59, 130, 246, 0.2); border: 2px solid rgba(59, 130, 246, 0.5); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; color: #60a5fa; font-weight: 600; font-size: 1.1rem;">
             <div style="margin-bottom: 1rem;">
                 🎥 <strong>How It Works:</strong><br>
-                When a tutor accepts your request, they'll receive an email with a Zoom meeting link. The tutor will teach you on Zoom and you'll get all the session details!
+                When a tutor accepts your request, they'll receive an email with a Zoom meeting link. The tutor will
+                teach you on Zoom and you'll get all the session details!
             </div>
             <div style="border-top: 2px solid rgba(59, 130, 246, 0.5); padding-top: 1rem;">
                 💻 <strong>Requirements:</strong> You need a computer to receive online lessons via Zoom
@@ -596,9 +603,11 @@
         </div>
 
         <!-- Support Banner -->
-        <div style="background: rgba(239, 68, 68, 0.2); border: 2px solid rgba(239, 68, 68, 0.5); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; color: #ef4444; font-weight: 600; font-size: 1.1rem; text-align: center;">
+        <div
+            style="background: rgba(239, 68, 68, 0.2); border: 2px solid rgba(239, 68, 68, 0.5); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; color: #ef4444; font-weight: 600; font-size: 1.1rem; text-align: center;">
             📞 <strong>Need Help?</strong><br>
-            If you feel like the tutoring isn't working well or if you experience any difficulties, please contact us at:<br>
+            If you feel like the tutoring isn't working well or if you experience any difficulties, please contact us
+            at:<br>
             <strong style="font-size: 1.2rem; display: block; margin-top: 0.5rem;">📧 dylanduancanada@gmail.com</strong>
         </div>
 
@@ -610,19 +619,19 @@
                     <div class="empty-state-icon">⏰</div>
                     <div class="empty-state-text">No upcoming sessions yet</div>
                     <div class="empty-state-subtext">Submit a tutoring request to get started!</div>
-                    
-                    </div>
+
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Your Requests -->
-        <div class="card">
-            <div class="card-title">📝 Your Requests</div>
-            <div id="yourRequests">
-                <div class="loading">Loading requests...</div>
-            </div>
+    <!-- Your Requests -->
+    <div class="card">
+        <div class="card-title">📝 Your Requests</div>
+        <div id="yourRequests">
+            <div class="loading">Loading requests...</div>
         </div>
+    </div>
     </div>
     <div class="card">
         <div class="card-title">👨‍🏫 Available Tutors</div>
@@ -630,121 +639,122 @@
             <div class="loading">Loading available tutors...</div>
         </div>
 
-    <!-- New Request Modal -->
-    <div class="modal" id="requestModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span>📝 Request Tutoring Help</span>
-                <button class="close-btn" onclick="closeRequestModal()">×</button>
+        <!-- New Request Modal -->
+        <div class="modal" id="requestModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span>📝 Request Tutoring Help</span>
+                    <button class="close-btn" onclick="closeRequestModal()">×</button>
+                </div>
+
+                <form onsubmit="submitRequest(event)">
+                    <div class="form-group">
+                        <label>Subject</label>
+                        <select id="requestSubject" required>
+                            <option value="">Select a subject</option>
+                            <option value="Mathematics">Mathematics 📐</option>
+                            <option value="Sciences">Sciences 🔬</option>
+                            <option value="Languages">Languages 🌐</option>
+                            <option value="Social Studies">Social Studies 📚</option>
+                            <option value="Technology">Technology 💻</option>
+                            <option value="Arts & Culture">Arts & Culture 🎨</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>What do you need help with? (Optional)</label>
+                        <textarea id="requestDescription"
+                            placeholder="Tell the tutor what specific topics you need help with..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Session Duration</label>
+                        <select id="requestTime" required>
+                            <option value="">Select duration</option>
+                            <option value="30min">30 minutes</option>
+                            <option value="1hour">1 hour</option>
+                            <option value="1.5hours">1.5 hours</option>
+                            <option value="2hours">2 hours</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Priority</label>
+                        <select id="requestPriority" required>
+                            <option value="medium" selected>Medium</option>
+                            <option value="low">Low</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" onclick="closeRequestModal()">Cancel</button>
+                        <button type="submit" class="btn-primary">Submit Request</button>
+                    </div>
+                </form>
             </div>
-
-            <form onsubmit="submitRequest(event)">
-                <div class="form-group">
-                    <label>Subject</label>
-                    <select id="requestSubject" required>
-                        <option value="">Select a subject</option>
-                        <option value="Mathematics">Mathematics 📐</option>
-                        <option value="Sciences">Sciences 🔬</option>
-                        <option value="Languages">Languages 🌐</option>
-                        <option value="Social Studies">Social Studies 📚</option>
-                        <option value="Technology">Technology 💻</option>
-                        <option value="Arts & Culture">Arts & Culture 🎨</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>What do you need help with? (Optional)</label>
-                    <textarea id="requestDescription" placeholder="Tell the tutor what specific topics you need help with..."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>Session Duration</label>
-                    <select id="requestTime" required>
-                        <option value="">Select duration</option>
-                        <option value="30min">30 minutes</option>
-                        <option value="1hour">1 hour</option>
-                        <option value="1.5hours">1.5 hours</option>
-                        <option value="2hours">2 hours</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Priority</label>
-                    <select id="requestPriority" required>
-                        <option value="medium" selected>Medium</option>
-                        <option value="low">Low</option>
-                        <option value="high">High</option>
-                    </select>
-                </div>
-
-                <div class="modal-actions">
-                    <button type="button" class="btn-secondary" onclick="closeRequestModal()">Cancel</button>
-                    <button type="submit" class="btn-primary">Submit Request</button>
-                </div>
-            </form>
         </div>
-    </div>
 
 
-<script src="auth.js"></script>
-<script>
-    const API_URL = 'https://saintthunderbirdtutoring.onrender.com/api';
-    
-    // Load all data on page load
-    async function loadDashboard() {
-        console.log('📊 Loading dashboard...');
-        await loadSessions();
-        await loadRequests();
-        await loadTutors();
-        await loadStudentStats();
-    }
-    
-    // Load student stats
-    async function loadStudentStats() {
-        try {
-            const token = localStorage.getItem('authToken');
-            const response = await fetch(`${API_URL}/tutor/student-stats`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            
-            if (response.ok) {
-                const data = await response.json();
-                if (data.success) {
-                    document.getElementById('requestsCount').textContent = data.requestsMade || 0;
-                    document.getElementById('sessionsCount').textContent = data.upcomingSessions || 0;
-                    document.getElementById('completedCount').textContent = data.completedSessions || 0;
-                    document.getElementById('hoursCount').textContent = data.hoursLearned || '0';
+        <script src="auth.js"></script>
+        <script>
+            const API_URL = 'http://localhost:5001/api';
+
+            // Load all data on page load
+            async function loadDashboard() {
+                console.log('📊 Loading dashboard...');
+                await loadSessions();
+                await loadRequests();
+                await loadTutors();
+                await loadStudentStats();
+            }
+
+            // Load student stats
+            async function loadStudentStats() {
+                try {
+                    const token = localStorage.getItem('authToken');
+                    const response = await fetch(`${API_URL}/tutor/student-stats`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.success) {
+                            document.getElementById('requestsCount').textContent = data.requestsMade || 0;
+                            document.getElementById('sessionsCount').textContent = data.upcomingSessions || 0;
+                            document.getElementById('completedCount').textContent = data.completedSessions || 0;
+                            document.getElementById('hoursCount').textContent = data.hoursLearned || '0';
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading student stats:', error);
                 }
             }
-        } catch (error) {
-            console.error('Error loading student stats:', error);
-        }
-    }
-// ADD THIS NEW FUNCTION
-async function loadTutors() {
-    try {
-        const token = localStorage.getItem('authToken');
-        // This endpoint must match your routes/tutor.js
-        const url = `${API_URL}/tutor/available-tutors`; 
-        console.log('📍 Fetching tutors from:', url);
-        
-        const res = await fetch(url, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
+            // ADD THIS NEW FUNCTION
+            async function loadTutors() {
+                try {
+                    const token = localStorage.getItem('authToken');
+                    // This endpoint must match your routes/tutor.js
+                    const url = `${API_URL}/tutor/available-tutors`;
+                    console.log('📍 Fetching tutors from:', url);
 
-        const data = await res.json();
-        const container = document.getElementById('tutors-container');
+                    const res = await fetch(url, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
 
-        if (data.success && data.tutors && data.tutors.length > 0) {
-            const html = data.tutors.map(tutor => {
-                // Handle subjects list safely
-                const subjects = tutor.tutorProfile?.subjects || ['General Help'];
-                const subjectsHtml = subjects.map(s => `<span class="subject-tag">${s}</span>`).join('');
-                
-                // Get initials for avatar
-                const initials = (tutor.firstName[0] + tutor.lastName[0]).toUpperCase();
+                    const data = await res.json();
+                    const container = document.getElementById('tutors-container');
 
-                return `
+                    if (data.success && data.tutors && data.tutors.length > 0) {
+                        const html = data.tutors.map(tutor => {
+                            // Handle subjects list safely
+                            const subjects = tutor.tutorProfile?.subjects || ['General Help'];
+                            const subjectsHtml = subjects.map(s => `<span class="subject-tag">${s}</span>`).join('');
+
+                            // Get initials for avatar
+                            const initials = (tutor.firstName[0] + tutor.lastName[0]).toUpperCase();
+
+                            return `
                     <div class="tutor-card">
                         <div>
                             <div class="session-header" style="margin-bottom: 0.5rem;">
@@ -769,68 +779,68 @@ async function loadTutors() {
                         </button>
                     </div>
                 `;
-            }).join('');
-            
-            container.innerHTML = html;
-        } else {
-            container.innerHTML = `
+                        }).join('');
+
+                        container.innerHTML = html;
+                    } else {
+                        container.innerHTML = `
                 <div class="empty-state" style="grid-column: 1 / -1;">
                     <div class="empty-state-icon">👨‍🏫</div>
                     <div class="empty-state-text">No tutors available right now</div>
                     <div class="empty-state-subtext">Check back later!</div>
                 </div>
             `;
-        }
-    } catch (error) {
-        console.error('❌ Error loading tutors:', error);
-        document.getElementById('tutors-container').innerHTML = '<div class="loading">Error loading tutors</div>';
-    }
-}
-
-    // Load student's sessions
-    async function loadSessions() {
-        try {
-            const token = localStorage.getItem('authToken');
-            console.log('🔐 Token:', token ? '✅ Found' : '❌ Not found');
-            
-            const url = `${API_URL}/tutor/student-sessions`;
-            console.log('📍 Fetching from:', url);
-            
-            const res = await fetch(url, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-
-            console.log('📡 Response status:', res.status);
-
-            const data = await res.json();
-            console.log('📦 Sessions data:', data);
-
-            const container = document.getElementById('upcomingSessions');
-
-            if (data.success && data.sessions && data.sessions.length > 0) {
-                document.getElementById('sessionsCount').textContent = data.sessions.length;
-                
-                const html = data.sessions.map(session => {
-                    const sessionDate = new Date(session.scheduledTime);
-                    const now = new Date();
-                    const daysUntil = Math.ceil((sessionDate - now) / (1000 * 60 * 60 * 24));
-                    const hoursUntil = Math.ceil((sessionDate - now) / (1000 * 60 * 60));
-                    const minutesUntil = Math.ceil((sessionDate - now) / (1000 * 60));
-
-                    let countdownText = '';
-                    if (daysUntil > 1) {
-                        countdownText = `📅 In ${daysUntil} days`;
-                    } else if (daysUntil === 1) {
-                        countdownText = `⏰ Tomorrow`;
-                    } else if (hoursUntil > 0) {
-                        countdownText = `⏳ In ${hoursUntil} hours`;
-                    } else if (minutesUntil > 0) {
-                        countdownText = `🔴 In ${minutesUntil} minutes`;
-                    } else {
-                        countdownText = `🎓 Starting now!`;
                     }
+                } catch (error) {
+                    console.error('❌ Error loading tutors:', error);
+                    document.getElementById('tutors-container').innerHTML = '<div class="loading">Error loading tutors</div>';
+                }
+            }
 
-                    return `
+            // Load student's sessions
+            async function loadSessions() {
+                try {
+                    const token = localStorage.getItem('authToken');
+                    console.log('🔐 Token:', token ? '✅ Found' : '❌ Not found');
+
+                    const url = `${API_URL}/tutor/student-sessions`;
+                    console.log('📍 Fetching from:', url);
+
+                    const res = await fetch(url, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    console.log('📡 Response status:', res.status);
+
+                    const data = await res.json();
+                    console.log('📦 Sessions data:', data);
+
+                    const container = document.getElementById('upcomingSessions');
+
+                    if (data.success && data.sessions && data.sessions.length > 0) {
+                        document.getElementById('sessionsCount').textContent = data.sessions.length;
+
+                        const html = data.sessions.map(session => {
+                            const sessionDate = new Date(session.scheduledTime);
+                            const now = new Date();
+                            const daysUntil = Math.ceil((sessionDate - now) / (1000 * 60 * 60 * 24));
+                            const hoursUntil = Math.ceil((sessionDate - now) / (1000 * 60 * 60));
+                            const minutesUntil = Math.ceil((sessionDate - now) / (1000 * 60));
+
+                            let countdownText = '';
+                            if (daysUntil > 1) {
+                                countdownText = `📅 In ${daysUntil} days`;
+                            } else if (daysUntil === 1) {
+                                countdownText = `⏰ Tomorrow`;
+                            } else if (hoursUntil > 0) {
+                                countdownText = `⏳ In ${hoursUntil} hours`;
+                            } else if (minutesUntil > 0) {
+                                countdownText = `🔴 In ${minutesUntil} minutes`;
+                            } else {
+                                countdownText = `🎓 Starting now!`;
+                            }
+
+                            return `
                         <div class="session-card">
                             <div class="session-header">
                                 <div>
@@ -868,55 +878,55 @@ async function loadTutors() {
                             ` : ''}
                         </div>
                     `;
-                }).join('');
-                
-                container.innerHTML = html;
-            } else {
-                // Stats will be updated by loadStudentStats
-                container.innerHTML = `
+                        }).join('');
+
+                        container.innerHTML = html;
+                    } else {
+                        // Stats will be updated by loadStudentStats
+                        container.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">⏰</div>
                         <div class="empty-state-text">No upcoming sessions yet</div>
                         <div class="empty-state-subtext">Submit a tutoring request to get started!</div>
                     </div>
                 `;
+                    }
+                } catch (error) {
+                    console.error('❌ Error loading sessions:', error);
+                }
             }
-        } catch (error) {
-            console.error('❌ Error loading sessions:', error);
-        }
-    }
 
-    // Load student's requests
-    async function loadRequests() {
-        try {
-            const token = localStorage.getItem('authToken');
-            const url = `${API_URL}/tutor/my-requests`;
-            console.log('📍 Fetching requests from:', url);
-            
-            const res = await fetch(url, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
+            // Load student's requests
+            async function loadRequests() {
+                try {
+                    const token = localStorage.getItem('authToken');
+                    const url = `${API_URL}/tutor/my-requests`;
+                    console.log('📍 Fetching requests from:', url);
 
-            console.log('📡 Response status:', res.status);
+                    const res = await fetch(url, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
 
-            const data = await res.json();
-            console.log('📦 Requests data:', data);
+                    console.log('📡 Response status:', res.status);
 
-            const container = document.getElementById('yourRequests');
+                    const data = await res.json();
+                    console.log('📦 Requests data:', data);
 
-            if (data.success && data.requests && data.requests.length > 0) {
-                // Stats will be updated by loadStudentStats
-                
-                const html = data.requests.map(req => {
-                    const timeLabels = {
-                        '30min': '30 minutes',
-                        '1hour': '1 hour',
-                        '1.5hours': '1.5 hours',
-                        '2hours': '2 hours'
-                    };
-                    const timeLabel = timeLabels[req.requestedTime] || req.requestedTime || 'Not specified';
-                    
-                    return `
+                    const container = document.getElementById('yourRequests');
+
+                    if (data.success && data.requests && data.requests.length > 0) {
+                        // Stats will be updated by loadStudentStats
+
+                        const html = data.requests.map(req => {
+                            const timeLabels = {
+                                '30min': '30 minutes',
+                                '1hour': '1 hour',
+                                '1.5hours': '1.5 hours',
+                                '2hours': '2 hours'
+                            };
+                            const timeLabel = timeLabels[req.requestedTime] || req.requestedTime || 'Not specified';
+
+                            return `
                     <div class="request-card">
                         <div class="request-subject">${req.subject}</div>
                         <span class="request-status status-${req.status}">${req.status.toUpperCase()}</span>
@@ -934,153 +944,154 @@ async function loadTutors() {
                         </div>
                     </div>
                 `;
-                }).join('');
-                
-                container.innerHTML = html;
-            } else {
-                // Stats will be updated by loadStudentStats
-                container.innerHTML = `
+                        }).join('');
+
+                        container.innerHTML = html;
+                    } else {
+                        // Stats will be updated by loadStudentStats
+                        container.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">📖</div>
                         <div class="empty-state-text">No requests yet</div>
                         <div class="empty-state-subtext">Create your first request to find a tutor!</div>
                     </div>
                 `;
+                    }
+                } catch (error) {
+                    console.error('❌ Error loading requests:', error);
+                }
             }
-        } catch (error) {
-            console.error('❌ Error loading requests:', error);
-        }
-    }
 
-    // Modal functions
-    function openRequestModal() {
-        console.log('🎯 Opening request modal...');
-        const modal = document.getElementById('requestModal');
-        console.log('Modal element:', modal);
-        if (modal) {
-            modal.classList.add('active');
-            console.log('✅ Modal opened');
-        } else {
-            console.error('❌ Modal element not found!');
-        }
-    }
+            // Modal functions
+            function openRequestModal() {
+                console.log('🎯 Opening request modal...');
+                const modal = document.getElementById('requestModal');
+                console.log('Modal element:', modal);
+                if (modal) {
+                    modal.classList.add('active');
+                    console.log('✅ Modal opened');
+                } else {
+                    console.error('❌ Modal element not found!');
+                }
+            }
 
-    function closeRequestModal() {
-        console.log('🎯 Closing request modal...');
-        const modal = document.getElementById('requestModal');
-        if (modal) {
-            modal.classList.remove('active');
-        }
-    }
+            function closeRequestModal() {
+                console.log('🎯 Closing request modal...');
+                const modal = document.getElementById('requestModal');
+                if (modal) {
+                    modal.classList.remove('active');
+                }
+            }
 
-    // Close modal when clicking outside
-    document.addEventListener('click', function(event) {
-        const modal = document.getElementById('requestModal');
-        if (event.target === modal) {
-            closeRequestModal();
-        }
-    });
-
-    // Submit new request
-    async function submitRequest(event) {
-        event.preventDefault();
-
-        const subject = document.getElementById('requestSubject').value;
-        const description = document.getElementById('requestDescription').value;
-        const priority = document.getElementById('requestPriority').value;
-        const requestedTime = document.getElementById('requestTime').value;
-
-        console.log('📝 Submitting request:', { subject, description, priority, requestedTime });
-
-        if (!subject) {
-            alert('❌ Please select a subject');
-            return;
-        }
-
-        if (!requestedTime) {
-            alert('❌ Please select a session duration');
-            return;
-        }
-
-        try {
-            const token = localStorage.getItem('authToken');
-            const url = `${API_URL}/tutor/create-request`;
-            
-            console.log('📍 Posting to:', url);
-            
-            const res = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ subject, description, priority, requestedTime })
+            // Close modal when clicking outside
+            document.addEventListener('click', function (event) {
+                const modal = document.getElementById('requestModal');
+                if (event.target === modal) {
+                    closeRequestModal();
+                }
             });
 
-            console.log('📡 Response status:', res.status);
+            // Submit new request
+            async function submitRequest(event) {
+                event.preventDefault();
 
-            const data = await res.json();
-            console.log('📦 Response data:', data);
+                const subject = document.getElementById('requestSubject').value;
+                const description = document.getElementById('requestDescription').value;
+                const priority = document.getElementById('requestPriority').value;
+                const requestedTime = document.getElementById('requestTime').value;
 
-            if (data.success) {
-                console.log('✅ Request submitted successfully!');
-                alert('✅ Request submitted! Tutors will be notified.');
-                closeRequestModal();
-                
-                // Clear form
-                document.getElementById('requestSubject').value = '';
-                document.getElementById('requestDescription').value = '';
-                document.getElementById('requestPriority').value = 'medium';
-                document.getElementById('requestTime').value = '';
-                
-                // Reload dashboard
-                loadDashboard();
-            } else {
-                console.error('❌ Server error:', data.error);
-                alert('❌ Error: ' + (data.error || 'Failed to submit request'));
+                console.log('📝 Submitting request:', { subject, description, priority, requestedTime });
+
+                if (!subject) {
+                    alert('❌ Please select a subject');
+                    return;
+                }
+
+                if (!requestedTime) {
+                    alert('❌ Please select a session duration');
+                    return;
+                }
+
+                try {
+                    const token = localStorage.getItem('authToken');
+                    const url = `${API_URL}/tutor/create-request`;
+
+                    console.log('📍 Posting to:', url);
+
+                    const res = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ subject, description, priority, requestedTime })
+                    });
+
+                    console.log('📡 Response status:', res.status);
+
+                    const data = await res.json();
+                    console.log('📦 Response data:', data);
+
+                    if (data.success) {
+                        console.log('✅ Request submitted successfully!');
+                        alert('✅ Request submitted! Tutors will be notified.');
+                        closeRequestModal();
+
+                        // Clear form
+                        document.getElementById('requestSubject').value = '';
+                        document.getElementById('requestDescription').value = '';
+                        document.getElementById('requestPriority').value = 'medium';
+                        document.getElementById('requestTime').value = '';
+
+                        // Reload dashboard
+                        loadDashboard();
+                    } else {
+                        console.error('❌ Server error:', data.error);
+                        alert('❌ Error: ' + (data.error || 'Failed to submit request'));
+                    }
+                } catch (error) {
+                    console.error('❌ Error submitting request:', error);
+                    alert('❌ Error submitting request: ' + error.message);
+                }
             }
-        } catch (error) {
-            console.error('❌ Error submitting request:', error);
-            alert('❌ Error submitting request: ' + error.message);
-        }
-    }
 
-    // Navigation
-    function logout() {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('user');
-        window.location.href = 'login.html';
-    }
+            // Navigation
+            function logout() {
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('user');
+                window.location.href = 'login.html';
+            }
 
-    // Load dashboard on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('✅ Page loaded, initializing...');
-        
-        const user = getUser();
-        console.log('🔍 Debug Info:');
-        console.log('User:', user);
-        console.log('API_URL:', API_URL);
+            // Load dashboard on page load
+            document.addEventListener('DOMContentLoaded', function () {
+                console.log('✅ Page loaded, initializing...');
 
-        if (!user || user.userType !== 'student') {
-            console.error('❌ Not a student, redirecting...');
-            window.location.href = 'login.html';
-            return;
-        }
+                const user = getUser();
+                console.log('🔍 Debug Info:');
+                console.log('User:', user);
+                console.log('API_URL:', API_URL);
 
-        // Set student name
-        const studentNameEl = document.getElementById('studentName');
-        if (studentNameEl) {
-            studentNameEl.textContent = user.firstName;
-        }
+                if (!user || user.userType !== 'student') {
+                    console.error('❌ Not a student, redirecting...');
+                    window.location.href = 'login.html';
+                    return;
+                }
 
-        // Load dashboard data
-        loadDashboard();
-        
-        // Refresh data every 30 seconds
-        setInterval(loadDashboard, 30000);
-    });
+                // Set student name
+                const studentNameEl = document.getElementById('studentName');
+                if (studentNameEl) {
+                    studentNameEl.textContent = user.firstName;
+                }
 
-    console.log('✅ Scripts loaded successfully');
-</script>
+                // Load dashboard data
+                loadDashboard();
+
+                // Refresh data every 30 seconds
+                setInterval(loadDashboard, 30000);
+            });
+
+            console.log('✅ Scripts loaded successfully');
+        </script>
 </body>
+
 </html>

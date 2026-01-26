@@ -13,7 +13,7 @@
       intro.style.transition = 'opacity 1s ease, transform 1s ease';
       intro.style.opacity = '0';
       intro.style.transform = 'scale(1.05)';
-      
+
       setTimeout(() => {
         intro.style.display = 'none';
         intro.classList.add('hidden');
@@ -36,7 +36,7 @@
 
   // ===== INTERSECTION OBSERVER =====
   const observerOptions = { threshold: 0.18, rootMargin: '0px 0px -50px 0px' };
-  
+
   const revealObserver = new IntersectionObserver((entries) => {
     entries.forEach((entry, index) => {
       if (entry.isIntersecting) {
@@ -71,7 +71,7 @@
   const counterObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (!entry.isIntersecting) return;
-      
+
       const el = entry.target;
       if (el.dataset._animated) {
         counterObserver.unobserve(el);
@@ -89,9 +89,9 @@
         const progress = frame / totalFrames;
         const eased = 1 - Math.pow(1 - progress, 3);
         const value = Math.round(target * eased);
-        
+
         el.textContent = value.toLocaleString();
-        
+
         if (frame < totalFrames) {
           requestAnimationFrame(animate);
         } else {
@@ -112,7 +112,7 @@
   const progressObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (!entry.isIntersecting) return;
-      
+
       const fill = entry.target;
       if (fill.dataset._filled) {
         progressObserver.unobserve(fill);
@@ -120,7 +120,7 @@
       }
 
       const width = parseFloat(fill.getAttribute('data-width') || '100');
-      
+
       setTimeout(() => {
         fill.style.width = width + '%';
         fill.style.background = 'linear-gradient(90deg, #ff8c00, #ffa500, #ff6b35)';
@@ -148,7 +148,7 @@
     anchor.addEventListener('click', function (e) {
       const href = this.getAttribute('href');
       if (href === '#') return;
-      
+
       e.preventDefault();
       const target = $(href);
       if (target) {
@@ -195,61 +195,61 @@
 
   // ===== POPUP SYSTEM =====
   const popups = [
-    { 
-      icon: '🎓', 
-      title: 'Welcome!', 
-      msg: 'Explore culturally responsive education for Indigenous students', 
-      btn: 'Learn More', 
-      link: '#about' 
+    {
+      icon: '🎓',
+      title: 'Welcome!',
+      msg: 'Explore culturally responsive education for Indigenous students',
+      btn: 'Learn More',
+      link: '#about'
     },
-    { 
-      icon: '500️⃣', 
-      title: '500+ Students', 
-      msg: 'Join our thriving community across 15 Indigenous communities', 
-      btn: 'Join Us', 
-      link: '#students' 
+    {
+      icon: '500️⃣',
+      title: 'Targeting 500+ Students',
+      msg: 'Join our thriving community targeting over 15 Indigenous communities',
+      btn: 'Join Us',
+      link: '#students'
     },
-    { 
-      icon: '💝', 
-      title: 'Completely Free', 
-      msg: 'All tutoring services are free for First Nations students', 
-      btn: 'Get Started', 
-      link: '#subjects' 
+    {
+      icon: '💝',
+      title: 'Completely Free',
+      msg: 'All tutoring services are free for First Nations students',
+      btn: 'Get Started',
+      link: '#subjects'
     },
-    { 
-      icon: '👨‍🏫', 
-      title: 'Become a Tutor', 
-      msg: 'Share your knowledge and make a lasting impact', 
-      btn: 'Apply Now', 
-      link: '#mentors' 
+    {
+      icon: '👨‍🏫',
+      title: 'Become a Tutor',
+      msg: 'Share your knowledge and make a lasting impact',
+      btn: 'Apply Now',
+      link: '#mentors'
     },
-    { 
-      icon: '⚡', 
-      title: 'Expert Mentorship', 
-      msg: 'Learn from certified educators and indigenous community leaders', 
-      btn: 'Meet Our Team', 
-      link: '#mentors' 
+    {
+      icon: '⚡',
+      title: 'Expert Mentorship',
+      msg: 'Learn from certified educators and indigenous community leaders',
+      btn: 'Meet Our Team',
+      link: '#mentors'
     },
-    { 
-      icon: '🌟', 
-      title: '100% Success Rate', 
-      msg: 'Students are improving their grades with our personalized support', 
-      btn: 'View Subjects', 
-      link: '#subjects' 
+    {
+      icon: '🌟',
+      title: '100% Success Rate',
+      msg: 'Students are improving their grades with our personalized support',
+      btn: 'View Subjects',
+      link: '#subjects'
     },
-    { 
-      icon: '🤝', 
-      title: 'Community First', 
-      msg: 'Join study groups and connect with fellow indigenous students', 
-      btn: 'Explore More', 
-      link: '#students' 
+    {
+      icon: '🤝',
+      title: 'Community First',
+      msg: 'Join study groups and connect with fellow indigenous students',
+      btn: 'Explore More',
+      link: '#students'
     },
-    { 
-      icon: '🏆', 
-      title: 'Celebrate Success', 
-      msg: 'We recognize every achievement and celebrate your growth', 
-      btn: 'Learn More', 
-      link: '#about' 
+    {
+      icon: '🏆',
+      title: 'Celebrate Success',
+      msg: 'We recognize every achievement and celebrate your growth',
+      btn: 'Learn More',
+      link: '#about'
     }
   ];
 
@@ -318,7 +318,7 @@ function setupMusicControls() {
   const musicControl = document.getElementById('musicControl');
 
   if (volumeSlider) {
-    volumeSlider.addEventListener('input', function() {
+    volumeSlider.addEventListener('input', function () {
       volumeValue.textContent = this.value + '%';
     });
   }
@@ -329,7 +329,7 @@ function setupMusicControls() {
 
   // Collapse/expand functionality
   if (collapseBtn && musicControl) {
-    collapseBtn.addEventListener('click', function() {
+    collapseBtn.addEventListener('click', function () {
       const isCollapsed = musicControl.classList.toggle('collapsed');
       collapseBtn.textContent = isCollapsed ? '←' : '→';
     });
@@ -338,7 +338,7 @@ function setupMusicControls() {
 
 function toggleMusic() {
   const btn = document.getElementById('musicToggle');
-  
+
   if (!isPlaying) {
     if (!audioContext) {
       audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -355,7 +355,7 @@ function toggleMusic() {
 
 function playClassicalMusic() {
   if (!isPlaying) return;
-  
+
   const notes = [
     { freq: 329.63, duration: 0.6 },
     { freq: 349.23, duration: 0.6 },
@@ -367,7 +367,7 @@ function playClassicalMusic() {
     { freq: 293.66, duration: 0.6 },
     { freq: 329.63, duration: 0.9 },
   ];
-  
+
   let delay = 0;
   notes.forEach(note => {
     setTimeout(() => {
@@ -377,7 +377,7 @@ function playClassicalMusic() {
     }, delay * 1000);
     delay += note.duration;
   });
-  
+
   if (isPlaying) {
     setTimeout(() => playClassicalMusic(), delay * 1000);
   }
@@ -385,22 +385,22 @@ function playClassicalMusic() {
 
 function playNote(frequency, duration) {
   if (!audioContext) return;
-  
+
   const volumeSlider = document.getElementById('volumeSlider');
   const volume = volumeSlider ? volumeSlider.value / 100 : 0.3;
-  
+
   const osc = audioContext.createOscillator();
   const gain = audioContext.createGain();
-  
+
   osc.type = 'sine';
   osc.frequency.value = frequency;
-  
+
   gain.gain.setValueAtTime(0.05 * volume, audioContext.currentTime);
   gain.gain.exponentialRampToValueAtTime(0.001 * volume, audioContext.currentTime + duration);
-  
+
   osc.connect(gain);
   gain.connect(audioContext.destination);
-  
+
   osc.start(audioContext.currentTime);
   osc.stop(audioContext.currentTime + duration);
 }
@@ -412,11 +412,11 @@ document.addEventListener('DOMContentLoaded', setupMusicControls);
 window.toggleTheme = function toggleTheme() {
   document.body.classList.toggle('light-mode');
   const isLight = document.body.classList.contains('light-mode');
-  
+
   if (isLight) {
-    try { localStorage.setItem('st-theme', 'light'); } catch {}
+    try { localStorage.setItem('st-theme', 'light'); } catch { }
   } else {
-    try { localStorage.setItem('st-theme', 'dark'); } catch {}
+    try { localStorage.setItem('st-theme', 'dark'); } catch { }
   }
 
   const themeBtn = document.querySelector('.theme-toggle');
@@ -453,7 +453,7 @@ const infoCards = [
     subtitle: 'Empowering Through Education',
     description: 'Provide culturally responsive education that honors indigenous traditions while preparing students for future success through accessible, high-quality tutoring and mentorship.',
     highlight: 'Excellence meets Heritage',
-    stats: ['500+ Students', '100% Success Rate', '15 Communities']
+    stats: ['Targeting 500+ Students', '100% Success Rate', 'Targeting 15 Communities']
   },
   {
     icon: '🌍',
@@ -461,15 +461,15 @@ const infoCards = [
     subtitle: 'Across the Nation',
     description: 'We proudly serve indigenous students across 15 different First Nations communities spanning 3 provinces, bringing quality education directly to where our students live.',
     highlight: 'Coast to Coast Impact',
-    stats: ['15 Communities', '3 Provinces', 'Growing Daily']
+    stats: ['Targeting 15 Communities', 'Targeting 3 Provinces', 'Growing Daily']
   },
   {
     icon: '⚡',
-    title: '500+ Students Strong',
+    title: 'Targeting 500+ Students Strong',
     subtitle: 'A Growing Movement',
-    description: 'Over 500 indigenous students are currently enrolled and thriving with Saint Thunderbird. Each student receives personalized support tailored to their unique learning style and cultural background.',
+    description: 'Targeting over 500 indigenous students are currently enrolled and thriving with Saint Thunderbird. Each student receives personalized support tailored to their unique learning style and cultural background.',
     highlight: 'Every Student Matters',
-    stats: ['500+ Enrolled', '45% Growth YoY', 'Free Access']
+    stats: ['Targeting 500+ Enrolled', '45% Growth YoY', 'Free Access']
   },
   {
     icon: '👨‍🏫',
@@ -477,7 +477,7 @@ const infoCards = [
     subtitle: 'Dedicated Educators',
     description: 'Our team of 45+ expert tutors includes certified teachers, university professors, indigenous community leaders, and successful professionals committed to student success.',
     highlight: 'Experts Who Care',
-    stats: ['45+ Tutors', 'All Certified', 'Community Leaders']
+    stats: ['Targeting 45+ Tutors', 'All Certified', 'Community Leaders']
   },
   {
     icon: '🏆',
@@ -553,22 +553,22 @@ function showInfoCard() {
   const card = infoCards[currentCardIndex];
   const closeBtn = infoCardElement.querySelector('.premium-info-close');
   const content = infoCardElement.querySelector('.premium-info-content');
-  
+
   infoCardElement.querySelector('.premium-info-icon').textContent = card.icon;
   infoCardElement.querySelector('.premium-info-title').textContent = card.title;
   infoCardElement.querySelector('.premium-info-subtitle').textContent = card.subtitle;
   infoCardElement.querySelector('.premium-info-description').textContent = card.description;
   infoCardElement.querySelector('.premium-info-highlight').textContent = '✨ ' + card.highlight + ' ✨';
-  
+
   const statsHtml = card.stats.map(stat => `<span class="stat-badge">${stat}</span>`).join('');
   infoCardElement.querySelector('.premium-info-stats').innerHTML = statsHtml;
-  
+
   infoCardElement.querySelector('.premium-info-counter').textContent = `${currentCardIndex + 1}/${infoCards.length}`;
 
   closeBtn.style.opacity = '1';
   content.style.opacity = '1';
   infoCardElement.classList.add('active');
-  
+
   clearTimeout(cardTimeout);
   cardTimeout = setTimeout(() => {
     closeBtn.style.opacity = '0';
@@ -606,10 +606,10 @@ function toggleInfoMenu() {
 function createInfoMenu() {
   infoMenuElement = document.createElement('div');
   infoMenuElement.className = 'info-menu-dropdown';
-  
+
   let html = '<div class="info-menu-stripes">☰</div>';
   html += '<div class="info-menu-content">';
-  
+
   infoCards.forEach((card, index) => {
     html += `
       <div class="info-menu-item" onclick="openDetailedCard(${index})">
@@ -622,12 +622,12 @@ function createInfoMenu() {
       </div>
     `;
   });
-  
+
   html += '</div>';
   infoMenuElement.innerHTML = html;
-  
+
   document.body.appendChild(infoMenuElement);
-  
+
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.info-menu-btn') && !e.target.closest('.info-menu-dropdown')) {
       infoMenuElement.classList.remove('active');
@@ -649,40 +649,40 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadTutors() {
   // 1. Find the container where you want the boxes to appear
   const container = document.getElementById('tutors-container');
-  
+
   // If this page doesn't have the container, stop running (prevents errors)
   if (!container) return;
 
   try {
-      // 2. Fetch data from the backend
-      // Note: You need to be logged in (have a token) for this to work
-      const token = localStorage.getItem('token');
-      
-      const response = await fetch('/api/tutor/available-tutors', {
-          method: 'GET',
-          headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}` 
-          }
-      });
+    // 2. Fetch data from the backend
+    // Note: You need to be logged in (have a token) for this to work
+    const token = localStorage.getItem('token');
 
-      const data = await response.json();
+    const response = await fetch('http://localhost:5001/api/tutor/available-tutors', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
 
-      if (data.success) {
-          // 3. Clear any placeholder text
-          container.innerHTML = '';
+    const data = await response.json();
 
-          // 4. Generate a box for each tutor
-          if (data.tutors.length === 0) {
-              container.innerHTML = '<p>No tutors available right now.</p>';
-              return;
-          }
+    if (data.success) {
+      // 3. Clear any placeholder text
+      container.innerHTML = '';
 
-          data.tutors.forEach(tutor => {
-              const subjects = tutor.tutorProfile?.subjects?.join(', ') || 'General Help';
-              const bio = tutor.tutorProfile?.bio || 'Ready to help you learn!';
-              
-              const card = `
+      // 4. Generate a box for each tutor
+      if (data.tutors.length === 0) {
+        container.innerHTML = '<p>No tutors available right now.</p>';
+        return;
+      }
+
+      data.tutors.forEach(tutor => {
+        const subjects = tutor.tutorProfile?.subjects?.join(', ') || 'General Help';
+        const bio = tutor.tutorProfile?.bio || 'Ready to help you learn!';
+
+        const card = `
                   <div class="glass-card tutor-card">
                       <div class="tutor-header">
                           <div class="tutor-avatar">${tutor.firstName.charAt(0)}</div>
@@ -695,11 +695,11 @@ async function loadTutors() {
                       <button onclick="requestTutor('${tutor._id}')" class="btn-primary">Request Help</button>
                   </div>
               `;
-              container.innerHTML += card;
-          });
-      }
+        container.innerHTML += card;
+      });
+    }
   } catch (error) {
-      console.error('Error loading tutors:', error);
+    console.error('Error loading tutors:', error);
   }
 }
 
@@ -707,5 +707,5 @@ async function loadTutors() {
 function requestTutor(tutorId) {
   // Store the ID so we know who they chose, then redirect to request form
   localStorage.setItem('selectedTutorId', tutorId);
-  window.location.href = 'request-help.html'; 
+  window.location.href = 'request-help.html';
 }

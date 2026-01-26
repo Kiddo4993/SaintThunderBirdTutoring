@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tutor Dashboard - Saint Thunderbird</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <style>
         * {
@@ -23,14 +25,15 @@
             --border: rgba(212, 165, 116, 0.2);
             --success: #22c55e;
         }
-        /* Add this to your <style> section */
-#adminLink {
-    display: none !important;
-}
 
-#adminLink[style*="display: inline-block"] {
-    display: inline-block !important;
-}
+        /* Add this to your <style> section */
+        #adminLink {
+            display: none !important;
+        }
+
+        #adminLink[style*="display: inline-block"] {
+            display: inline-block !important;
+        }
 
         body {
             font-family: 'Orbitron', sans-serif;
@@ -44,7 +47,7 @@
             position: fixed;
             width: 100%;
             height: 100%;
-            background: 
+            background:
                 radial-gradient(at 20% 30%, rgba(212, 165, 116, 0.1) 0%, transparent 50%),
                 radial-gradient(at 80% 70%, rgba(139, 69, 19, 0.08) 0%, transparent 50%);
             filter: blur(60px);
@@ -344,10 +347,11 @@
         }
     </style>
 </head>
-<body>
-    
 
- 
+<body>
+
+
+
     <div class="mesh-gradient"></div>
 
     <div class="container">
@@ -384,14 +388,17 @@
             </div>
 
         </div>
-           <!-- Replace the volunteer hours banner with this -->
-            <div style="background: rgba(34, 197, 94, 0.2); border: 2px solid rgba(34, 197, 94, 0.5); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; color: #22c55e; font-weight: 600; font-size: 1.1rem; text-align: center;">
-                👥 <strong>Free Volunteer Hours Available!</strong><br>
-                For every hour you tutor, you earn free volunteer hours. Email dylanduancanada@gmail.com to get your volunteer hours confirmed and added to your record.<br>
-                <a href="volunteer-hours-guide.html" style="display: inline-block; margin-top: 1rem; padding: 0.75rem 1.5rem; background: rgba(212, 165, 116, 0.1); color: var(--beige); border: 1px solid var(--border); border-radius: 8px; text-decoration: none; font-weight: 700; transition: all 0.3s;">
-                    📚 Learn More
-                </a>
-            </div>
+        <!-- Replace the volunteer hours banner with this -->
+        <div
+            style="background: rgba(34, 197, 94, 0.2); border: 2px solid rgba(34, 197, 94, 0.5); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; color: #22c55e; font-weight: 600; font-size: 1.1rem; text-align: center;">
+            👥 <strong>Free Volunteer Hours Available!</strong><br>
+            For every hour you tutor, you earn free volunteer hours. Email dylanduancanada@gmail.com to get your
+            volunteer hours confirmed and added to your record.<br>
+            <a href="volunteer-hours-guide.html"
+                style="display: inline-block; margin-top: 1rem; padding: 0.75rem 1.5rem; background: rgba(212, 165, 116, 0.1); color: var(--beige); border: 1px solid var(--border); border-radius: 8px; text-decoration: none; font-weight: 700; transition: all 0.3s;">
+                📚 Learn More
+            </a>
+        </div>
 
         <!-- Info Banner -->
         <div class="zoom-info">
@@ -399,9 +406,11 @@
         </div>
 
         <!-- Volunteer Hours Banner -->
-        <div style="background: rgba(34, 197, 94, 0.2); border: 2px solid rgba(34, 197, 94, 0.5); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; color: #22c55e; font-weight: 600; font-size: 1.1rem; text-align: center;">
+        <div
+            style="background: rgba(34, 197, 94, 0.2); border: 2px solid rgba(34, 197, 94, 0.5); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; color: #22c55e; font-weight: 600; font-size: 1.1rem; text-align: center;">
             👥 <strong>Free Volunteer Hours Available!</strong><br>
-            For every hour you tutor, you earn free volunteer hours. Email dylanduancanada@gmail.com to get your volunteer hours confirmed and added to your record.
+            For every hour you tutor, you earn free volunteer hours. Email dylanduancanada@gmail.com to get your
+            volunteer hours confirmed and added to your record.
         </div>
 
         <!-- Student Requests -->
@@ -424,61 +433,74 @@
     <script src="auth.js"></script>
     <script>
         // FIX 1: Ensure API_URL points to the correct base
-        const API_URL = 'https://saintthunderbirdtutoring.onrender.com/api';
-    
-        document.addEventListener('DOMContentLoaded', function() {
+        const API_URL = 'http://localhost:5001/api';
+
+        document.addEventListener('DOMContentLoaded', function () {
             const user = getUser();
-            
+
             // Safety check: if no user, go to login
             if (!user) {
                 window.location.href = 'login.html';
                 return;
             }
-    
+
             // Admin Redirect Logic
             if (user.email === 'dylanduancanada@gmail.com') {
                 const adminBtn = document.getElementById('adminBtn');
                 if (adminBtn) adminBtn.style.display = 'inline-block';
             }
-            
+
             // Ensure only tutors (or admin) stay here
             if (user.userType !== 'tutor' && user.email !== 'dylanduancanada@gmail.com') {
                 window.location.href = 'login.html';
                 return;
             }
-    
-            document.getElementById('tutorName').textContent = user.firstName;
+
+            // EXTRA SECURITY: Check if approved
+            const appStatus = (user.tutorApplication && user.tutorApplication.status) ? user.tutorApplication.status : undefined;
+            // Allow admin (dylanduan) to bypass this check
+            if (user.email !== 'dylanduancanada@gmail.com') {
+                if (appStatus !== 'approved') {
+                    alert('⚠️ Access Denied: Your tutor application is ' + (appStatus || 'pending') + '.');
+                    window.location.href = 'login.html';
+                    return;
+                }
+            }
+
+            const nameEl = document.getElementById('tutorName');
+            if (nameEl) nameEl.textContent = user.firstName;
+
             loadDashboard();
         });
-    
+
         async function loadDashboard() {
             const token = localStorage.getItem('authToken');
-            
+
             // Load everything at once
             loadTutorStats(token);
             loadStudentRequests(token);
             loadUpcomingSessions(token);
         }
-    
+
         // Load tutor stats from correct endpoint
         async function loadTutorStats(token) {
             try {
                 const response = await fetch(`${API_URL}/tutor/stats`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                
+
                 const data = await response.json();
                 console.log('📊 Tutor stats:', data);
-                
+
                 if (data.success) {
                     // Update stats cards (requestsCount will be updated by loadStudentRequests)
                     const sessionsCountEl = document.getElementById('sessionsCount');
                     const hoursCountEl = document.getElementById('hoursCount');
-                    
+
                     if (sessionsCountEl) {
                         sessionsCountEl.textContent = data.sessionsCompleted || 0;
                     }
@@ -486,11 +508,11 @@
                         hoursCountEl.textContent = data.hoursTaught || '0';
                     }
                 }
-            } catch (error) { 
+            } catch (error) {
                 console.error('❌ Stats error:', error);
             }
         }
-    
+
         // Load real student requests from the DB
         async function loadStudentRequests(token) {
             const container = document.getElementById('studentRequests');
@@ -498,22 +520,22 @@
                 console.error('❌ Container #studentRequests not found');
                 return;
             }
-            
+
             try {
                 const response = await fetch(`${API_URL}/tutor/requests`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                
+
                 const data = await response.json();
                 console.log('📦 Requests data:', data);
-                
+
                 if (data.success && data.requests && data.requests.length > 0) {
                     document.getElementById('requestsCount').textContent = data.requests.length;
-                    
+
                     container.innerHTML = data.requests.map(req => {
                         // Escape HTML to prevent XSS
                         const escapeHtml = (text) => {
@@ -521,7 +543,7 @@
                             div.textContent = text;
                             return div.innerHTML;
                         };
-                        
+
                         const timeLabels = {
                             '30min': '30 minutes',
                             '1hour': '1 hour',
@@ -529,7 +551,7 @@
                             '2hours': '2 hours'
                         };
                         const timeLabel = timeLabels[req.requestedTime] || req.requestedTime || 'Not specified';
-                        
+
                         return `
                         <div class="student-request-card">
                             <div class="student-name">${escapeHtml(req.studentName || 'Unknown Student')}</div>
@@ -567,7 +589,7 @@
                         </div>
                     `;
                 }
-            } catch (error) { 
+            } catch (error) {
                 console.error('❌ Request load error:', error);
                 container.innerHTML = `
                     <div class="empty-state">
@@ -578,24 +600,24 @@
                 `;
             }
         }
-    
+
         // Accept request and trigger email automation
         async function acceptRequest(requestId) {
             if (!requestId) {
                 alert('❌ Invalid request ID');
                 return;
             }
-            
+
             const token = localStorage.getItem('authToken');
             if (!token) {
                 alert('❌ Not authenticated. Please log in again.');
                 window.location.href = 'login.html';
                 return;
             }
-            
+
             try {
                 console.log('📝 Accepting request:', requestId);
-                
+
                 const response = await fetch(`${API_URL}/tutor/accept-request`, {
                     method: 'POST',
                     headers: {
@@ -604,10 +626,10 @@
                     },
                     body: JSON.stringify({ requestId })
                 });
-                
+
                 const data = await response.json();
                 console.log('📦 Accept response:', data);
-                
+
                 if (response.ok && data.success) {
                     alert('✅ Request accepted! Zoom meeting created and emails sent to both you and the student.');
                     // Refresh the dashboard
@@ -617,33 +639,33 @@
                     console.error('❌ Accept error:', errorMsg);
                     alert('❌ Error: ' + errorMsg);
                 }
-            } catch (error) { 
+            } catch (error) {
                 console.error('❌ Accept request error:', error);
                 alert('❌ Error accepting request: ' + error.message);
             }
         }
-    
+
         // Load upcoming sessions with Zoom links
         async function loadUpcomingSessions(token) {
             const container = document.getElementById('mySessions');
             if (!container) return;
-            
+
             try {
                 const response = await fetch(`${API_URL}/tutor/sessions`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                
+
                 const data = await response.json();
                 console.log('📦 Sessions data:', data);
-                
+
                 if (data.success && data.sessions && data.sessions.length > 0) {
                     document.getElementById('sessionsCount').textContent = data.sessions.length;
-                    
+
                     container.innerHTML = data.sessions.map(session => {
                         const sessionDate = new Date(session.scheduledTime);
                         const isPast = sessionDate < new Date();
                         const isCompleted = session.status === 'completed';
-                        
+
                         return `
                             <div class="student-request-card" style="margin-bottom: 1.5rem;">
                                 <div class="student-name">${session.studentName || 'Unknown Student'}</div>
@@ -694,28 +716,28 @@
                         </div>
                     `;
                 }
-            } catch (error) { 
+            } catch (error) {
                 console.error('❌ Session load error:', error);
                 container.innerHTML = '<div class="loading">Error loading sessions</div>';
             }
         }
-        
+
         // Complete a session
         async function completeSession(sessionId) {
             const hoursInput = document.getElementById(`hours-${sessionId}`);
             const hoursSpent = parseFloat(hoursInput?.value) || 1;
-            
+
             if (hoursSpent <= 0) {
                 alert('❌ Please enter a valid number of hours');
                 return;
             }
-            
+
             const token = localStorage.getItem('authToken');
             if (!token) {
                 alert('❌ Not authenticated. Please log in again.');
-                    return;
+                return;
             }
-            
+
             try {
                 const response = await fetch(`${API_URL}/tutor/complete-session`, {
                     method: 'POST',
@@ -725,9 +747,9 @@
                     },
                     body: JSON.stringify({ sessionId, hoursSpent })
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (response.ok && data.success) {
                     alert(`✅ Session completed! ${hoursSpent} hour(s) logged. Admin has been notified.`);
                     loadDashboard(); // Refresh
@@ -739,50 +761,51 @@
                 alert('❌ Error: ' + error.message);
             }
         }
-    
+
         function logout() {
             localStorage.removeItem('authToken');
             localStorage.removeItem('user');
             window.location.href = 'index.html';
         }
         // ==========================================
-// 👑 ADMIN ACCESS BUTTON (Only for Dylan)
-// ==========================================
-const currentUser = JSON.parse(localStorage.getItem('user'));
+        // 👑 ADMIN ACCESS BUTTON (Only for Dylan)
+        // ==========================================
+        const currentUser = JSON.parse(localStorage.getItem('user'));
 
-if (currentUser && currentUser.email === 'dylanduancanada@gmail.com') {
-    // 1. Create the button
-    const adminBtn = document.createElement('button');
-    adminBtn.innerHTML = '👑 Admin Panel';
-    
-    // 2. Style it to look awesome
-    Object.assign(adminBtn.style, {
-        backgroundColor: '#8b4513',
-        color: 'white',
-        border: '1px solid #d4a574',
-        padding: '0.8rem 1.5rem',
-        borderRadius: '8px',
-        fontWeight: 'bold',
-        cursor: 'pointer',
-        marginLeft: '1rem',
-        fontFamily: "'Orbitron', sans-serif",
-        textTransform: 'uppercase',
-        boxShadow: '0 0 10px rgba(139, 69, 19, 0.5)' // Glow effect
-    });
+        if (currentUser && currentUser.email === 'dylanduancanada@gmail.com') {
+            // 1. Create the button
+            const adminBtn = document.createElement('button');
+            adminBtn.innerHTML = '👑 Admin Panel';
 
-    // 3. Make it clickable
-    adminBtn.onclick = () => {
-        window.location.href = 'admin-applications.html';
-    };
+            // 2. Style it to look awesome
+            Object.assign(adminBtn.style, {
+                backgroundColor: '#8b4513',
+                color: 'white',
+                border: '1px solid #d4a574',
+                padding: '0.8rem 1.5rem',
+                borderRadius: '8px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                marginLeft: '1rem',
+                fontFamily: "'Orbitron', sans-serif",
+                textTransform: 'uppercase',
+                boxShadow: '0 0 10px rgba(139, 69, 19, 0.5)' // Glow effect
+            });
 
-    // 4. Attach it to the Header
-    // (This looks for the logout button area or the main header)
-    const headerLocation = document.querySelector('.header-actions') || document.querySelector('header');
-    
-    if (headerLocation) {
-        headerLocation.appendChild(adminBtn);
-    }
-}
+            // 3. Make it clickable
+            adminBtn.onclick = () => {
+                window.location.href = 'admin-applications.html';
+            };
+
+            // 4. Attach it to the Header
+            // (This looks for the logout button area or the main header)
+            const headerLocation = document.querySelector('.header-actions') || document.querySelector('header');
+
+            if (headerLocation) {
+                headerLocation.appendChild(adminBtn);
+            }
+        }
     </script>
 </body>
+
 </html>
