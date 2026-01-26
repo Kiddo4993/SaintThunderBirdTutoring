@@ -658,7 +658,7 @@ async function loadTutors() {
     // Note: You need to be logged in (have a token) for this to work
     const token = localStorage.getItem('token');
 
-    const response = await fetch('http://localhost:5001/api/tutor/available-tutors', {
+    const response = await fetch('/api/tutor/available-tutors', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
