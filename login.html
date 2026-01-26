@@ -545,11 +545,21 @@
                     }
 
                     // CHECK IF TUTOR IS APPROVED
-                    const appStatus = data.user.tutorApplication?.status || 'pending';
+                    // Allow admin to bypass
+                    if (data.user.email !== 'dylanduancanada@gmail.com') {
+                        const appStatus = data.user.tutorApplication?.status || 'approved'; // Default to approved for legacy/admin if missing, or handle strictly? 
+                        // Actually, if it's a NEW system, new users have 'pending'. Old users might not have the field.
+                        // Let's stick to the user's logic: if they have an application, check it.
 
-                    if (appStatus === 'pending') {
-                        alert('⏳ Your tutor application is still pending approval. Please wait for an admin to approve you.');
-                        return;
+                        if (data.user.tutorApplication && data.user.tutorApplication.status === 'pending') {
+                            alert('⏳ Your tutor application is still pending approval. Please wait for an admin to approve you.');
+                            return;
+                        }
+
+                        if (data.user.tutorApplication && data.user.tutorApplication.status === 'denied') {
+                            alert('❌ Your tutor application was denied. You cannot log in as a tutor.');
+                            return;
+                        }
                     }
 
                     if (appStatus === 'denied') {
