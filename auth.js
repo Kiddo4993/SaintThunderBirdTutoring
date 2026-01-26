@@ -94,7 +94,7 @@ async function login(email, password, userType = 'student') {
             localStorage.setItem('authToken', data.token);
             localStorage.setItem('user', JSON.stringify(data.user));
             alert(`✅ Welcome back, ${data.user.firstName}!`);
-            
+
             // Redirect based on user type
             const dashboard = data.user.userType === 'tutor' ? 'tutor-dashboard.html' : 'student-dashboard.html';
             window.location.href = dashboard;
@@ -227,7 +227,7 @@ function loadRememberedEmail() {
     if (remembered) {
         const studentEmail = document.getElementById('studentEmail');
         const tutorEmail = document.getElementById('tutorEmail');
-        
+
         if (studentEmail) studentEmail.value = remembered;
         if (tutorEmail) tutorEmail.value = remembered;
     }
@@ -235,8 +235,8 @@ function loadRememberedEmail() {
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
-    setupStudentSignupForm();
-    setupTutorSignupForm();
-    setupLoginForms();
+    // setupStudentSignupForm(); // Removed to prevent duplicate event listeners on signup.html
+    // setupTutorSignupForm();   // Removed to prevent duplicate event listeners on signup.html
+    // setupLoginForms(); // Removed to prevent duplicate event listeners on login.html
     loadRememberedEmail();
 });

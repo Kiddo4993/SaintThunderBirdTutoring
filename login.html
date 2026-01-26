@@ -480,6 +480,7 @@
         // STUDENT LOGIN - Only once
         document.getElementById('studentLoginForm').addEventListener('submit', async function (e) {
             e.preventDefault();
+            e.stopImmediatePropagation(); // Prevent cached/duplicate handlers from firing
 
             const email = document.getElementById('studentEmail').value;
             const password = document.getElementById('studentPassword').value;
@@ -521,6 +522,7 @@
         // TUTOR LOGIN - Only once
         document.getElementById('tutorLoginForm').addEventListener('submit', async function (e) {
             e.preventDefault();
+            e.stopImmediatePropagation(); // Prevent cached/duplicate handlers from firing
 
             const email = document.getElementById('tutorEmail').value;
             const password = document.getElementById('tutorPassword').value;

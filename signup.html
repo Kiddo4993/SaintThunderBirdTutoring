@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up - Saint Thunderbird Tutoring</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <style>
         * {
@@ -19,7 +21,8 @@
             --accent: #8b4513;
             --beige-light: #e8d5c4;
         }
-                    /* Is it working or nah, I can't ufcking tell */
+
+        /* Is it working or nah, I can't ufcking tell */
         body {
             font-family: 'Orbitron', sans-serif;
             background: #000000;
@@ -39,7 +42,7 @@
             position: fixed;
             width: 100%;
             height: 100%;
-            background: 
+            background:
                 radial-gradient(at 20% 30%, rgba(96, 165, 250, 0.15) 0%, transparent 50%),
                 radial-gradient(at 80% 70%, rgba(139, 69, 19, 0.12) 0%, transparent 50%);
             filter: blur(60px);
@@ -161,7 +164,9 @@
             color: #2d2d2d;
         }
 
-        input, select, textarea {
+        input,
+        select,
+        textarea {
             width: 100%;
             padding: 1rem;
             background: rgba(255, 255, 255, 0.05);
@@ -181,7 +186,9 @@
             color: #1a1a1a;
         }
 
-        input:focus, select:focus, textarea:focus {
+        input:focus,
+        select:focus,
+        textarea:focus {
             outline: none;
             border-color: var(--beige);
             background: rgba(212, 165, 116, 0.1);
@@ -368,6 +375,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="mesh-gradient"></div>
     <button class="theme-toggle-btn" onclick="toggleTheme()">🌓</button>
@@ -376,7 +384,7 @@
         <div class="logo">
             <div class="logo-icon">⚡</div>
         </div>
-        
+
         <h1>Join Saint Thunderbird</h1>
         <p class="subtitle">Create your account and start your learning journey</p>
 
@@ -384,7 +392,7 @@
             <div class="tab active" onclick="switchTab('student')">Student</div>
             <div class="tab" onclick="switchTab('tutor')">Tutor</div>
         </div>
-        
+
         <!-- Student Sign Up -->
         <div id="student-content" class="tab-content active">
             <div class="info-text">
@@ -466,14 +474,15 @@
 
                 <div class="form-group">
                     <label for="studentGoals">Learning Goals (Optional)</label>
-                    <textarea id="studentGoals" name="goals" placeholder="Tell us what you'd like to achieve..."></textarea>
+                    <textarea id="studentGoals" name="goals"
+                        placeholder="Tell us what you'd like to achieve..."></textarea>
                 </div>
 
                 <div class="checkbox-group">
                     <input type="checkbox" id="studentTerms" name="terms" required>
                     <label for="studentTerms">
                         I agree to the <a href="terms.html" class="link" target="_blank">terms and conditions</a>
-                    </label>                      
+                    </label>
                 </div>
 
                 <button type="submit" class="btn-submit">Sign Up as Student</button>
@@ -578,7 +587,8 @@
 
                 <div class="form-group">
                     <label for="tutorExperience">Teaching Experience</label>
-                    <textarea id="tutorExperience" name="experience" placeholder="Tell us about your teaching or tutoring experience..." required></textarea>
+                    <textarea id="tutorExperience" name="experience"
+                        placeholder="Tell us about your teaching or tutoring experience..." required></textarea>
                 </div>
 
                 <div class="form-group">
@@ -594,7 +604,8 @@
 
                 <div class="form-group">
                     <label for="tutorMotivation">Why Join Saint Thunderbird?</label>
-                    <textarea id="tutorMotivation" name="motivation" placeholder="Tell us what motivates you to tutor First Nations students..." required></textarea>
+                    <textarea id="tutorMotivation" name="motivation"
+                        placeholder="Tell us what motivates you to tutor First Nations students..." required></textarea>
                 </div>
 
                 <div class="checkbox-group">
@@ -607,7 +618,7 @@
                 <button type="submit" class="btn-submit">Apply as Tutor</button>
             </form>
         </div>
-        
+
         <div class="links-group">
             <a href="login.html" class="link">Already have an account? Log in →</a>
             <a href="index.html" class="link">← Back to Home</a>
@@ -636,12 +647,13 @@
             document.getElementById(tab + '-content').classList.add('active');
         }
 
-        document.getElementById('studentSignupForm').addEventListener('submit', async function(e) {
+        document.getElementById('studentSignupForm').addEventListener('submit', async function (e) {
             e.preventDefault();
-            
+            e.stopImmediatePropagation();
+
             const password = document.getElementById('studentPassword').value;
             const confirmPassword = document.getElementById('studentConfirmPassword').value;
-            
+
             if (password !== confirmPassword) {
                 alert('❌ Passwords do not match!');
                 return;
@@ -667,7 +679,7 @@
                 });
 
                 const data = await res.json();
-                
+
                 if (data.success) {
                     localStorage.setItem('authToken', data.token);
                     localStorage.setItem('user', JSON.stringify(data.user));
@@ -683,73 +695,75 @@
 
         // Replace the tutor form submission in your signup.html with this:
 
-document.getElementById('tutorSignupForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    const password = document.getElementById('tutorPassword').value;
-    const confirmPassword = document.getElementById('tutorConfirmPassword').value;
-    
-    if (password !== confirmPassword) {
-        alert('❌ Passwords do not match!');
-        return;
-    }
+        document.getElementById('tutorSignupForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
 
-    const firstName = document.getElementById('tutorFirstName').value;
-    const lastName = document.getElementById('tutorLastName').value;
-    const email = document.getElementById('tutorEmail').value;
-    const education = document.getElementById('tutorEducation').value;
-    const experience = document.getElementById('tutorExperience').value;
-    const availability = document.getElementById('tutorAvailability').value;
-    const motivation = document.getElementById('tutorMotivation').value;
+            const password = document.getElementById('tutorPassword').value;
+            const confirmPassword = document.getElementById('tutorConfirmPassword').value;
 
-    // Get selected subjects
-    const subjects = Array.from(document.querySelectorAll('.tutor-subject:checked')).map(el => el.value);
-    const availableTimes = Array.from(document.querySelectorAll('.tutor-time:checked')).map(el => el.value);
+            if (password !== confirmPassword) {
+                alert('❌ Passwords do not match!');
+                return;
+            }
 
-    if (subjects.length === 0) {
-        alert('❌ Please select at least one subject you can teach!');
-        return;
-    }
+            const firstName = document.getElementById('tutorFirstName').value;
+            const lastName = document.getElementById('tutorLastName').value;
+            const email = document.getElementById('tutorEmail').value;
+            const education = document.getElementById('tutorEducation').value;
+            const experience = document.getElementById('tutorExperience').value;
+            const availability = document.getElementById('tutorAvailability').value;
+            const motivation = document.getElementById('tutorMotivation').value;
 
-    if (availableTimes.length === 0) {
-        alert('❌ Please select at least one session duration you can offer!');
-        return;
-    }
+            // Get selected subjects
+            const subjects = Array.from(document.querySelectorAll('.tutor-subject:checked')).map(el => el.value);
+            const availableTimes = Array.from(document.querySelectorAll('.tutor-time:checked')).map(el => el.value);
 
-    try {
-        const res = await fetch('https://saintthunderbirdtutoring.onrender.com/api/auth/signup', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                firstName,
-                lastName,
-                email,
-                password,
-                userType: 'tutor',
-                tutorProfile: {
-                    subjects: subjects,
-                    availableTimes: availableTimes,
-                    experience: experience,
-                    availability: availability,
-                    motivation: motivation
+            if (subjects.length === 0) {
+                alert('❌ Please select at least one subject you can teach!');
+                return;
+            }
+
+            if (availableTimes.length === 0) {
+                alert('❌ Please select at least one session duration you can offer!');
+                return;
+            }
+
+            try {
+                const res = await fetch('https://saintthunderbirdtutoring.onrender.com/api/auth/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        firstName,
+                        lastName,
+                        email,
+                        password,
+                        userType: 'tutor',
+                        tutorProfile: {
+                            subjects: subjects,
+                            availableTimes: availableTimes,
+                            experience: experience,
+                            availability: availability,
+                            motivation: motivation
+                        }
+                    })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    alert('✅ Application submitted! Please check your email for updates.');
+                    window.location.href = 'tutor-pending.html';
+                } else {
+                    alert('❌ Error: ' + data.error);
                 }
-            })
+            } catch (error) {
+                alert('❌ Connection error: ' + error.message);
+            }
         });
-
-        const data = await res.json();
-        
-        if (data.success) {
-            localStorage.setItem('authToken', data.token);
-            localStorage.setItem('user', JSON.stringify(data.user));
-            alert('✅ Application submitted! Please check your email for updates.');
-            window.location.href = 'tutor-pending.html';
-        } else {
-            alert('❌ Error: ' + data.error);
-        }
-    } catch (error) {
-        alert('❌ Connection error: ' + error.message);
-    }
-});
     </script>
 </body>
+
 </html>
