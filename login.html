@@ -562,10 +562,7 @@
                         }
                     }
 
-                    if (appStatus === 'denied') {
-                        alert('❌ Your tutor application was denied. You cannot log in as a tutor.');
-                        return;
-                    }
+
 
                     localStorage.setItem('authToken', data.token);
                     localStorage.setItem('user', JSON.stringify(data.user));
