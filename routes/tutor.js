@@ -1055,15 +1055,22 @@ router.post('/approve-tutor/:userId', authMiddleware, async (req, res) => {
         }
 
         const { userId } = req.params;
+
+        // Fetch user first to get application data
+        const targetUser = await User.findById(userId);
+        if (!targetUser) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
         const user = await User.findByIdAndUpdate(
             userId,
             {
                 userType: 'tutor',
                 'tutorApplication.status': 'approved',
                 'tutorApplication.approvedAt': new Date(),
-                // Initialize default profile if empty
+                // Initialize default profile using data from the fetched user
                 'tutorProfile': {
-                    subjects: user.tutorApplication?.subjects || ['General'],
+                    subjects: targetUser.tutorApplication?.subjects || ['General'],
                     bio: "I am ready to help!"
                 }
             },
