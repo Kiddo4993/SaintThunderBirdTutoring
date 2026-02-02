@@ -2,7 +2,8 @@
 // AUTHENTICATION FUNCTIONS
 // ========================================
 
-const API_URL = 'https://saintthunderbirdtutoring.onrender.com/api/auth';
+// Use relative URL so it works in all environments (local, staging, production)
+const API_URL = '/api/auth';
 
 // ========== SIGNUP HANDLERS ==========
 

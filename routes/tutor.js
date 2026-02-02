@@ -621,21 +621,23 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
             }
         }
 
-        // Generate UNIQUE Zoom meeting ID for THIS session
-        const uniqueZoomId = Math.floor(Math.random() * 9000000000) + 1000000000;
+        // Generate session reference ID for coordination
+        // NOTE: This is a placeholder - tutors should create their own Zoom/Google Meet link
+        const sessionRefId = Math.floor(Math.random() * 9000000000) + 1000000000;
         const zoomPassword = 'Tutoring2025';
-        const zoomLink = `https://zoom.us/j/${uniqueZoomId}?pwd=${zoomPassword}`;
+        // This is a placeholder link - tutors should create their own meeting
+        const zoomLink = `https://zoom.us/j/${sessionRefId}?pwd=${zoomPassword}`;
 
-        // Create session with unique Zoom ID
+        // Create session with session reference
         const session = {
             studentId: studentId,
             subject: requestSubject,
             scheduledTime: new Date(Date.now() + 24 * 60 * 60 * 1000),
             status: 'scheduled',
             createdAt: new Date(),
-            zoomMeetingId: uniqueZoomId,
+            zoomMeetingId: sessionRefId,
             zoomPassword: zoomPassword,
-            zoomLink: zoomLink
+            zoomLink: zoomLink // Placeholder - tutors should coordinate their own meeting link
         };
 
         tutor.tutorSessions.push(session);
@@ -662,7 +664,7 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
             scheduledTime: session.scheduledTime,
             status: 'scheduled',
             zoomLink: zoomLink,
-            zoomMeetingId: uniqueZoomId,
+            zoomMeetingId: sessionRefId,
             zoomPassword: zoomPassword,
             createdAt: new Date()
         });
@@ -672,32 +674,39 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
         const tutorMailOptions = {
             from: process.env.EMAIL_USER,
             to: tutor.email,
-            subject: `🎓 New Student Session - Zoom Link Inside`,
+            subject: `🎓 New Student Session - Action Required`,
             html: `
                 <div style="font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px;">
                     <div style="background: white; padding: 30px; border-radius: 10px; max-width: 600px; margin: 0 auto;">
                         <h2 style="color: #8b4513;">📹 You Have a New Tutoring Session!</h2>
                         <p><strong>Student:</strong> ${student.firstName} ${student.lastName}</p>
-                        <p><strong>Email:</strong> ${student.email}</p>
+                        <p><strong>Student Email:</strong> <a href="mailto:${student.email}">${student.email}</a></p>
                         <p><strong>Subject:</strong> ${requestSubject}</p>
-                        <p><strong>Scheduled:</strong> Tomorrow at your preferred time</p>
+                        <p><strong>Session Reference:</strong> #${sessionRefId}</p>
 
-                        <h3 style="color: #8b4513;">🎥 Zoom Meeting Details (UNIQUE TO THIS SESSION)</h3>
-                        <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #d4a574; margin: 20px 0;">
-                            <p><strong>Meeting ID:</strong> ${uniqueZoomId}</p>
-                            <p><strong>Password:</strong> ${zoomPassword}</p>
-                            <p><strong>Join Link:</strong> <a href="${zoomLink}" style="color: #d4a574; font-weight: bold;">${zoomLink}</a></p>
+                        <div style="background: #fff3cd; padding: 15px; border-left: 4px solid #ffc107; margin: 20px 0;">
+                            <h3 style="color: #856404; margin-top: 0;">⚠️ Important: Set Up Your Meeting</h3>
+                            <p style="color: #856404; margin-bottom: 0;">Please create your own Zoom or Google Meet link and email it directly to the student at <strong>${student.email}</strong>.</p>
                         </div>
 
-                        <h3 style="color: #8b4513;">📋 Session Tips:</h3>
-                        <ul>
-                            <li>✓ Join 5 minutes early to test audio/video</li>
-                            <li>✓ Have your screen sharing ready</li>
-                            <li>✓ Keep notes on session progress</li>
-                            <li>✓ Each session has its own unique Zoom room</li>
+                        <h3 style="color: #8b4513;">📋 Next Steps:</h3>
+                        <ol style="color: #666; line-height: 1.8;">
+                            <li>Create a Zoom meeting or Google Meet link</li>
+                            <li>Email the meeting link to the student: <a href="mailto:${student.email}">${student.email}</a></li>
+                            <li>Coordinate a time that works for both of you</li>
+                            <li>Join 5 minutes early to test audio/video</li>
+                            <li>After the session, mark it as complete in your dashboard</li>
+                        </ol>
+
+                        <h3 style="color: #8b4513;">💡 Session Tips:</h3>
+                        <ul style="color: #666;">
+                            <li>Have your screen sharing ready</li>
+                            <li>Keep notes on session progress</li>
+                            <li>Be patient and encouraging</li>
+                            <li>Track your hours for volunteer credit</li>
                         </ul>
 
-                        <p>Good luck! 🌩️⚡</p>
+                        <p>Good luck with your session! 🌩️⚡</p>
                         <p style="color: #888; font-size: 12px;">Saint Thunderbird Tutoring Platform</p>
                     </div>
                 </div>
@@ -722,32 +731,34 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
             html: `
                 <div style="font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px;">
                     <div style="background: white; padding: 30px; border-radius: 10px; max-width: 600px; margin: 0 auto;">
-                        <h2 style="color: #8b4513;">Great News!</h2>
+                        <h2 style="color: #8b4513;">🎉 Great News!</h2>
                         <p><strong>${tutor.firstName} ${tutor.lastName}</strong> has accepted your tutoring request!</p>
                         
                         <h3 style="color: #8b4513;">📅 Session Details:</h3>
-                        <p><strong>Tutor:</strong> ${tutor.firstName} ${tutor.lastName}</p>
-                        <p><strong>Email:</strong> ${tutor.email}</p>
-                        <p><strong>Subject:</strong> ${requestSubject}</p>
-                        <p><strong>Subjects Taught:</strong> ${tutor.tutorProfile?.subjects?.join(', ') || 'Various'}</p>
-                        
-                        <h3 style="color: #8b4513;">🎥 Zoom Information (UNIQUE TO YOUR SESSION)</h3>
                         <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #d4a574; margin: 20px 0;">
-                            <p><strong>Meeting ID:</strong> ${uniqueZoomId}</p>
-                            <p><strong>Password:</strong> ${zoomPassword}</p>
-                            <p><strong>Join Link:</strong> <a href="${zoomLink}" style="color: #d4a574; font-weight: bold;">${zoomLink}</a></p>
+                            <p><strong>Tutor:</strong> ${tutor.firstName} ${tutor.lastName}</p>
+                            <p><strong>Tutor Email:</strong> <a href="mailto:${tutor.email}">${tutor.email}</a></p>
+                            <p><strong>Subject:</strong> ${requestSubject}</p>
+                            <p><strong>Session Reference:</strong> #${sessionRefId}</p>
+                        </div>
+                        
+                        <div style="background: #d4edda; padding: 15px; border-left: 4px solid #28a745; margin: 20px 0;">
+                            <h3 style="color: #155724; margin-top: 0;">📧 What Happens Next?</h3>
+                            <p style="color: #155724; margin-bottom: 0;">Your tutor will email you directly with a Zoom or Google Meet link. Keep an eye on your inbox for a message from <strong>${tutor.email}</strong>.</p>
                         </div>
                         
                         <h3 style="color: #8b4513;">💻 How to Prepare:</h3>
-                        <ul>
-                            <li>Make sure you have Zoom installed</li>
+                        <ul style="color: #666; line-height: 1.8;">
+                            <li>Make sure you have Zoom or Google Meet ready</li>
                             <li>Test your microphone and camera beforehand</li>
                             <li>Find a quiet place for your session</li>
-                            <li>Have your materials ready (books, notes, etc.)</li>
-                            <li>Each session has its own unique Zoom room</li>
+                            <li>Have your materials ready (books, notes, questions)</li>
+                            <li>Reply to your tutor's email to confirm the meeting time</li>
                         </ul>
 
-                        <p>Looking forward to working with you! 📚⚡</p>
+                        <p style="margin-top: 20px;">If you don't hear from your tutor within 24 hours, feel free to email them directly at <a href="mailto:${tutor.email}">${tutor.email}</a>.</p>
+
+                        <p>Looking forward to helping you succeed! 📚⚡</p>
                         <p style="color: #888; font-size: 12px;">Saint Thunderbird Tutoring Platform</p>
                     </div>
                 </div>
@@ -785,7 +796,7 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
                         <h3 style="color: #8b4513; margin-top: 20px;">📚 Session Details:</h3>
                         <p><strong>Subject:</strong> ${requestSubject}</p>
                         <p><strong>Scheduled Time:</strong> ${new Date(session.scheduledTime).toLocaleString()}</p>
-                        <p><strong>Zoom Meeting ID:</strong> ${uniqueZoomId}</p>
+                        <p><strong>Session Reference:</strong> #${sessionRefId}</p>
                         
                         <p style="margin-top: 20px; color: #888; font-size: 12px;">
                             Session hours will be tracked individually for each user.
@@ -805,9 +816,9 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
 
         res.json({
             success: true,
-            message: 'Request accepted! Zoom links sent to both tutor and student',
-            zoomLink: zoomLink,
-            zoomMeetingId: uniqueZoomId
+            message: 'Request accepted! Session created - tutor will contact student with meeting link.',
+            sessionRefId: sessionRefId,
+            tutorEmail: tutor.email
         });
     } catch (error) {
         console.error('Error in accept-request:', error);
@@ -1062,22 +1073,67 @@ router.post('/approve-tutor/:userId', authMiddleware, async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
+        // Preserve existing tutorProfile data from signup, only fill in missing fields
+        const existingProfile = targetUser.tutorProfile || {};
+        const updatedProfile = {
+            subjects: existingProfile.subjects || ['General'],
+            bio: existingProfile.bio || "I am ready to help!",
+            availability: existingProfile.availability,
+            motivation: existingProfile.motivation,
+            experience: existingProfile.experience,
+            availableTimes: existingProfile.availableTimes || [],
+            education: existingProfile.education
+        };
+
         const user = await User.findByIdAndUpdate(
             userId,
             {
-                userType: 'tutor',
+                userType: 'tutor', // CRITICAL: This changes them from 'student' to 'tutor'
                 'tutorApplication.status': 'approved',
                 'tutorApplication.approvedAt': new Date(),
-                // Initialize default profile using data from the fetched user
-                'tutorProfile': {
-                    subjects: targetUser.tutorApplication?.subjects || ['General'],
-                    bio: "I am ready to help!"
-                }
+                'tutorProfile': updatedProfile
             },
             { new: true }
         );
 
-        res.json({ success: true, message: 'Approved successfully' });
+        // Send approval email to the tutor
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: user.email,
+            subject: 'Your Tutor Application Has Been Approved! 🎉',
+            html: `
+                <div style="font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px;">
+                    <div style="background: white; padding: 30px; border-radius: 10px; max-width: 600px; margin: 0 auto;">
+                        <h2 style="color: #8b4513;">🎉 Congratulations ${user.firstName}!</h2>
+                        <p>Your tutor application has been <strong style="color: #22c55e;">APPROVED</strong>!</p>
+                        <p>You can now log in to your tutor dashboard and start helping students.</p>
+                        
+                        <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #d4a574; margin: 20px 0;">
+                            <h3 style="color: #8b4513; margin-top: 0;">Next Steps:</h3>
+                            <ul style="color: #666;">
+                                <li>Log in at the Saint Thunderbird website</li>
+                                <li>Use the "Tutor" tab to access your dashboard</li>
+                                <li>Wait for student requests to appear</li>
+                                <li>Accept requests and help students succeed!</li>
+                            </ul>
+                        </div>
+                        
+                        <p>Welcome to the Saint Thunderbird tutoring team! ⚡</p>
+                        <p style="color: #888; font-size: 12px;">Saint Thunderbird Tutoring Platform</p>
+                    </div>
+                </div>
+            `
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error('❌ Approval email error:', error.message);
+            } else {
+                console.log('✅ Approval email sent to:', user.email);
+            }
+        });
+
+        res.json({ success: true, message: 'Tutor approved and email sent!' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -1093,12 +1149,61 @@ router.post('/deny-tutor/:userId', authMiddleware, async (req, res) => {
         }
 
         const { userId } = req.params;
+        const { reason } = req.body; // Optional denial reason
+
+        // Get user info before updating
+        const targetUser = await User.findById(userId);
+        if (!targetUser) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Update application status to denied (don't remove it completely so they can see why)
         await User.findByIdAndUpdate(
             userId,
-            { $unset: { tutorApplication: 1 } } // Removes the application
+            { 
+                'tutorApplication.status': 'denied',
+                'tutorApplication.deniedAt': new Date(),
+                'tutorApplication.denialReason': reason || 'No reason provided'
+            }
         );
 
-        res.json({ success: true, message: 'Application denied' });
+        // Send denial email to the applicant
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: targetUser.email,
+            subject: 'Update on Your Tutor Application - Saint Thunderbird',
+            html: `
+                <div style="font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px;">
+                    <div style="background: white; padding: 30px; border-radius: 10px; max-width: 600px; margin: 0 auto;">
+                        <h2 style="color: #8b4513;">Tutor Application Update</h2>
+                        <p>Dear ${targetUser.firstName},</p>
+                        <p>Thank you for your interest in becoming a tutor at Saint Thunderbird.</p>
+                        <p>After careful review, we regret to inform you that your application has not been approved at this time.</p>
+                        
+                        ${reason ? `
+                        <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #d4a574; margin: 20px 0;">
+                            <p><strong>Reason:</strong> ${reason}</p>
+                        </div>
+                        ` : ''}
+                        
+                        <p>You are still welcome to use Saint Thunderbird as a student. If you believe this decision was made in error, please contact us at dylanduancanada@gmail.com.</p>
+                        
+                        <p>Thank you for your understanding.</p>
+                        <p style="color: #888; font-size: 12px;">Saint Thunderbird Tutoring Platform</p>
+                    </div>
+                </div>
+            `
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error('❌ Denial email error:', error.message);
+            } else {
+                console.log('✅ Denial email sent to:', targetUser.email);
+            }
+        });
+
+        res.json({ success: true, message: 'Application denied and email sent' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
