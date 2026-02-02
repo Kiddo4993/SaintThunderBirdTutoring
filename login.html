@@ -496,9 +496,18 @@
                 const data = await res.json();
 
                 if (data.success) {
-                    // CHECK IF USER IS STUDENT
+                    // Check if this is a pending tutor applicant
+                    if (data.user.tutorApplication && data.user.tutorApplication.status === 'pending') {
+                        localStorage.setItem('authToken', data.token);
+                        localStorage.setItem('user', JSON.stringify(data.user));
+                        alert('⏳ Your tutor application is pending approval. Redirecting to status page...');
+                        window.location.href = 'tutor-pending.html';
+                        return;
+                    }
+
+                    // CHECK IF USER IS STUDENT (and not a pending tutor)
                     if (data.user.userType !== 'student') {
-                        alert('❌ Error: You are not a student. You are a ' + data.user.userType);
+                        alert('❌ Error: You are not a student. You are a ' + data.user.userType + '. Please use the Tutor tab.');
                         return;
                     }
 
@@ -538,31 +547,41 @@
                 const data = await res.json();
 
                 if (data.success) {
-                    // CHECK IF USER IS TUTOR
-                    if (data.user.userType !== 'tutor') {
-                        alert('❌ Error: You are not a tutor. You are a ' + data.user.userType);
+                    // Allow admin to bypass all checks
+                    if (data.user.email === 'dylanduancanada@gmail.com') {
+                        localStorage.setItem('authToken', data.token);
+                        localStorage.setItem('user', JSON.stringify(data.user));
+                        if (remember) localStorage.setItem('rememberEmail', email);
+                        alert('✅ Welcome back, Admin!');
+                        window.location.href = 'tutor-dashboard.html';
                         return;
                     }
 
-                    // CHECK IF TUTOR IS APPROVED
-                    // Allow admin to bypass
-                    if (data.user.email !== 'dylanduancanada@gmail.com') {
-                        const appStatus = data.user.tutorApplication?.status || 'approved'; // Default to approved for legacy/admin if missing, or handle strictly? 
-                        // Actually, if it's a NEW system, new users have 'pending'. Old users might not have the field.
-                        // Let's stick to the user's logic: if they have an application, check it.
-
-                        if (data.user.tutorApplication && data.user.tutorApplication.status === 'pending') {
-                            alert('⏳ Your tutor application is still pending approval. Please wait for an admin to approve you.');
-                            return;
-                        }
-
-                        if (data.user.tutorApplication && data.user.tutorApplication.status === 'denied') {
-                            alert('❌ Your tutor application was denied. You cannot log in as a tutor.');
-                            return;
-                        }
+                    // Check if this is a pending tutor applicant (they have userType 'student' but tutorApplication pending)
+                    if (data.user.tutorApplication && data.user.tutorApplication.status === 'pending') {
+                        localStorage.setItem('authToken', data.token);
+                        localStorage.setItem('user', JSON.stringify(data.user));
+                        alert('⏳ Your tutor application is pending approval. Redirecting to status page...');
+                        window.location.href = 'tutor-pending.html';
+                        return;
                     }
 
+                    // Check if application was denied
+                    if (data.user.tutorApplication && data.user.tutorApplication.status === 'denied') {
+                        alert('❌ Your tutor application was denied. Please contact support for more information.');
+                        return;
+                    }
 
+                    // CHECK IF USER IS AN APPROVED TUTOR
+                    if (data.user.userType !== 'tutor') {
+                        // They might be a student without any tutor application
+                        if (!data.user.tutorApplication) {
+                            alert('❌ Error: You are not a tutor. You are a student. Please use the Student tab or apply to become a tutor.');
+                        } else {
+                            alert('❌ Error: Your tutor status is unclear. Please contact support.');
+                        }
+                        return;
+                    }
 
                     localStorage.setItem('authToken', data.token);
                     localStorage.setItem('user', JSON.stringify(data.user));

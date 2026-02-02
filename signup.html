@@ -666,7 +666,8 @@
             const subjects = Array.from(document.querySelectorAll('.student-subject:checked')).map(el => el.value);
 
             try {
-                const res = await fetch('https://saintthunderbirdtutoring.onrender.com/api/auth/signup', {
+                // Use relative URL so it works in all environments
+                const res = await fetch('/api/auth/signup', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -693,8 +694,7 @@
             }
         });
 
-        // Replace the tutor form submission in your signup.html with this:
-
+        // Tutor Signup Form - Sends application to admin for approval
         document.getElementById('tutorSignupForm').addEventListener('submit', async function (e) {
             e.preventDefault();
             e.stopImmediatePropagation();
@@ -730,7 +730,8 @@
             }
 
             try {
-                const res = await fetch('https://saintthunderbirdtutoring.onrender.com/api/auth/signup', {
+                // Use relative URL so it works in all environments
+                const res = await fetch('/api/auth/signup', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -738,13 +739,14 @@
                         lastName,
                         email,
                         password,
-                        userType: 'tutor',
+                        userType: 'tutor', // Backend will keep as 'student' until approved
                         tutorProfile: {
                             subjects: subjects,
                             availableTimes: availableTimes,
                             experience: experience,
                             availability: availability,
-                            motivation: motivation
+                            motivation: motivation,
+                            education: education
                         }
                     })
                 });
@@ -754,7 +756,9 @@
                 if (data.success) {
                     localStorage.setItem('authToken', data.token);
                     localStorage.setItem('user', JSON.stringify(data.user));
-                    alert('✅ Application submitted! Please check your email for updates.');
+                    
+                    // Note: User will have userType 'student' but tutorApplication.status 'pending'
+                    alert('✅ Application submitted! An admin will review your application. You will receive an email when approved.');
                     window.location.href = 'tutor-pending.html';
                 } else {
                     alert('❌ Error: ' + data.error);
