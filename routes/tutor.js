@@ -540,7 +540,10 @@ router.get('/requests', authMiddleware, async (req, res) => {
             if (student.tutorRequests && Array.isArray(student.tutorRequests)) {
                 student.tutorRequests.forEach((req, index) => {
                     // Check if request matches tutor's subjects AND time availability
-                    const subjectMatches = tutorSubjects.includes(req.subject);
+                    // FIXED: Allow 'General' to match everything
+                    const hasGeneral = tutorSubjects.some(s => s === 'General' || s === 'General Help');
+                    const subjectMatches = hasGeneral || tutorSubjects.includes(req.subject);
+
                     const timeMatches = tutorAvailableTimes.length === 0 || tutorAvailableTimes.includes(req.requestedTime);
 
                     if (req.status === 'pending' && subjectMatches && timeMatches) {
