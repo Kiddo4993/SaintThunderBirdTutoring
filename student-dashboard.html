@@ -570,11 +570,6 @@
                 <div class="stat-label">Requests Made</div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon">🎓</div>
-                <div class="stat-value" id="sessionsCount">0</div>
-                <div class="stat-label">Upcoming Sessions</div>
-            </div>
-            <div class="stat-card">
                 <div class="stat-icon">✅</div>
                 <div class="stat-value" id="completedCount">0</div>
                 <div class="stat-label">Completed Sessions</div>
@@ -612,20 +607,6 @@
             at:<br>
             <strong style="font-size: 1.2rem; display: block; margin-top: 0.5rem;">📧 dylanduancanada@gmail.com</strong>
         </div>
-
-        <!-- Upcoming Sessions -->
-        <div class="card">
-            <div class="card-title">📅 Upcoming Sessions</div>
-            <div id="upcomingSessions">
-                <div class="empty-state">
-                    <div class="empty-state-icon">⏰</div>
-                    <div class="empty-state-text">No upcoming sessions yet</div>
-                    <div class="empty-state-subtext">Submit a tutoring request to get started!</div>
-
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Your Requests -->
     <div class="card">
@@ -705,7 +686,6 @@
             // Load all data on page load
             async function loadDashboard() {
                 console.log('📊 Loading dashboard...');
-                await loadSessions();
                 await loadRequests();
                 await loadTutors();
                 await loadStudentStats();
@@ -723,7 +703,6 @@
                         const data = await response.json();
                         if (data.success) {
                             document.getElementById('requestsCount').textContent = data.requestsMade || 0;
-                            document.getElementById('sessionsCount').textContent = data.upcomingSessions || 0;
                             document.getElementById('completedCount').textContent = data.completedSessions || 0;
                             document.getElementById('hoursCount').textContent = data.hoursLearned || '0';
                         }
@@ -799,104 +778,8 @@
                 }
             }
 
-            // Load student's sessions
-            async function loadSessions() {
-                try {
-                    const token = localStorage.getItem('authToken');
-                    console.log('🔐 Token:', token ? '✅ Found' : '❌ Not found');
-
-                    const url = `${API_URL}/tutor/student-sessions`;
-                    console.log('📍 Fetching from:', url);
-
-                    const res = await fetch(url, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-
-                    console.log('📡 Response status:', res.status);
-
-                    const data = await res.json();
-                    console.log('📦 Sessions data:', data);
-
-                    const container = document.getElementById('upcomingSessions');
-
-                    if (data.success && data.sessions && data.sessions.length > 0) {
-                        document.getElementById('sessionsCount').textContent = data.sessions.length;
-
-                        const html = data.sessions.map(session => {
-                            const sessionDate = new Date(session.scheduledTime);
-                            const now = new Date();
-                            const daysUntil = Math.ceil((sessionDate - now) / (1000 * 60 * 60 * 24));
-                            const hoursUntil = Math.ceil((sessionDate - now) / (1000 * 60 * 60));
-                            const minutesUntil = Math.ceil((sessionDate - now) / (1000 * 60));
-
-                            let countdownText = '';
-                            if (daysUntil > 1) {
-                                countdownText = `📅 In ${daysUntil} days`;
-                            } else if (daysUntil === 1) {
-                                countdownText = `⏰ Tomorrow`;
-                            } else if (hoursUntil > 0) {
-                                countdownText = `⏳ In ${hoursUntil} hours`;
-                            } else if (minutesUntil > 0) {
-                                countdownText = `🔴 In ${minutesUntil} minutes`;
-                            } else {
-                                countdownText = `🎓 Starting now!`;
-                            }
-
-                            return `
-                        <div class="session-card">
-                            <div class="session-header">
-                                <div>
-                                    <div class="tutor-name">${session.tutorName}</div>
-                                    <div style="color: var(--text-secondary); font-size: 0.9rem;">Tutor</div>
-                                </div>
-                                <div class="session-time">
-                                    ${sessionDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} @ ${sessionDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
-                                </div>
-                            </div>
-
-                            <div class="session-subject">${session.subject || 'Mathematics'}</div>
-
-                            <div class="countdown">${countdownText}</div>
-
-                            <div class="session-info">
-                                <div class="info-item">
-                                    <div class="info-label">Status</div>
-                                    <div class="info-value">${session.status.toUpperCase()}</div>
-                                </div>
-                                <div class="info-item">
-                                    <div class="info-label">Tutor Email</div>
-                                    <div class="info-value" style="font-size: 0.9rem;">${session.tutorEmail}</div>
-                                </div>
-                            </div>
-                            
-                            ${session.zoomLink ? `
-                                <div style="background: rgba(59, 130, 246, 0.2); border: 2px solid rgba(59, 130, 246, 0.5); padding: 1rem; border-radius: 8px; margin-top: 1rem; text-align: center;">
-                                    <div style="color: #60a5fa; font-weight: 600; margin-bottom: 0.5rem;">🎥 Zoom Meeting</div>
-                                    <a href="${session.zoomLink}" target="_blank" style="display: inline-block; background: linear-gradient(135deg, #60a5fa, #3b82f6); color: white; padding: 0.75rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 700; margin-top: 0.5rem;">
-                                        Join Zoom Meeting
-                                    </a>
-                                    ${session.zoomMeetingId ? `<div style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.5rem;">Meeting ID: ${session.zoomMeetingId}</div>` : ''}
-                                </div>
-                            ` : ''}
-                        </div>
-                    `;
-                        }).join('');
-
-                        container.innerHTML = html;
-                    } else {
-                        // Stats will be updated by loadStudentStats
-                        container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">⏰</div>
-                        <div class="empty-state-text">No upcoming sessions yet</div>
-                        <div class="empty-state-subtext">Submit a tutoring request to get started!</div>
-                    </div>
-                `;
-                    }
-                } catch (error) {
-                    console.error('❌ Error loading sessions:', error);
-                }
-            }
+            // Track which accepted requests we've already notified about
+            let notifiedAcceptedRequests = JSON.parse(localStorage.getItem('notifiedAcceptedRequests') || '[]');
 
             // Load student's requests
             async function loadRequests() {
@@ -917,7 +800,23 @@
                     const container = document.getElementById('yourRequests');
 
                     if (data.success && data.requests && data.requests.length > 0) {
-                        // Stats will be updated by loadStudentStats
+                        // Check for newly accepted requests
+                        const newlyAcceptedRequests = data.requests.filter(req => 
+                            req.status === 'accepted' && 
+                            req.acceptedAt && 
+                            !notifiedAcceptedRequests.includes(req._id || req.createdAt)
+                        );
+
+                        // Show popup for newly accepted requests
+                        if (newlyAcceptedRequests.length > 0) {
+                            newlyAcceptedRequests.forEach(req => {
+                                showAcceptedNotification(req);
+                                // Add to notified list
+                                notifiedAcceptedRequests.push(req._id || req.createdAt);
+                            });
+                            // Save notified list
+                            localStorage.setItem('notifiedAcceptedRequests', JSON.stringify(notifiedAcceptedRequests));
+                        }
 
                         const html = data.requests.map(req => {
                             const timeLabels = {
@@ -962,6 +861,81 @@
                 } catch (error) {
                     console.error('❌ Error loading requests:', error);
                 }
+            }
+
+            // Show notification popup when request is accepted
+            function showAcceptedNotification(request) {
+                // Create popup element
+                const popup = document.createElement('div');
+                popup.id = 'acceptedNotification';
+                popup.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: linear-gradient(135deg, rgba(34, 197, 94, 0.95), rgba(22, 163, 74, 0.95));
+                    border: 2px solid rgba(34, 197, 94, 0.8);
+                    border-radius: 16px;
+                    padding: 2rem;
+                    max-width: 450px;
+                    width: 90%;
+                    z-index: 10000;
+                    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+                    text-align: center;
+                    color: white;
+                    font-family: 'Orbitron', sans-serif;
+                `;
+
+                popup.innerHTML = `
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+                    <h2 style="font-size: 1.5rem; margin-bottom: 1rem; color: white;">Great News!</h2>
+                    <p style="font-size: 1.1rem; margin-bottom: 1rem; line-height: 1.6;">
+                        A tutor has accepted your request for <strong>${request.subject}</strong>!
+                    </p>
+                    <div style="background: rgba(255, 255, 255, 0.2); padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                        <p style="margin: 0; font-size: 1rem;">
+                            📧 <strong>Check your email!</strong><br>
+                            Your tutor will send you a Zoom link to start your session.
+                        </p>
+                    </div>
+                    <button onclick="closeAcceptedNotification()" style="
+                        background: white;
+                        color: #16a34a;
+                        border: none;
+                        padding: 0.75rem 2rem;
+                        border-radius: 8px;
+                        font-family: 'Orbitron', sans-serif;
+                        font-weight: 700;
+                        font-size: 1rem;
+                        cursor: pointer;
+                        margin-top: 1rem;
+                        text-transform: uppercase;
+                    ">Got it!</button>
+                `;
+
+                // Create overlay
+                const overlay = document.createElement('div');
+                overlay.id = 'acceptedNotificationOverlay';
+                overlay.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(0, 0, 0, 0.7);
+                    z-index: 9999;
+                `;
+
+                document.body.appendChild(overlay);
+                document.body.appendChild(popup);
+            }
+
+            // Close the accepted notification popup
+            function closeAcceptedNotification() {
+                const popup = document.getElementById('acceptedNotification');
+                const overlay = document.getElementById('acceptedNotificationOverlay');
+                if (popup) popup.remove();
+                if (overlay) overlay.remove();
             }
 
             // Modal functions

@@ -372,14 +372,9 @@
         <!-- Stats -->
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-icon">📚</div>
-                <div class="stat-value" id="requestsCount">0</div>
-                <div class="stat-label">Requests Waiting</div>
-            </div>
-            <div class="stat-card">
                 <div class="stat-icon">🎓</div>
                 <div class="stat-value" id="sessionsCount">0</div>
-                <div class="stat-label">Active Sessions</div>
+                <div class="stat-label">Completed Sessions</div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon">⏱️</div>
@@ -498,7 +493,7 @@
                 console.log('📊 Tutor stats:', data);
 
                 if (data.success) {
-                    // Update stats cards (requestsCount will be updated by loadStudentRequests)
+                    // Update stats cards
                     const sessionsCountEl = document.getElementById('sessionsCount');
                     const hoursCountEl = document.getElementById('hoursCount');
 
@@ -535,8 +530,6 @@
                 console.log('📦 Requests data:', data);
 
                 if (data.success && data.requests && data.requests.length > 0) {
-                    document.getElementById('requestsCount').textContent = data.requests.length;
-
                     container.innerHTML = data.requests.map(req => {
                         // Escape HTML to prevent XSS
                         const escapeHtml = (text) => {
@@ -581,7 +574,6 @@
                     `;
                     }).join('');
                 } else {
-                    document.getElementById('requestsCount').textContent = '0';
                     container.innerHTML = `
                         <div class="empty-state">
                             <div class="empty-state-icon">📝</div>
