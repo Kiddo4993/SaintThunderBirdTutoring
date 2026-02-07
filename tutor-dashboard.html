@@ -373,6 +373,11 @@
         <div class="stats-grid">
             
             <div class="stat-card">
+                <div class="stat-icon">📝</div>
+                <div class="stat-value" id="requestsWaitingCount">0</div>
+                <div class="stat-label">Requests Waiting</div>
+            </div>
+            <div class="stat-card">
                 <div class="stat-icon">🎓</div>
                 <div class="stat-value" id="sessionsCount">0</div>
                 <div class="stat-label">Completed Sessions</div>
@@ -382,7 +387,6 @@
                 <div class="stat-value" id="hoursCount">0</div>
                 <div class="stat-label">Hours Taught</div>
             </div>
-
         </div>
         <!-- Replace the volunteer hours banner with this -->
         <div
@@ -488,7 +492,7 @@
                 console.log('📊 Tutor stats:', data);
 
                 if (data.success) {
-                    // Update stats cards (requestsCount will be updated by loadStudentRequests)
+                    // Update stats cards
                     const sessionsCountEl = document.getElementById('sessionsCount');
                     const hoursCountEl = document.getElementById('hoursCount');
 
@@ -524,9 +528,13 @@
                 const data = await response.json();
                 console.log('📦 Requests data:', data);
 
-                if (data.success && data.requests && data.requests.length > 0) {
-                    document.getElementById('requestsCount').textContent = data.requests.length;
+                // Update Requests Waiting count
+                const requestsWaitingCountEl = document.getElementById('requestsWaitingCount');
+                if (requestsWaitingCountEl) {
+                    requestsWaitingCountEl.textContent = data.success && data.requests ? data.requests.length : 0;
+                }
 
+                if (data.success && data.requests && data.requests.length > 0) {
                     container.innerHTML = data.requests.map(req => {
                         // Escape HTML to prevent XSS
                         const escapeHtml = (text) => {
@@ -571,7 +579,6 @@
                     `;
                     }).join('');
                 } else {
-                    document.getElementById('requestsCount').textContent = '0';
                     container.innerHTML = `
                         <div class="empty-state">
                             <div class="empty-state-icon">📝</div>
@@ -650,8 +657,6 @@
                 console.log('📦 Sessions data:', data);
 
                 if (data.success && data.sessions && data.sessions.length > 0) {
-                    document.getElementById('sessionsCount').textContent = data.sessions.length;
-
                     container.innerHTML = data.sessions.map(session => {
                         const sessionDate = new Date(session.scheduledTime);
                         const isPast = sessionDate < new Date();
@@ -698,7 +703,6 @@
                         `;
                     }).join('');
                 } else {
-                    document.getElementById('sessionsCount').textContent = '0';
                     container.innerHTML = `
                         <div class="empty-state">
                             <div class="empty-state-icon">📅</div>

@@ -489,11 +489,6 @@ router.get('/student-stats', authMiddleware, async (req, res) => {
 
         const requestsMade = student.tutorRequests?.length || 0;
 
-        // Count upcoming sessions from studentSessions array
-        const upcomingSessions = student.studentSessions?.filter(s =>
-            s.status === 'scheduled' && new Date(s.scheduledTime) > new Date()
-        ).length || 0;
-
         // Count completed sessions
         const completedSessions = student.studentSessions?.filter(s =>
             s.status === 'completed'
@@ -507,7 +502,6 @@ router.get('/student-stats', authMiddleware, async (req, res) => {
         res.json({
             success: true,
             requestsMade,
-            upcomingSessions,
             completedSessions,
             hoursLearned: hoursLearned.toFixed(1)
         });
@@ -528,7 +522,6 @@ router.get('/requests', authMiddleware, async (req, res) => {
         }
 
         const tutorSubjects = tutor.tutorProfile?.subjects || [];
-        const tutorAvailableTimes = tutor.tutorProfile?.availableTimes || [];
 
         const students = await User.find({
             userType: 'student',
@@ -539,6 +532,8 @@ router.get('/requests', authMiddleware, async (req, res) => {
         students.forEach(student => {
             if (student.tutorRequests && Array.isArray(student.tutorRequests)) {
                 student.tutorRequests.forEach((req, index) => {
+                    // Check if request matches tutor's subjects
+                    const subjectMatches = tutorSubjects.includes(req.subject);
                     // Check if request matches tutor's subjects AND time availability
                     // FIXED: Allow 'General' to match everything
                     const hasGeneral = tutorSubjects.some(s => s === 'General' || s === 'General Help');
@@ -546,7 +541,7 @@ router.get('/requests', authMiddleware, async (req, res) => {
 
                     const timeMatches = tutorAvailableTimes.length === 0 || tutorAvailableTimes.includes(req.requestedTime);
 
-                    if (req.status === 'pending' && subjectMatches && timeMatches) {
+                    if (req.status === 'pending' && subjectMatches) {
                         // Create a reliable requestId using studentId and request index
                         const requestId = `${student._id}-${index}-${req.createdAt ? new Date(req.createdAt).getTime() : Date.now()}`;
                         requests.push({
