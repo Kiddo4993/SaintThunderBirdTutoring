@@ -564,28 +564,6 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Session Durations You Can Offer (Select Multiple)</label>
-                    <div class="subjects-grid">
-                        <div class="subject-item">
-                            <input type="checkbox" id="tutorTime30" value="30min" class="tutor-time">
-                            <label for="tutorTime30">30 minutes</label>
-                        </div>
-                        <div class="subject-item">
-                            <input type="checkbox" id="tutorTime1" value="1hour" class="tutor-time">
-                            <label for="tutorTime1">1 hour</label>
-                        </div>
-                        <div class="subject-item">
-                            <input type="checkbox" id="tutorTime1.5" value="1.5hours" class="tutor-time">
-                            <label for="tutorTime1.5">1.5 hours</label>
-                        </div>
-                        <div class="subject-item">
-                            <input type="checkbox" id="tutorTime2" value="2hours" class="tutor-time">
-                            <label for="tutorTime2">2 hours</label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
                     <label for="tutorExperience">Teaching Experience</label>
                     <textarea id="tutorExperience" name="experience"
                         placeholder="Tell us about your teaching or tutoring experience..." required></textarea>
@@ -717,15 +695,9 @@
 
             // Get selected subjects
             const subjects = Array.from(document.querySelectorAll('.tutor-subject:checked')).map(el => el.value);
-            const availableTimes = Array.from(document.querySelectorAll('.tutor-time:checked')).map(el => el.value);
 
             if (subjects.length === 0) {
                 alert('❌ Please select at least one subject you can teach!');
-                return;
-            }
-
-            if (availableTimes.length === 0) {
-                alert('❌ Please select at least one session duration you can offer!');
                 return;
             }
 
@@ -742,7 +714,6 @@
                         userType: 'tutor', // Backend will keep as 'student' until approved
                         tutorProfile: {
                             subjects: subjects,
-                            availableTimes: availableTimes,
                             experience: experience,
                             availability: availability,
                             motivation: motivation,
