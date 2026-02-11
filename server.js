@@ -14,16 +14,25 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, './')));
 
 // Database Connection with better error handling for Render
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/saintthunderbird', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-})
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/saintthunderbird')
     .then(() => console.log('✅ MongoDB Connected'))
     .catch(err => {
         console.error('❌ MongoDB Error:', err.message);
         console.error('💡 Make sure MONGODB_URI is set in your environment variables');
-        // Don't crash the server, but log the error
     });
+
+// Global Error Handlers for better Render debugging
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+process.on('uncaughtException', (err) => {
+    console.error('❌ Uncaught Exception:', err);
+    // Give time for logging before exiting
+    setTimeout(() => {
+        process.exit(1);
+    }, 1000);
+});
 
 // --- ROUTE IMPORTS ---
 // This connects the separate files you made
