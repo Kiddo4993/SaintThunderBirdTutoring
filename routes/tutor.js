@@ -532,8 +532,6 @@ router.get('/requests', authMiddleware, async (req, res) => {
         students.forEach(student => {
             if (student.tutorRequests && Array.isArray(student.tutorRequests)) {
                 student.tutorRequests.forEach((req, index) => {
-                    // Check if request matches tutor's subjects
-                    const subjectMatches = tutorSubjects.includes(req.subject);
                     // Check if request matches tutor's subjects AND time availability
                     // FIXED: Allow 'General' to match everything
                     const hasGeneral = tutorSubjects.some(s => s === 'General' || s === 'General Help');
@@ -1158,7 +1156,7 @@ router.post('/deny-tutor/:userId', authMiddleware, async (req, res) => {
         // Update application status to denied (don't remove it completely so they can see why)
         await User.findByIdAndUpdate(
             userId,
-            { 
+            {
                 'tutorApplication.status': 'denied',
                 'tutorApplication.deniedAt': new Date(),
                 'tutorApplication.denialReason': reason || 'No reason provided'
