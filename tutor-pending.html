@@ -201,6 +201,9 @@
         // Display user email
         const user = JSON.parse(localStorage.getItem('user'));
         if (user) {
+            if (user.userType === 'student') {
+                window.location.href = 'student-dashboard.html';
+            }
             document.getElementById('emailDisplay').textContent = 'Check ' + user.email + ' for updates';
         } else {
             window.location.href = 'login.html';
@@ -214,16 +217,27 @@
         setInterval(async () => {
             try {
                 const token = localStorage.getItem('authToken');
-                const res = await fetch('https://saintthunderbirdtutoring.onrender.com/api/auth/profile', {
+                const res = await fetch('/api/auth/profile', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 
                 const data = await res.json();
                 
-                if (data.user && data.user.userType === 'tutor') {
-                    // Approved!
+                if (data.user && data.user.userType === 'student') {
+                    window.location.href = 'student-dashboard.html';
+                    return;
+                }
+
+                const status = data.user?.tutorApplication?.status || 'not_applied';
+                if (data.user && data.user.userType === 'tutor' && status === 'approved') {
                     alert('🎉 Congratulations! Your tutor application has been approved!');
                     window.location.href = 'tutor-dashboard.html';
+                    return;
+                }
+
+                if (status === 'denied') {
+                    alert('❌ Your tutor application was denied.');
+                    window.location.href = 'login.html';
                 }
             } catch (error) {
                 console.log('Checking status...');

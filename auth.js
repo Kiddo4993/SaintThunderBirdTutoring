@@ -2,7 +2,7 @@
 // AUTHENTICATION FUNCTIONS
 // ========================================
 
-const API_URL = 'https://saintthunderbirdtutoring.onrender.com/api/auth';
+const API_URL = '/api/auth';
 
 // ========== SIGNUP HANDLERS ==========
 
@@ -91,12 +91,26 @@ async function login(email, password, userType = 'student') {
                 return;
             }
 
+            if (userType === 'tutor' && data.user.email !== 'dylanduancanada@gmail.com') {
+                const tutorStatus = data.user.tutorApplication?.status || 'approved';
+                if (tutorStatus === 'denied') {
+                    alert('❌ Your tutor application was denied. You cannot log in as a tutor.');
+                    return;
+                }
+            }
+
             localStorage.setItem('authToken', data.token);
             localStorage.setItem('user', JSON.stringify(data.user));
             alert(`✅ Welcome back, ${data.user.firstName}!`);
 
             // Redirect based on user type
-            const dashboard = data.user.userType === 'tutor' ? 'tutor-dashboard.html' : 'student-dashboard.html';
+            let dashboard = 'student-dashboard.html';
+            if (data.user.userType === 'tutor') {
+                const tutorStatus = data.user.tutorApplication?.status || 'approved';
+                dashboard = (data.user.email !== 'dylanduancanada@gmail.com' && tutorStatus === 'pending')
+                    ? 'tutor-pending.html'
+                    : 'tutor-dashboard.html';
+            }
             window.location.href = dashboard;
         } else {
             alert('❌ Error: ' + data.error);

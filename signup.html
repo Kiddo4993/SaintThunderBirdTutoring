@@ -592,17 +592,6 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="tutorAvailability">Weekly Availability (Hours)</label>
-                    <select id="tutorAvailability" name="availability" required>
-                        <option value="">Select Hours</option>
-                        <option value="1-3">1-3 hours</option>
-                        <option value="4-6">4-6 hours</option>
-                        <option value="7-10">7-10 hours</option>
-                        <option value="10+">10+ hours</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
                     <label for="tutorMotivation">Why Join Saint Thunderbird?</label>
                     <textarea id="tutorMotivation" name="motivation"
                         placeholder="Tell us what motivates you to tutor First Nations students..." required></textarea>
@@ -666,7 +655,7 @@
             const subjects = Array.from(document.querySelectorAll('.student-subject:checked')).map(el => el.value);
 
             try {
-                const res = await fetch('https://saintthunderbirdtutoring.onrender.com/api/auth/signup', {
+                const res = await fetch('/api/auth/signup', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -712,7 +701,6 @@
             const email = document.getElementById('tutorEmail').value;
             const education = document.getElementById('tutorEducation').value;
             const experience = document.getElementById('tutorExperience').value;
-            const availability = document.getElementById('tutorAvailability').value;
             const motivation = document.getElementById('tutorMotivation').value;
 
             // Get selected subjects
@@ -730,7 +718,7 @@
             }
 
             try {
-                const res = await fetch('https://saintthunderbirdtutoring.onrender.com/api/auth/signup', {
+                const res = await fetch('/api/auth/signup', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -741,9 +729,9 @@
                         userType: 'tutor',
                         tutorProfile: {
                             subjects: subjects,
+                            educationLevel: education,
                             availableTimes: availableTimes,
                             experience: experience,
-                            availability: availability,
                             motivation: motivation
                         }
                     })

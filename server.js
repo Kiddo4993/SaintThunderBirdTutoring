@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
+const { startBiweeklyTutorSummaryScheduler } = require('./jobs/biweeklyTutorSummary');
 
 const app = express();
 
@@ -18,7 +19,10 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/saintthun
     useNewUrlParser: true,
     useUnifiedTopology: true,
 })
-    .then(() => console.log('✅ MongoDB Connected'))
+    .then(() => {
+        console.log('✅ MongoDB Connected');
+        startBiweeklyTutorSummaryScheduler();
+    })
     .catch(err => {
         console.error('❌ MongoDB Error:', err.message);
         console.error('💡 Make sure MONGODB_URI is set in your environment variables');

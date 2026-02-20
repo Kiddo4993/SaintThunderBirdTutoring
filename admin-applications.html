@@ -455,6 +455,12 @@
 
         function displayApplications(applications) {
             const container = document.getElementById('applicationsContainer');
+            const durationLabels = {
+                '30min': '30 minutes',
+                '1hour': '1 hour',
+                '1.5hours': '1.5 hours',
+                '2hours': '2 hours'
+            };
 
             if (applications.length === 0) {
                 container.innerHTML = `
@@ -481,15 +487,29 @@
                         <div class="detail">
                             <div class="detail-label">📚 Subjects</div>
                             <div class="subjects">
-                                ${(app.tutorProfile?.subjects || []).map(s =>
+                                ${(app.tutorProfile?.subjects || ['Not specified']).map(s =>
                 `<span class="subject-tag">${s}</span>`
             ).join('')}
                             </div>
                         </div>
 
                         <div class="detail">
-                            <div class="detail-label">📊 Availability</div>
-                            <div class="detail-value">${app.tutorProfile?.availability || 'Not specified'}</div>
+                            <div class="detail-label">🎓 Education Level</div>
+                            <div class="detail-value">${app.tutorProfile?.educationLevel || 'Not specified'}</div>
+                        </div>
+
+                        <div class="detail">
+                            <div class="detail-label">⏱️ Session Durations</div>
+                            <div class="detail-value">${(app.tutorProfile?.availableTimes || []).length > 0
+                    ? app.tutorProfile.availableTimes.map(t => durationLabels[t] || t).join(', ')
+                    : 'Not specified'}</div>
+                        </div>
+
+                        <div class="detail">
+                            <div class="detail-label">📅 Applied At</div>
+                            <div class="detail-value">${app.tutorApplication?.appliedAt
+                    ? new Date(app.tutorApplication.appliedAt).toLocaleString()
+                    : 'Not available'}</div>
                         </div>
 
                         <div class="detail" style="grid-column: 1 / -1;">

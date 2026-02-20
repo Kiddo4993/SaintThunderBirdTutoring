@@ -25,9 +25,11 @@ const userSchema = new mongoose.Schema({
     tutorProfile: {
         subjects: [String],
         bio: String,
-        availability: String,
+        educationLevel: String,
+        availability: String, // legacy field kept for backward compatibility
         motivation: String,
-        availableTimes: [String] // e.g., ['30min', '1hour', '1.5hours', '2hours']
+        availableTimes: [String], // e.g., ['30min', '1hour', '1.5hours', '2hours']
+        experience: String
     },
 
     // EMBEDDED REQUESTS (If you want to keep them inside the User object)
@@ -52,6 +54,7 @@ const userSchema = new mongoose.Schema({
         zoomLink: String,
         zoomMeetingId: String,
         zoomPassword: String,
+        plannedHours: Number,
         hoursSpent: Number,
         createdAt: { type: Date, default: Date.now },
         completedAt: Date
@@ -67,6 +70,8 @@ const userSchema = new mongoose.Schema({
         zoomLink: String,
         zoomMeetingId: String,
         zoomPassword: String,
+        tutorSessionId: { type: mongoose.Schema.Types.ObjectId },
+        plannedHours: Number,
         hoursSpent: Number,
         createdAt: { type: Date, default: Date.now },
         completedAt: Date
