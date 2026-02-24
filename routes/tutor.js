@@ -1,50 +1,41 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
 const User = require('../models/User');
+const { ADMIN_EMAIL, sendEmail } = require('../services/emailService');
+const { sendBiweeklyTutorSummary } = require('../jobs/biweeklyTutorSummary');
 const router = express.Router();
 
-// Setup email transporter with better error handling
-let transporter;
+const ADMIN_URL = process.env.ADMIN_URL || 'http://localhost:5000';
 
-try {
-    transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASSWORD // Should be an App Password, not regular password
-        },
-        // Add timeout and retry options
-        pool: true,
-        maxConnections: 1,
-        maxMessages: 3
-    });
-
-    // Verify transporter is working
-    transporter.verify((error, success) => {
-        if (error) {
-            console.error('❌ Email transporter error:', error.message);
-            console.error('💡 Make sure EMAIL_USER and EMAIL_PASSWORD are set in environment variables');
-            console.error('💡 For Gmail, use an App Password (not your regular password)');
-        } else {
-            console.log('✅ Email transporter ready');
-        }
-    });
-} catch (error) {
-    console.error('❌ FAILED TO CREATE EMAIL TRANSPORTER:', error.message);
-    console.error('💡 This usually means your EMAIL_USER or EMAIL_PASSWORD in .env is incorrect.');
-    console.error('💡 Double check you are using an "App Password" for Gmail, not your login password.');
-    console.error('💡 Full error:', error);
-
-    // Create a dummy transporter to prevent crashes
-    transporter = {
-        sendMail: (options, callback) => {
-            console.error('❌ [EMAIL FAILED] Email service not configured properly.');
-            console.error('   Attempted to send to:', options.to);
-            console.error('   Subject:', options.subject);
-            if (callback) callback(new Error('Email transporter not configured properly. Check server logs.'), null);
-        }
+function toDurationLabel(value) {
+    const map = {
+        '30min': '30 minutes',
+        '1hour': '1 hour',
+        '1.5hours': '1.5 hours',
+        '2hours': '2 hours'
     };
+    return map[value] || value || 'Not specified';
+}
+
+function durationToHours(value) {
+    const map = {
+        '30min': 0.5,
+        '1hour': 1,
+        '1.5hours': 1.5,
+        '2hours': 2
+    };
+    return map[value] || 1;
+}
+
+async function sendEmailSafe({ to, subject, html, successLog, errorLog }) {
+    try {
+        await sendEmail({ to, subject, html });
+        if (successLog) {
+            console.log(successLog);
+        }
+    } catch (error) {
+        console.error(errorLog || '❌ Email error:', error.message);
+    }
 }
 
 // Middleware to check if user is authenticated
@@ -84,12 +75,11 @@ router.post('/apply-tutor', authMiddleware, async (req, res) => {
             { new: true }
         );
 
-        const approveLink = `${process.env.ADMIN_URL || 'http://localhost:5000'}/api/tutor/approve/${user._id}`;
-        const denyLink = `${process.env.ADMIN_URL || 'http://localhost:5000'}/api/tutor/deny/${user._id}`;
+        const approveLink = `${ADMIN_URL}/api/tutor/approve/${user._id}`;
+        const denyLink = `${ADMIN_URL}/api/tutor/deny/${user._id}`;
 
         const mailOptions = {
-            from: process.env.EMAIL_USER,
-            to: 'dylanduancanada@gmail.com',
+            to: ADMIN_EMAIL,
             subject: `New Tutor Application: ${name}`,
             html: `
                 <h2>New Tutor Application</h2>
@@ -109,14 +99,10 @@ router.post('/apply-tutor', authMiddleware, async (req, res) => {
             `
         };
 
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error('❌ Application email error:', error.message);
-                console.error('Full error:', error);
-            } else {
-                console.log('✅ Application email sent successfully to:', 'dylanduancanada@gmail.com');
-                console.log('Message ID:', info.messageId);
-            }
+        sendEmailSafe({
+            ...mailOptions,
+            successLog: `✅ Application email sent successfully to: ${ADMIN_EMAIL}`,
+            errorLog: '❌ Application email error:'
         });
 
         res.json({
@@ -149,7 +135,6 @@ router.get('/approve/:userId', async (req, res) => {
         }
 
         const mailOptions = {
-            from: process.env.EMAIL_USER,
             to: user.email,
             subject: 'Your Tutor Application Has Been Approved! 🎉',
             html: `
@@ -160,13 +145,10 @@ router.get('/approve/:userId', async (req, res) => {
             `
         };
 
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error('❌ Approval email error:', error.message);
-                console.error('Full error:', error);
-            } else {
-                console.log('✅ Approval email sent successfully to:', user.email);
-            }
+        sendEmailSafe({
+            ...mailOptions,
+            successLog: `✅ Approval email sent successfully to: ${user.email}`,
+            errorLog: '❌ Approval email error:'
         });
 
         res.json({
@@ -197,7 +179,6 @@ router.get('/deny/:userId', async (req, res) => {
         );
 
         const mailOptions = {
-            from: process.env.EMAIL_USER,
             to: user.email,
             subject: 'Your Tutor Application Status',
             html: `
@@ -208,13 +189,10 @@ router.get('/deny/:userId', async (req, res) => {
             `
         };
 
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error('❌ Denial email error:', error.message);
-                console.error('Full error:', error);
-            } else {
-                console.log('✅ Denial email sent successfully to:', user.email);
-            }
+        sendEmailSafe({
+            ...mailOptions,
+            successLog: `✅ Denial email sent successfully to: ${user.email}`,
+            errorLog: '❌ Denial email error:'
         });
 
         res.json({
@@ -284,8 +262,7 @@ router.post('/create-request', authMiddleware, async (req, res) => {
 
         // ===== EMAIL TO ADMIN WHEN STUDENT CREATES REQUEST =====
         const adminMailOptions = {
-            from: process.env.EMAIL_USER,
-            to: 'dylanduancanada@gmail.com',
+            to: ADMIN_EMAIL,
             subject: `📝 New Tutoring Request - ${student.firstName} ${student.lastName}`,
             html: `
                 <div style="font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px;">
@@ -303,7 +280,7 @@ router.post('/create-request', authMiddleware, async (req, res) => {
                         <h3 style="color: #8b4513; margin-top: 20px;">📚 Request Details:</h3>
                         <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #d4a574; margin: 10px 0;">
                             <p><strong>Subject:</strong> ${subject}</p>
-                            <p><strong>Session Duration:</strong> ${requestedTime === '30min' ? '30 minutes' : requestedTime === '1hour' ? '1 hour' : requestedTime === '1.5hours' ? '1.5 hours' : requestedTime === '2hours' ? '2 hours' : requestedTime}</p>
+                            <p><strong>Session Duration:</strong> ${toDurationLabel(requestedTime)}</p>
                             <p><strong>Description:</strong> ${description || 'No description provided'}</p>
                             <p><strong>Priority:</strong> ${priority || 'medium'}</p>
                             <p><strong>Requested At:</strong> ${new Date().toLocaleString()}</p>
@@ -317,12 +294,10 @@ router.post('/create-request', authMiddleware, async (req, res) => {
             `
         };
 
-        transporter.sendMail(adminMailOptions, (error, info) => {
-            if (error) {
-                console.error('❌ Admin notification error:', error.message);
-            } else {
-                console.log('✅ Admin notified of new request');
-            }
+        sendEmailSafe({
+            ...adminMailOptions,
+            successLog: '✅ Admin notified of new request',
+            errorLog: '❌ Admin notification error:'
         });
 
         res.json({
@@ -495,9 +470,9 @@ router.get('/student-stats', authMiddleware, async (req, res) => {
         ).length || 0;
 
         // Calculate hours learned from completed sessions
-        const hoursLearned = student.studentSessions?.reduce((sum, s) =>
-            sum + (s.hoursSpent || 0), 0
-        ) || 0;
+        const hoursLearned = student.studentSessions
+            ?.filter((s) => s.status === 'completed')
+            .reduce((sum, s) => sum + Number(s.hoursSpent || 0), 0) || 0;
 
         res.json({
             success: true,
@@ -572,7 +547,7 @@ router.get('/requests', authMiddleware, async (req, res) => {
 // ===== ACCEPT A TUTORING REQUEST =====
 router.post('/accept-request', authMiddleware, async (req, res) => {
     try {
-        const { requestId, tutorName } = req.body;
+        const { requestId } = req.body;
         const tutor = await User.findById(req.user.userId);
 
         if (!tutor || tutor.userType !== 'tutor') {
@@ -597,6 +572,8 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
         // Find the specific request using the index
         let matchingRequest = null;
         let requestSubject = 'Mathematics';
+        let requestedTime = '1hour';
+        let plannedHours = 1;
 
         if (student.tutorRequests && Array.isArray(student.tutorRequests) && student.tutorRequests.length > 0) {
             // Use index if valid, otherwise find first pending request
@@ -614,6 +591,8 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
 
             if (matchingRequest) {
                 requestSubject = matchingRequest.subject || 'Mathematics';
+                requestedTime = matchingRequest.requestedTime || '1hour';
+                plannedHours = durationToHours(requestedTime);
             }
         }
 
@@ -633,11 +612,14 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
             createdAt: new Date(),
             zoomMeetingId: sessionRefId,
             zoomPassword: zoomPassword,
+            zoomLink: zoomLink,
+            plannedHours
             zoomLink: zoomLink // Placeholder - tutors should coordinate their own meeting link
         };
 
         tutor.tutorSessions.push(session);
         await tutor.save();
+        const createdTutorSession = tutor.tutorSessions[tutor.tutorSessions.length - 1];
 
         // Update student request status - use the matching request we found earlier
         if (matchingRequest) {
@@ -662,13 +644,14 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
             zoomLink: zoomLink,
             zoomMeetingId: sessionRefId,
             zoomPassword: zoomPassword,
+            tutorSessionId: createdTutorSession?._id,
+            plannedHours,
             createdAt: new Date()
         });
         await student.save();
 
         // ===== EMAIL TO TUTOR =====
         const tutorMailOptions = {
-            from: process.env.EMAIL_USER,
             to: tutor.email,
             subject: `🎓 New Student Session - Action Required`,
             html: `
@@ -678,6 +661,8 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
                         <p><strong>Student:</strong> ${student.firstName} ${student.lastName}</p>
                         <p><strong>Student Email:</strong> <a href="mailto:${student.email}">${student.email}</a></p>
                         <p><strong>Subject:</strong> ${requestSubject}</p>
+                        <p><strong>Planned Session Length:</strong> ${toDurationLabel(requestedTime)}</p>
+                        <p><strong>Scheduled:</strong> Tomorrow at your preferred time</p>
                         <p><strong>Session Reference:</strong> #${sessionRefId}</p>
 
                         <div style="background: #fff3cd; padding: 15px; border-left: 4px solid #ffc107; margin: 20px 0;">
@@ -708,20 +693,14 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
                 </div>
             `
         };
-
-        transporter.sendMail(tutorMailOptions, (error, info) => {
-            if (error) {
-                console.error('❌ Tutor email error:', error.message);
-                console.error('Full error:', error);
-            } else {
-                console.log('✅ Tutor email sent successfully to:', tutor.email);
-                console.log('Message ID:', info.messageId);
-            }
+        sendEmailSafe({
+            ...tutorMailOptions,
+            successLog: `✅ Tutor email sent successfully to: ${tutor.email}`,
+            errorLog: '❌ Tutor email error:'
         });
 
         // ===== EMAIL TO STUDENT =====
         const studentMailOptions = {
-            from: process.env.EMAIL_USER,
             to: student.email,
             subject: `✅ Tutor ${tutor.firstName} Accepted Your Request!`,
             html: `
@@ -731,6 +710,13 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
                         <p><strong>${tutor.firstName} ${tutor.lastName}</strong> has accepted your tutoring request!</p>
                         
                         <h3 style="color: #8b4513;">📅 Session Details:</h3>
+                        <p><strong>Tutor:</strong> ${tutor.firstName} ${tutor.lastName}</p>
+                        <p><strong>Email:</strong> ${tutor.email}</p>
+                        <p><strong>Subject:</strong> ${requestSubject}</p>
+                        <p><strong>Session Length:</strong> ${toDurationLabel(requestedTime)}</p>
+                        <p><strong>Subjects Taught:</strong> ${tutor.tutorProfile?.subjects?.join(', ') || 'Various'}</p>
+                        
+                        <h3 style="color: #8b4513;">🎥 Zoom Information (UNIQUE TO YOUR SESSION)</h3>
                         <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #d4a574; margin: 20px 0;">
                             <p><strong>Tutor:</strong> ${tutor.firstName} ${tutor.lastName}</p>
                             <p><strong>Tutor Email:</strong> <a href="mailto:${tutor.email}">${tutor.email}</a></p>
@@ -760,21 +746,15 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
                 </div>
             `
         };
-
-        transporter.sendMail(studentMailOptions, (error, info) => {
-            if (error) {
-                console.error('❌ Student email error:', error.message);
-                console.error('Full error:', error);
-            } else {
-                console.log('✅ Student email sent successfully to:', student.email);
-                console.log('Message ID:', info.messageId);
-            }
+        sendEmailSafe({
+            ...studentMailOptions,
+            successLog: `✅ Student email sent successfully to: ${student.email}`,
+            errorLog: '❌ Student email error:'
         });
 
         // ===== EMAIL TO ADMIN WHEN REQUEST IS ACCEPTED =====
         const adminMailOptions = {
-            from: process.env.EMAIL_USER,
-            to: 'dylanduancanada@gmail.com',
+            to: ADMIN_EMAIL,
             subject: `🔔 New Session Created - ${tutor.firstName} ${tutor.lastName} & ${student.firstName} ${student.lastName}`,
             html: `
                 <div style="font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px;">
@@ -791,6 +771,7 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
                         
                         <h3 style="color: #8b4513; margin-top: 20px;">📚 Session Details:</h3>
                         <p><strong>Subject:</strong> ${requestSubject}</p>
+                        <p><strong>Requested Duration:</strong> ${toDurationLabel(requestedTime)}</p>
                         <p><strong>Scheduled Time:</strong> ${new Date(session.scheduledTime).toLocaleString()}</p>
                         <p><strong>Session Reference:</strong> #${sessionRefId}</p>
                         
@@ -801,13 +782,10 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
                 </div>
             `
         };
-
-        transporter.sendMail(adminMailOptions, (error, info) => {
-            if (error) {
-                console.error('❌ Admin notification error:', error.message);
-            } else {
-                console.log('✅ Admin notification sent for new session');
-            }
+        sendEmailSafe({
+            ...adminMailOptions,
+            successLog: '✅ Admin notification sent for new session',
+            errorLog: '❌ Admin notification error:'
         });
 
         res.json({
@@ -893,12 +871,15 @@ router.post('/complete-session', authMiddleware, async (req, res) => {
 
         let completedSession = null;
         let student = null;
+        const parsedHours = Number(hoursSpent);
 
         if (tutor.tutorSessions) {
             tutor.tutorSessions.forEach(session => {
                 if (session._id.toString() === sessionId) {
                     session.status = 'completed';
-                    session.hoursSpent = hoursSpent || 1;
+                    session.hoursSpent = Number.isFinite(parsedHours) && parsedHours > 0
+                        ? parsedHours
+                        : Number(session.plannedHours || 1);
                     session.completedAt = new Date();
                     completedSession = session;
                 }
@@ -910,11 +891,17 @@ router.post('/complete-session', authMiddleware, async (req, res) => {
                 student = await User.findById(completedSession.studentId);
                 if (student && student.studentSessions) {
                     student.studentSessions.forEach(session => {
-                        if (session.tutorId && session.tutorId.toString() === tutor._id.toString() &&
-                            session.subject === completedSession.subject &&
-                            session.status === 'scheduled') {
+                        const exactMatch = session.tutorSessionId
+                            && session.tutorSessionId.toString() === completedSession._id.toString();
+                        const fallbackMatch = !session.tutorSessionId
+                            && session.tutorId
+                            && session.tutorId.toString() === tutor._id.toString()
+                            && session.subject === completedSession.subject
+                            && session.status === 'scheduled';
+
+                        if (exactMatch || fallbackMatch) {
                             session.status = 'completed';
-                            session.hoursSpent = hoursSpent || 1;
+                            session.hoursSpent = completedSession.hoursSpent;
                             session.completedAt = new Date();
                         }
                     });
@@ -925,9 +912,13 @@ router.post('/complete-session', authMiddleware, async (req, res) => {
 
         // ===== EMAIL TO ADMIN WITH INDIVIDUAL USER DATA =====
         if (completedSession && student) {
+            const tutorCompletedSessions = tutor.tutorSessions?.filter((s) => s.status === 'completed') || [];
+            const tutorCompletedHours = tutorCompletedSessions.reduce((sum, s) => sum + Number(s.hoursSpent || 0), 0);
+            const studentCompletedSessions = student.studentSessions?.filter((s) => s.status === 'completed') || [];
+            const studentCompletedHours = studentCompletedSessions.reduce((sum, s) => sum + Number(s.hoursSpent || 0), 0);
+
             const adminMailOptions = {
-                from: process.env.EMAIL_USER,
-                to: 'dylanduancanada@gmail.com',
+                to: ADMIN_EMAIL,
                 subject: `📊 Session Completed - ${tutor.firstName} ${tutor.lastName} & ${student.firstName} ${student.lastName}`,
                 html: `
                     <div style="font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px;">
@@ -938,22 +929,22 @@ router.post('/complete-session', authMiddleware, async (req, res) => {
                             <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #d4a574; margin: 10px 0;">
                                 <p><strong>Name:</strong> ${tutor.firstName} ${tutor.lastName}</p>
                                 <p><strong>Email:</strong> ${tutor.email}</p>
-                                <p><strong>Total Hours Taught (This Tutor):</strong> ${(tutor.tutorSessions?.reduce((sum, s) => sum + (s.hoursSpent || 0), 0) || 0).toFixed(1)} hours</p>
-                                <p><strong>Total Sessions Completed (This Tutor):</strong> ${tutor.tutorSessions?.filter(s => s.status === 'completed').length || 0}</p>
+                                <p><strong>Total Hours Taught (This Tutor):</strong> ${tutorCompletedHours.toFixed(1)} hours</p>
+                                <p><strong>Total Sessions Completed (This Tutor):</strong> ${tutorCompletedSessions.length}</p>
                             </div>
 
                             <h3 style="color: #8b4513; margin-top: 20px;">👨‍🎓 Student Information:</h3>
                             <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #d4a574; margin: 10px 0;">
                                 <p><strong>Name:</strong> ${student.firstName} ${student.lastName}</p>
                                 <p><strong>Email:</strong> ${student.email}</p>
-                                <p><strong>Total Hours Learned (This Student):</strong> ${(student.studentSessions?.reduce((sum, s) => sum + (s.hoursSpent || 0), 0) || 0).toFixed(1)} hours</p>
-                                <p><strong>Total Sessions Completed (This Student):</strong> ${student.studentSessions?.filter(s => s.status === 'completed').length || 0}</p>
+                                <p><strong>Total Hours Learned (This Student):</strong> ${studentCompletedHours.toFixed(1)} hours</p>
+                                <p><strong>Total Sessions Completed (This Student):</strong> ${studentCompletedSessions.length}</p>
                             </div>
 
                             <h3 style="color: #8b4513; margin-top: 20px;">📝 Session Details:</h3>
                             <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #d4a574; margin: 10px 0;">
                                 <p><strong>Subject:</strong> ${completedSession.subject || 'N/A'}</p>
-                                <p><strong>Hours Spent:</strong> ${hoursSpent || 1} hour(s)</p>
+                                <p><strong>Hours Spent:</strong> ${completedSession.hoursSpent} hour(s)</p>
                                 <p><strong>Completed At:</strong> ${new Date().toLocaleString()}</p>
                                 <p><strong>Scheduled Time:</strong> ${completedSession.scheduledTime ? new Date(completedSession.scheduledTime).toLocaleString() : 'N/A'}</p>
                             </div>
@@ -967,12 +958,10 @@ router.post('/complete-session', authMiddleware, async (req, res) => {
                 `
             };
 
-            transporter.sendMail(adminMailOptions, (error, info) => {
-                if (error) {
-                    console.error('❌ Admin email error:', error.message);
-                } else {
-                    console.log('✅ Admin notification sent successfully');
-                }
+            sendEmailSafe({
+                ...adminMailOptions,
+                successLog: '✅ Admin notification sent successfully',
+                errorLog: '❌ Admin email error:'
             });
         }
 
@@ -1015,9 +1004,9 @@ router.get('/stats', authMiddleware, async (req, res) => {
             s => s.status === 'completed'
         ).length || 0;
 
-        const hoursTaught = tutor.tutorSessions?.reduce(
-            (sum, s) => sum + (s.hoursSpent || 0), 0
-        ) || 0;
+        const hoursTaught = tutor.tutorSessions
+            ?.filter((s) => s.status === 'completed')
+            .reduce((sum, s) => sum + Number(s.hoursSpent || 0), 0) || 0;
 
         res.json({
             success: true,
@@ -1038,7 +1027,7 @@ router.get('/pending-applications', authMiddleware, async (req, res) => {
     try {
         // Security Check: Only Dylan can see this
         const user = await User.findById(req.user.userId);
-        if (user.email !== 'dylanduancanada@gmail.com') {
+        if (user.email !== ADMIN_EMAIL) {
             return res.status(403).json({ error: 'Unauthorized: Admin access only' });
         }
 
@@ -1057,7 +1046,7 @@ router.post('/approve-tutor/:userId', authMiddleware, async (req, res) => {
     try {
         // Security Check
         const admin = await User.findById(req.user.userId);
-        if (admin.email !== 'dylanduancanada@gmail.com') {
+        if (admin.email !== ADMIN_EMAIL) {
             return res.status(403).json({ error: 'Unauthorized' });
         }
 
@@ -1069,6 +1058,7 @@ router.post('/approve-tutor/:userId', authMiddleware, async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
+        await User.findByIdAndUpdate(
         // Preserve existing tutorProfile data from signup, only fill in missing fields
         const existingProfile = targetUser.tutorProfile || {};
         const updatedProfile = {
@@ -1087,11 +1077,34 @@ router.post('/approve-tutor/:userId', authMiddleware, async (req, res) => {
                 userType: 'tutor', // CRITICAL: This changes them from 'student' to 'tutor'
                 'tutorApplication.status': 'approved',
                 'tutorApplication.approvedAt': new Date(),
+                // Keep submitted profile details so admin can review complete application data.
+                'tutorProfile': {
+                    subjects: targetUser.tutorProfile?.subjects || ['General'],
+                    bio: targetUser.tutorProfile?.bio || 'I am ready to help!',
+                    educationLevel: targetUser.tutorProfile?.educationLevel || '',
+                    availability: targetUser.tutorProfile?.availability || '',
+                    motivation: targetUser.tutorProfile?.motivation || '',
+                    availableTimes: targetUser.tutorProfile?.availableTimes || [],
+                    experience: targetUser.tutorProfile?.experience || ''
+                }
                 'tutorProfile': updatedProfile
             },
             { new: true }
         );
 
+        sendEmailSafe({
+            to: targetUser.email,
+            subject: 'Your Tutor Application Has Been Approved! 🎉',
+            html: `
+                <h2>Congratulations ${targetUser.firstName}!</h2>
+                <p>Your tutor application has been <strong>APPROVED</strong>.</p>
+                <p>You can now log in and start tutoring.</p>
+            `,
+            successLog: `✅ Approval email sent successfully to: ${targetUser.email}`,
+            errorLog: '❌ Approval email error:'
+        });
+
+        res.json({ success: true, message: 'Approved successfully' });
         // Send approval email to the tutor
         const mailOptions = {
             from: process.env.EMAIL_USER,
@@ -1140,7 +1153,7 @@ router.post('/deny-tutor/:userId', authMiddleware, async (req, res) => {
     try {
         // Security Check
         const admin = await User.findById(req.user.userId);
-        if (admin.email !== 'dylanduancanada@gmail.com') {
+        if (admin.email !== ADMIN_EMAIL) {
             return res.status(403).json({ error: 'Unauthorized' });
         }
 
@@ -1163,6 +1176,20 @@ router.post('/deny-tutor/:userId', authMiddleware, async (req, res) => {
             }
         );
 
+        sendEmailSafe({
+            to: targetUser.email,
+            subject: 'Your Tutor Application Status',
+            html: `
+                <h2>Tutor Application Update</h2>
+                <p>Thank you for applying to become a tutor on Saint Thunderbird.</p>
+                <p>Unfortunately, your application has been <strong>DENIED</strong> at this time.</p>
+                <p>You can apply again in the future.</p>
+            `,
+            successLog: `✅ Denial email sent successfully to: ${targetUser.email}`,
+            errorLog: '❌ Denial email error:'
+        });
+
+        res.json({ success: true, message: 'Application denied' });
         // Send denial email to the applicant
         const mailOptions = {
             from: process.env.EMAIL_USER,
@@ -1204,4 +1231,20 @@ router.post('/deny-tutor/:userId', authMiddleware, async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
+// 4. MANUAL ADMIN TRIGGER FOR BIWEEKLY SUMMARY EMAIL
+router.post('/admin/send-biweekly-summary', authMiddleware, async (req, res) => {
+    try {
+        const admin = await User.findById(req.user.userId);
+        if (!admin || admin.email !== ADMIN_EMAIL) {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+
+        const result = await sendBiweeklyTutorSummary({ force: true });
+        res.json({ success: true, result });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 module.exports = router;

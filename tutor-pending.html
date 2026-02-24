@@ -201,6 +201,9 @@
         // Display user email
         const user = JSON.parse(localStorage.getItem('user'));
         if (user) {
+            if (user.userType === 'student') {
+                window.location.href = 'student-dashboard.html';
+            }
             document.getElementById('emailDisplay').textContent = 'Check ' + user.email + ' for updates';
         } else {
             window.location.href = 'login.html';
@@ -220,11 +223,24 @@
                 
                 const data = await res.json();
                 
+                if (data.user && data.user.userType === 'student') {
+                    window.location.href = 'student-dashboard.html';
+                    return;
+                }
+
+                const status = data.user?.tutorApplication?.status || 'not_applied';
+                if (data.user && data.user.userType === 'tutor' && status === 'approved') {
                 if (data.user && data.user.userType === 'tutor') {
                     // Approved!
                     localStorage.setItem('user', JSON.stringify(data.user)); // Update local storage
                     alert('🎉 Congratulations! Your tutor application has been approved!');
                     window.location.href = 'tutor-dashboard.html';
+                    return;
+                }
+
+                if (status === 'denied') {
+                    alert('❌ Your tutor application was denied.');
+                    window.location.href = 'login.html';
                 }
 
                 // Check if denied

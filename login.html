@@ -557,6 +557,14 @@
                         return;
                     }
 
+                    // CHECK IF TUTOR IS APPROVED
+                    // Allow admin to bypass
+                    if (data.user.email !== 'dylanduancanada@gmail.com') {
+                        const appStatus = data.user.tutorApplication?.status || 'approved';
+
+                        if (appStatus === 'denied') {
+                            alert('❌ Your tutor application was denied. You cannot log in as a tutor.');
+                            return;
                     // Check if this is a pending tutor applicant (they have userType 'student' but tutorApplication pending)
                     if (data.user.tutorApplication && data.user.tutorApplication.status === 'pending') {
                         localStorage.setItem('authToken', data.token);
@@ -591,7 +599,13 @@
                     }
 
                     alert('✅ Welcome back, ' + data.user.firstName + '!');
-                    window.location.href = 'tutor-dashboard.html';
+                    const appStatus = data.user.tutorApplication?.status || 'approved';
+                    if (data.user.email !== 'dylanduancanada@gmail.com' && appStatus === 'pending') {
+                        alert('⏳ Your tutor application is still pending approval.');
+                        window.location.href = 'tutor-pending.html';
+                    } else {
+                        window.location.href = 'tutor-dashboard.html';
+                    }
                 } else {
                     alert('❌ Error: ' + data.error);
                 }

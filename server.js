@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
+const { startBiweeklyTutorSummaryScheduler } = require('./jobs/biweeklyTutorSummary');
 
 const app = express();
 
@@ -14,6 +15,14 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, './')));
 
 // Database Connection with better error handling for Render
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/saintthunderbird', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+})
+    .then(() => {
+        console.log('✅ MongoDB Connected');
+        startBiweeklyTutorSummaryScheduler();
+    })
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/saintthunderbird')
     .then(() => console.log('✅ MongoDB Connected'))
     .catch(err => {

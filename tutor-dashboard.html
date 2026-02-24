@@ -371,6 +371,11 @@
 
         <!-- Stats -->
         <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📚</div>
+                <div class="stat-value" id="requestsCount">0</div>
+                <div class="stat-label">Requests Received</div>
+            </div>
             
             <div class="stat-card">
                 <div class="stat-icon">🎓</div>
@@ -398,14 +403,6 @@
         <!-- Info Banner -->
         <div class="zoom-info">
             🎥 When you accept a request, you'll receive an email with your Zoom meeting link and password
-        </div>
-
-        <!-- Volunteer Hours Banner -->
-        <div
-            style="background: rgba(34, 197, 94, 0.2); border: 2px solid rgba(34, 197, 94, 0.5); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; color: #22c55e; font-weight: 600; font-size: 1.1rem; text-align: center;">
-            👥 <strong>Free Volunteer Hours Available!</strong><br>
-            For every hour you tutor, you earn free volunteer hours. Email dylanduancanada@gmail.com to get your
-            volunteer hours confirmed and added to your record.
         </div>
 
         <!-- Student Requests -->
@@ -452,7 +449,7 @@
             if (user.email !== 'dylanduancanada@gmail.com') {
                 if (appStatus !== 'approved') {
                     alert('⚠️ Access Denied: Your tutor application is ' + (appStatus || 'pending') + '.');
-                    window.location.href = 'login.html';
+                    window.location.href = appStatus === 'pending' ? 'tutor-pending.html' : 'login.html';
                     return;
                 }
             }
