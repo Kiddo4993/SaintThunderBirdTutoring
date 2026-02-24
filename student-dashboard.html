@@ -589,11 +589,13 @@
             style="background: rgba(59, 130, 246, 0.2); border: 2px solid rgba(59, 130, 246, 0.5); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; color: #60a5fa; font-weight: 600; font-size: 1.1rem;">
             <div style="margin-bottom: 1rem;">
                 🎥 <strong>How It Works:</strong><br>
-                When a tutor accepts your request, they'll receive an email with a Zoom meeting link. The tutor will
-                teach you on Zoom and you'll get all the session details!
+                1. Submit a tutoring request below<br>
+                2. A tutor will accept your request<br>
+                3. The tutor will email you directly with a Zoom or Google Meet link<br>
+                4. Join the meeting at the scheduled time for your session!
             </div>
             <div style="border-top: 2px solid rgba(59, 130, 246, 0.5); padding-top: 1rem;">
-                💻 <strong>Requirements:</strong> You need a computer to receive online lessons via Zoom
+                💻 <strong>Requirements:</strong> You need a computer with Zoom or Google Meet installed, plus a working microphone and camera.
             </div>
         </div>
 
@@ -620,6 +622,14 @@
                 <div class="loading">Loading available tutors...</div>
             </div>
         </div>
+    <!-- Your Requests -->
+    <div class="card">
+        <div class="card-title">📝 Your Requests</div>
+        <div id="yourRequests">
+            <div class="loading">Loading requests...</div>
+        </div>
+    </div>
+
 
         <!-- New Request Modal -->
         <div class="modal" id="requestModal">
@@ -778,6 +788,9 @@
                 }
             }
 
+            // Track which accepted requests we've already notified about
+            let notifiedAcceptedRequests = JSON.parse(localStorage.getItem('notifiedAcceptedRequests') || '[]');
+
             // Load student's requests
             async function loadRequests() {
                 try {
@@ -797,7 +810,23 @@
                     const container = document.getElementById('yourRequests');
 
                     if (data.success && data.requests && data.requests.length > 0) {
-                        // Stats will be updated by loadStudentStats
+                        // Check for newly accepted requests
+                        const newlyAcceptedRequests = data.requests.filter(req => 
+                            req.status === 'accepted' && 
+                            req.acceptedAt && 
+                            !notifiedAcceptedRequests.includes(req._id || req.createdAt)
+                        );
+
+                        // Show popup for newly accepted requests
+                        if (newlyAcceptedRequests.length > 0) {
+                            newlyAcceptedRequests.forEach(req => {
+                                showAcceptedNotification(req);
+                                // Add to notified list
+                                notifiedAcceptedRequests.push(req._id || req.createdAt);
+                            });
+                            // Save notified list
+                            localStorage.setItem('notifiedAcceptedRequests', JSON.stringify(notifiedAcceptedRequests));
+                        }
 
                         const html = data.requests.map(req => {
                             const timeLabels = {
@@ -842,6 +871,81 @@
                 } catch (error) {
                     console.error('❌ Error loading requests:', error);
                 }
+            }
+
+            // Show notification popup when request is accepted
+            function showAcceptedNotification(request) {
+                // Create popup element
+                const popup = document.createElement('div');
+                popup.id = 'acceptedNotification';
+                popup.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: linear-gradient(135deg, rgba(34, 197, 94, 0.95), rgba(22, 163, 74, 0.95));
+                    border: 2px solid rgba(34, 197, 94, 0.8);
+                    border-radius: 16px;
+                    padding: 2rem;
+                    max-width: 450px;
+                    width: 90%;
+                    z-index: 10000;
+                    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+                    text-align: center;
+                    color: white;
+                    font-family: 'Orbitron', sans-serif;
+                `;
+
+                popup.innerHTML = `
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+                    <h2 style="font-size: 1.5rem; margin-bottom: 1rem; color: white;">Great News!</h2>
+                    <p style="font-size: 1.1rem; margin-bottom: 1rem; line-height: 1.6;">
+                        A tutor has accepted your request for <strong>${request.subject}</strong>!
+                    </p>
+                    <div style="background: rgba(255, 255, 255, 0.2); padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                        <p style="margin: 0; font-size: 1rem;">
+                            📧 <strong>Check your email!</strong><br>
+                            Your tutor will send you a Zoom link to start your session.
+                        </p>
+                    </div>
+                    <button onclick="closeAcceptedNotification()" style="
+                        background: white;
+                        color: #16a34a;
+                        border: none;
+                        padding: 0.75rem 2rem;
+                        border-radius: 8px;
+                        font-family: 'Orbitron', sans-serif;
+                        font-weight: 700;
+                        font-size: 1rem;
+                        cursor: pointer;
+                        margin-top: 1rem;
+                        text-transform: uppercase;
+                    ">Got it!</button>
+                `;
+
+                // Create overlay
+                const overlay = document.createElement('div');
+                overlay.id = 'acceptedNotificationOverlay';
+                overlay.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(0, 0, 0, 0.7);
+                    z-index: 9999;
+                `;
+
+                document.body.appendChild(overlay);
+                document.body.appendChild(popup);
+            }
+
+            // Close the accepted notification popup
+            function closeAcceptedNotification() {
+                const popup = document.getElementById('acceptedNotification');
+                const overlay = document.getElementById('acceptedNotificationOverlay');
+                if (popup) popup.remove();
+                if (overlay) overlay.remove();
             }
 
             // Modal functions

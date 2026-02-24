@@ -213,7 +213,7 @@
             window.location.href = 'index.html';
         }
 
-        // Optional: Check approval status every 10 seconds
+        // Check approval status every 10 seconds
         setInterval(async () => {
             try {
                 const token = localStorage.getItem('authToken');
@@ -230,6 +230,9 @@
 
                 const status = data.user?.tutorApplication?.status || 'not_applied';
                 if (data.user && data.user.userType === 'tutor' && status === 'approved') {
+                if (data.user && data.user.userType === 'tutor') {
+                    // Approved!
+                    localStorage.setItem('user', JSON.stringify(data.user)); // Update local storage
                     alert('🎉 Congratulations! Your tutor application has been approved!');
                     window.location.href = 'tutor-dashboard.html';
                     return;
@@ -238,6 +241,13 @@
                 if (status === 'denied') {
                     alert('❌ Your tutor application was denied.');
                     window.location.href = 'login.html';
+                }
+
+                // Check if denied
+                if (data.user && data.user.tutorApplication && data.user.tutorApplication.status === 'denied') {
+                    alert('❌ Your tutor application was not approved. You can still use Saint Thunderbird as a student.');
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    window.location.href = 'student-dashboard.html';
                 }
             } catch (error) {
                 console.log('Checking status...');

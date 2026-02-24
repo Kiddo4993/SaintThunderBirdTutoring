@@ -510,6 +510,7 @@
                             <div class="detail-value">${app.tutorApplication?.appliedAt
                     ? new Date(app.tutorApplication.appliedAt).toLocaleString()
                     : 'Not available'}</div>
+                            <div class="detail-value">${app.tutorProfile?.education || 'Not specified'}</div>
                         </div>
 
                         <div class="detail" style="grid-column: 1 / -1;">

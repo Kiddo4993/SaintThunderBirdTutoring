@@ -564,28 +564,6 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Session Durations You Can Offer (Select Multiple)</label>
-                    <div class="subjects-grid">
-                        <div class="subject-item">
-                            <input type="checkbox" id="tutorTime30" value="30min" class="tutor-time">
-                            <label for="tutorTime30">30 minutes</label>
-                        </div>
-                        <div class="subject-item">
-                            <input type="checkbox" id="tutorTime1" value="1hour" class="tutor-time">
-                            <label for="tutorTime1">1 hour</label>
-                        </div>
-                        <div class="subject-item">
-                            <input type="checkbox" id="tutorTime1.5" value="1.5hours" class="tutor-time">
-                            <label for="tutorTime1.5">1.5 hours</label>
-                        </div>
-                        <div class="subject-item">
-                            <input type="checkbox" id="tutorTime2" value="2hours" class="tutor-time">
-                            <label for="tutorTime2">2 hours</label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
                     <label for="tutorExperience">Teaching Experience</label>
                     <textarea id="tutorExperience" name="experience"
                         placeholder="Tell us about your teaching or tutoring experience..." required></textarea>
@@ -655,6 +633,7 @@
             const subjects = Array.from(document.querySelectorAll('.student-subject:checked')).map(el => el.value);
 
             try {
+                // Use relative URL so it works in all environments
                 const res = await fetch('/api/auth/signup', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -682,8 +661,7 @@
             }
         });
 
-        // Replace the tutor form submission in your signup.html with this:
-
+        // Tutor Signup Form - Sends application to admin for approval
         document.getElementById('tutorSignupForm').addEventListener('submit', async function (e) {
             e.preventDefault();
             e.stopImmediatePropagation();
@@ -705,19 +683,14 @@
 
             // Get selected subjects
             const subjects = Array.from(document.querySelectorAll('.tutor-subject:checked')).map(el => el.value);
-            const availableTimes = Array.from(document.querySelectorAll('.tutor-time:checked')).map(el => el.value);
 
             if (subjects.length === 0) {
                 alert('❌ Please select at least one subject you can teach!');
                 return;
             }
 
-            if (availableTimes.length === 0) {
-                alert('❌ Please select at least one session duration you can offer!');
-                return;
-            }
-
             try {
+                // Use relative URL so it works in all environments
                 const res = await fetch('/api/auth/signup', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -726,13 +699,17 @@
                         lastName,
                         email,
                         password,
-                        userType: 'tutor',
+                        userType: 'tutor', // Backend will keep as 'student' until approved
                         tutorProfile: {
                             subjects: subjects,
                             educationLevel: education,
                             availableTimes: availableTimes,
                             experience: experience,
                             motivation: motivation
+                            experience: experience,
+                            availability: availability,
+                            motivation: motivation,
+                            education: education
                         }
                     })
                 });
@@ -742,7 +719,9 @@
                 if (data.success) {
                     localStorage.setItem('authToken', data.token);
                     localStorage.setItem('user', JSON.stringify(data.user));
-                    alert('✅ Application submitted! Please check your email for updates.');
+                    
+                    // Note: User will have userType 'student' but tutorApplication.status 'pending'
+                    alert('✅ Application submitted! An admin will review your application. You will receive an email when approved.');
                     window.location.href = 'tutor-pending.html';
                 } else {
                     alert('❌ Error: ' + data.error);

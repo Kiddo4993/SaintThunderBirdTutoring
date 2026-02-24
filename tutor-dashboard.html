@@ -376,6 +376,7 @@
                 <div class="stat-value" id="requestsCount">0</div>
                 <div class="stat-label">Requests Received</div>
             </div>
+            
             <div class="stat-card">
                 <div class="stat-icon">🎓</div>
                 <div class="stat-value" id="sessionsCount">0</div>
@@ -386,7 +387,6 @@
                 <div class="stat-value" id="hoursCount">0</div>
                 <div class="stat-label">Hours Taught</div>
             </div>
-
         </div>
         <!-- Replace the volunteer hours banner with this -->
         <div
@@ -414,12 +414,7 @@
         </div>
 
         <!-- My Sessions -->
-        <div class="card">
-            <div class="card-title">📅 My Sessions</div>
-            <div id="mySessions">
-                <div class="loading">Loading sessions...</div>
-            </div>
-        </div>
+        
     </div>
 
     <script src="auth.js"></script>
@@ -489,7 +484,7 @@
                 console.log('📊 Tutor stats:', data);
 
                 if (data.success) {
-                    // Update stats cards (requestsCount will be updated by loadStudentRequests)
+                    // Update stats cards
                     const sessionsCountEl = document.getElementById('sessionsCount');
                     const hoursCountEl = document.getElementById('hoursCount');
 
@@ -525,9 +520,13 @@
                 const data = await response.json();
                 console.log('📦 Requests data:', data);
 
-                if (data.success && data.requests && data.requests.length > 0) {
-                    document.getElementById('requestsCount').textContent = data.requests.length;
+                // Update Requests Waiting count
+                const requestsWaitingCountEl = document.getElementById('requestsWaitingCount');
+                if (requestsWaitingCountEl) {
+                    requestsWaitingCountEl.textContent = data.success && data.requests ? data.requests.length : 0;
+                }
 
+                if (data.success && data.requests && data.requests.length > 0) {
                     container.innerHTML = data.requests.map(req => {
                         // Escape HTML to prevent XSS
                         const escapeHtml = (text) => {
@@ -572,7 +571,6 @@
                     `;
                     }).join('');
                 } else {
-                    document.getElementById('requestsCount').textContent = '0';
                     container.innerHTML = `
                         <div class="empty-state">
                             <div class="empty-state-icon">📝</div>
