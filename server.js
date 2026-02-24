@@ -15,16 +15,11 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, './')));
 
 // Database Connection with better error handling for Render
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/saintthunderbird', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-})
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/saintthunderbird')
     .then(() => {
         console.log('✅ MongoDB Connected');
         startBiweeklyTutorSummaryScheduler();
     })
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/saintthunderbird')
-    .then(() => console.log('✅ MongoDB Connected'))
     .catch(err => {
         console.error('❌ MongoDB Error:', err.message);
         console.error('💡 Make sure MONGODB_URI is set in your environment variables');

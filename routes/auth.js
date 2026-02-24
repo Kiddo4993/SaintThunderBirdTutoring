@@ -150,28 +150,19 @@ router.post('/signup', async (req, res) => {
             lastName,
             email,
             password: hashedPassword,
-            userType,
+            userType: actualUserType,
             tutorApplication: userType === 'tutor'
-                ? { status: 'pending', appliedAt: new Date() }
+                ? {
+                    status: 'pending',
+                    appliedAt: new Date(),
+                    name: `${firstName} ${lastName}`,
+                    requestedType: 'tutor'
+                }
                 : undefined
         };
 
         if (userType === 'tutor') {
             userData.tutorProfile = buildTutorProfile(req.body.tutorProfile || {});
-            password: hashedPassword, // hashing password for security
-            userType: actualUserType,
-            // If applying as tutor, create pending application
-            tutorApplication: userType === 'tutor' ? { 
-                status: 'pending', 
-                appliedAt: new Date(),
-                name: `${firstName} ${lastName}`,
-                requestedType: 'tutor' // Track that they applied as tutor
-            } : undefined
-        };
-
-        // If tutor profile data is provided, add it (even for pending applicants)
-        if (req.body.tutorProfile && userType === 'tutor') {
-            userData.tutorProfile = req.body.tutorProfile;
         }
 
         const user = new User(userData);
@@ -187,20 +178,11 @@ router.post('/signup', async (req, res) => {
             { expiresIn: '7d' }
         );
 
-        // Return the REQUESTED userType so frontend knows to redirect to pending page
+        // Return the user payload so frontend knows to redirect to pending page if necessary
         res.status(201).json({
             success: true,
             token,
             user: createAuthUserPayload(user)
-            user: { 
-                id: user._id, 
-                firstName, 
-                lastName, 
-                email, 
-                userType: actualUserType,
-                // Include application status so frontend can handle redirect
-                tutorApplication: userData.tutorApplication
-            }
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -231,16 +213,6 @@ router.post('/login', async (req, res) => {
             success: true,
             token,
             user: createAuthUserPayload(user)
-            user: {
-                id: user._id,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                email: user.email,
-                userType: user.userType,
-                // Include tutorApplication so frontend can check approval status
-                tutorApplication: user.tutorApplication,
-                tutorProfile: user.tutorProfile
-            }
         });
     } catch (error) {
         res.status(500).json({ error: error.message });

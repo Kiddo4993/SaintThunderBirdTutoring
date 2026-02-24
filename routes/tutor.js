@@ -612,9 +612,8 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
             createdAt: new Date(),
             zoomMeetingId: sessionRefId,
             zoomPassword: zoomPassword,
-            zoomLink: zoomLink,
+            zoomLink: zoomLink, // Placeholder - tutors should coordinate their own meeting link
             plannedHours
-            zoomLink: zoomLink // Placeholder - tutors should coordinate their own meeting link
         };
 
         tutor.tutorSessions.push(session);
@@ -1058,17 +1057,16 @@ router.post('/approve-tutor/:userId', authMiddleware, async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        await User.findByIdAndUpdate(
         // Preserve existing tutorProfile data from signup, only fill in missing fields
         const existingProfile = targetUser.tutorProfile || {};
         const updatedProfile = {
             subjects: existingProfile.subjects || ['General'],
             bio: existingProfile.bio || "I am ready to help!",
-            availability: existingProfile.availability,
-            motivation: existingProfile.motivation,
-            experience: existingProfile.experience,
+            availability: existingProfile.availability || '',
+            motivation: existingProfile.motivation || '',
+            experience: existingProfile.experience || '',
             availableTimes: existingProfile.availableTimes || [],
-            education: existingProfile.education
+            educationLevel: existingProfile.educationLevel || ''
         };
 
         const user = await User.findByIdAndUpdate(
@@ -1077,17 +1075,7 @@ router.post('/approve-tutor/:userId', authMiddleware, async (req, res) => {
                 userType: 'tutor', // CRITICAL: This changes them from 'student' to 'tutor'
                 'tutorApplication.status': 'approved',
                 'tutorApplication.approvedAt': new Date(),
-                // Keep submitted profile details so admin can review complete application data.
-                'tutorProfile': {
-                    subjects: targetUser.tutorProfile?.subjects || ['General'],
-                    bio: targetUser.tutorProfile?.bio || 'I am ready to help!',
-                    educationLevel: targetUser.tutorProfile?.educationLevel || '',
-                    availability: targetUser.tutorProfile?.availability || '',
-                    motivation: targetUser.tutorProfile?.motivation || '',
-                    availableTimes: targetUser.tutorProfile?.availableTimes || [],
-                    experience: targetUser.tutorProfile?.experience || ''
-                }
-                'tutorProfile': updatedProfile
+                tutorProfile: updatedProfile
             },
             { new: true }
         );
