@@ -395,6 +395,19 @@
             box-shadow: 0 15px 40px rgba(212, 165, 116, 0.4);
         }
 
+        .request-dropdown {
+            display: none;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .request-dropdown.active {
+            display: block;
+        }
+
         .empty-state {
             text-align: center;
             padding: 4rem 2rem;
@@ -582,7 +595,39 @@
         </div>
 
         <!-- New Request Button -->
-        <button class="new-request-btn" onclick="openRequestModal(null)">📝 Request Tutoring Help</button>
+        <button class="new-request-btn" onclick="toggleRequestDropdown()">📝 Request Tutoring Help</button>
+        <div id="requestDropdown" class="request-dropdown">
+            <div class="form-group">
+                <label>Subject</label>
+                <select id="quickRequestSubject">
+                    <option value="">Select a subject</option>
+                    <option value="Mathematics">Mathematics 📐</option>
+                    <option value="Sciences">Sciences 🔬</option>
+                    <option value="Languages">Languages 🌐</option>
+                    <option value="Social Studies">Social Studies 📚</option>
+                    <option value="Technology">Technology 💻</option>
+                    <option value="Arts & Culture">Arts & Culture 🎨</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Hours</label>
+                <select id="quickRequestTime">
+                    <option value="">Select duration</option>
+                    <option value="30min">30 minutes</option>
+                    <option value="1hour">1 hour</option>
+                    <option value="1.5hours">1.5 hours</option>
+                    <option value="2hours">2 hours</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Details (optional)</label>
+                <textarea id="quickRequestDescription" placeholder="What do you need help with?"></textarea>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" onclick="closeRequestDropdown()">Cancel</button>
+                <button type="button" class="btn-primary" onclick="submitQuickRequest()">Send Request</button>
+            </div>
+        </div>
 
         <!-- Info Banner -->
         <div
@@ -971,6 +1016,58 @@
                 const modal = document.getElementById('requestModal');
                 if (modal) {
                     modal.classList.remove('active');
+                }
+            }
+
+            function toggleRequestDropdown() {
+                const dropdown = document.getElementById('requestDropdown');
+                dropdown.classList.toggle('active');
+            }
+
+            function closeRequestDropdown() {
+                const dropdown = document.getElementById('requestDropdown');
+                dropdown.classList.remove('active');
+            }
+
+            async function submitQuickRequest() {
+                const subject = document.getElementById('quickRequestSubject').value;
+                const requestedTime = document.getElementById('quickRequestTime').value;
+                const description = document.getElementById('quickRequestDescription').value;
+
+                if (!subject || !requestedTime) {
+                    alert('❌ Please select both subject and duration');
+                    return;
+                }
+
+                try {
+                    const token = localStorage.getItem('authToken');
+                    const res = await fetch(`${API_URL}/tutor/create-request`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            subject,
+                            requestedTime,
+                            description,
+                            priority: 'medium'
+                        })
+                    });
+                    const data = await res.json();
+                    if (!data.success) {
+                        alert('❌ Error: ' + (data.error || 'Failed to submit request'));
+                        return;
+                    }
+
+                    alert('✅ Request sent');
+                    document.getElementById('quickRequestSubject').value = '';
+                    document.getElementById('quickRequestTime').value = '';
+                    document.getElementById('quickRequestDescription').value = '';
+                    closeRequestDropdown();
+                    loadDashboard();
+                } catch (error) {
+                    alert('❌ Error submitting request: ' + error.message);
                 }
             }
 

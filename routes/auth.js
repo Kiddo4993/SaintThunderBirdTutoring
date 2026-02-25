@@ -143,6 +143,7 @@ router.post('/signup', async (req, res) => {
         // Only students get immediate 'student' userType
         // Tutors get 'student' userType + tutorApplication with 'pending' status
         const actualUserType = userType === 'tutor' ? 'student' : userType;
+        const tutorProfileInput = req.body.tutorProfile || {};
 
         const userData = {
             firstName,
@@ -155,13 +156,17 @@ router.post('/signup', async (req, res) => {
                     status: 'pending',
                     appliedAt: new Date(),
                     name: `${firstName} ${lastName}`,
-                    requestedType: 'tutor'
+                    requestedType: 'tutor',
+                    subjects: Array.isArray(tutorProfileInput.subjects) ? tutorProfileInput.subjects : [],
+                    educationLevel: tutorProfileInput.educationLevel || '',
+                    experience: tutorProfileInput.experience || '',
+                    motivation: tutorProfileInput.motivation || ''
                 }
                 : undefined
         };
 
         if (userType === 'tutor') {
-            userData.tutorProfile = buildTutorProfile(req.body.tutorProfile || {});
+            userData.tutorProfile = buildTutorProfile(tutorProfileInput);
         }
 
         const user = new User(userData);

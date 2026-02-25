@@ -16,6 +16,10 @@ const userSchema = new mongoose.Schema({
     tutorApplication: {
         name: String,
         age: Number,
+        subjects: [String],
+        educationLevel: String,
+        experience: String,
+        motivation: String,
         status: { type: String, enum: ['pending', 'approved', 'denied'], default: 'pending' },
         appliedAt: Date,
         approvedAt: Date

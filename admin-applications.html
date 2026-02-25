@@ -483,7 +483,16 @@
                 return;
             }
 
-            container.innerHTML = applications.map(app => `
+            container.innerHTML = applications.map(app => {
+                const subjects = (app.tutorProfile?.subjects && app.tutorProfile.subjects.length > 0)
+                    ? app.tutorProfile.subjects
+                    : (app.tutorApplication?.subjects || []);
+                const educationLevel = app.tutorProfile?.educationLevel || app.tutorApplication?.educationLevel || 'Not specified';
+                const experience = app.tutorProfile?.experience || app.tutorApplication?.experience || 'Not provided';
+                const motivation = app.tutorProfile?.motivation || app.tutorApplication?.motivation || 'Not provided';
+                const appliedAt = app.tutorApplication?.appliedAt || app.createdAt;
+
+                return `
                 <div class="app-card">
                     <div class="app-header">
                         <div>
@@ -497,7 +506,7 @@
                         <div class="detail">
                             <div class="detail-label">📚 Subjects</div>
                             <div class="subjects">
-                                ${(app.tutorProfile?.subjects || ['Not specified']).map(s =>
+                                ${(subjects.length > 0 ? subjects : ['Not specified']).map(s =>
                 `<span class="subject-tag">${s}</span>`
             ).join('')}
                             </div>
@@ -505,14 +514,12 @@
 
                         <div class="detail">
                             <div class="detail-label">🎓 Education Level</div>
-                            <div class="detail-value">${app.tutorProfile?.educationLevel || 'Not specified'}</div>
+                            <div class="detail-value">${educationLevel}</div>
                         </div>
 
                         <div class="detail">
                             <div class="detail-label">📅 Applied At</div>
-                            <div class="detail-value">${app.tutorApplication?.appliedAt
-                    ? new Date(app.tutorApplication.appliedAt).toLocaleString()
-                    : 'Not available'}</div>
+                            <div class="detail-value">${appliedAt ? new Date(appliedAt).toLocaleString() : 'Not available'}</div>
                         </div>
 
                         <div class="detail">
@@ -523,12 +530,12 @@
 
                         <div class="detail" style="grid-column: 1 / -1;">
                             <div class="detail-label">💼 Experience</div>
-                            <div class="experience-text">${app.tutorProfile?.experience || 'Not provided'}</div>
+                            <div class="experience-text">${experience}</div>
                         </div>
 
                         <div class="detail" style="grid-column: 1 / -1;">
                             <div class="detail-label">❤️ Motivation</div>
-                            <div class="motivation-text">"${app.tutorProfile?.motivation || 'Not provided'}"</div>
+                            <div class="motivation-text">"${motivation}"</div>
                         </div>
                     </div>
 
@@ -541,7 +548,8 @@
                         </button>
                     </div>
                 </div>
-            `).join('');
+            `;
+            }).join('');
 
             document.getElementById('pendingCount').textContent = applications.length;
         }
