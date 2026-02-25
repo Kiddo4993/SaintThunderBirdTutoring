@@ -396,7 +396,7 @@
         }
 
         .request-dropdown {
-            display: block;
+            display: none;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border);
             border-radius: 12px;
@@ -406,6 +406,31 @@
 
         .request-dropdown.active {
             display: block;
+        }
+
+        .request-status-msg {
+            margin-top: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: none;
+        }
+
+        .request-status-msg.show {
+            display: block;
+        }
+
+        .request-status-msg.success {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid rgba(34, 197, 94, 0.5);
+            color: #22c55e;
+        }
+
+        .request-status-msg.error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            color: #ef4444;
         }
 
         .empty-state {
@@ -595,8 +620,10 @@
         </div>
 
         <!-- New Request Button -->
-        <button class="new-request-btn" onclick="document.getElementById('requestDropdown')?.scrollIntoView({behavior:'smooth',block:'start'})">📝 Request Tutoring Help</button>
+        <button class="new-request-btn" onclick="toggleRequestDropdown()">📝 Request Tutoring Help</button>
         <div id="requestDropdown" class="request-dropdown">
+            <input type="hidden" id="quickSelectedTutorId">
+            <div id="quickSelectedTutorNotice" style="display:none; margin-bottom: 1rem; padding: 0.75rem; border-radius: 8px; background: rgba(74, 124, 158, 0.2); border: 1px solid rgba(74, 124, 158, 0.4); color: #60a5fa;"></div>
             <div class="form-group">
                 <label>Subject</label>
                 <select id="quickRequestSubject">
@@ -627,6 +654,7 @@
                 <button type="button" class="btn-secondary" onclick="closeRequestDropdown()">Cancel</button>
                 <button type="button" class="btn-primary" onclick="submitQuickRequest()">Send Request</button>
             </div>
+            <div id="quickRequestStatus" class="request-status-msg"></div>
         </div>
 
         <!-- Info Banner -->
@@ -804,7 +832,7 @@
                             </p>
                         </div>
                         
-                        <button class="btn-primary" style="width: 100%; margin-top: auto;" onclick="openRequestModal('${tutor._id}', '${safeTutorName}')">
+                        <button class="btn-primary" style="width: 100%; margin-top: auto;" onclick="openQuickRequestForTutor('${tutor._id}', '${safeTutorName}')">
                             Request Help
                         </button>
                     </div>
@@ -1022,26 +1050,57 @@
             function toggleRequestDropdown() {
                 const dropdown = document.getElementById('requestDropdown');
                 dropdown.classList.toggle('active');
+                if (dropdown.classList.contains('active')) {
+                    dropdown.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
             }
 
             function closeRequestDropdown() {
                 const dropdown = document.getElementById('requestDropdown');
                 dropdown.classList.remove('active');
-                dropdown.style.display = 'none';
+            }
+
+            function openQuickRequestForTutor(tutorId, tutorName) {
+                const dropdown = document.getElementById('requestDropdown');
+                const tutorIdInput = document.getElementById('quickSelectedTutorId');
+                const tutorNotice = document.getElementById('quickSelectedTutorNotice');
+                dropdown.classList.add('active');
+                tutorIdInput.value = tutorId || '';
+                if (tutorId) {
+                    tutorNotice.style.display = 'block';
+                    tutorNotice.textContent = `Request will be sent to: ${tutorName}`;
+                } else {
+                    tutorNotice.style.display = 'none';
+                    tutorNotice.textContent = '';
+                }
+                dropdown.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            function showQuickRequestStatus(message, type = 'success') {
+                const el = document.getElementById('quickRequestStatus');
+                el.className = `request-status-msg show ${type}`;
+                el.textContent = message;
             }
 
             async function submitQuickRequest() {
                 const subject = document.getElementById('quickRequestSubject').value;
                 const requestedTime = document.getElementById('quickRequestTime').value;
                 const description = document.getElementById('quickRequestDescription').value;
+                const selectedTutorId = document.getElementById('quickSelectedTutorId').value;
 
                 if (!subject || !requestedTime) {
-                    alert('❌ Please select both subject and duration');
+                    showQuickRequestStatus('Please select both subject and hours.', 'error');
                     return;
                 }
 
                 try {
                     const token = localStorage.getItem('authToken');
+                    if (!token) {
+                        showQuickRequestStatus('You are logged out. Please log in again.', 'error');
+                        setTimeout(() => { window.location.href = 'login.html'; }, 900);
+                        return;
+                    }
+
                     const res = await fetch(`${API_URL}/tutor/create-request`, {
                         method: 'POST',
                         headers: {
@@ -1052,23 +1111,27 @@
                             subject,
                             requestedTime,
                             description,
-                            priority: 'medium'
+                            priority: 'medium',
+                            selectedTutorId
                         })
                     });
                     const data = await res.json();
                     if (!data.success) {
-                        alert('❌ Error: ' + (data.error || 'Failed to submit request'));
+                        showQuickRequestStatus(data.error || 'Request failed. Please try again.', 'error');
                         return;
                     }
 
-                    alert('✅ Request sent');
+                    showQuickRequestStatus('Request sent! A tutor will review it shortly.', 'success');
                     document.getElementById('quickRequestSubject').value = '';
                     document.getElementById('quickRequestTime').value = '';
                     document.getElementById('quickRequestDescription').value = '';
-                    closeRequestDropdown();
+                    document.getElementById('quickSelectedTutorId').value = '';
+                    const tutorNotice = document.getElementById('quickSelectedTutorNotice');
+                    tutorNotice.style.display = 'none';
+                    tutorNotice.textContent = '';
                     loadDashboard();
                 } catch (error) {
-                    alert('❌ Error submitting request: ' + error.message);
+                    showQuickRequestStatus('Error submitting request: ' + error.message, 'error');
                 }
             }
 
