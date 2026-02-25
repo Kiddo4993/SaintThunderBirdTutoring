@@ -396,7 +396,7 @@
         }
 
         .request-dropdown {
-            display: none;
+            display: block;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border);
             border-radius: 12px;
@@ -595,7 +595,7 @@
         </div>
 
         <!-- New Request Button -->
-        <button class="new-request-btn" onclick="(function(){const d=document.getElementById('requestDropdown');if(!d)return;d.style.display=(d.style.display==='block'?'none':'block');})();">📝 Request Tutoring Help</button>
+        <button class="new-request-btn" onclick="document.getElementById('requestDropdown')?.scrollIntoView({behavior:'smooth',block:'start'})">📝 Request Tutoring Help</button>
         <div id="requestDropdown" class="request-dropdown">
             <div class="form-group">
                 <label>Subject</label>
