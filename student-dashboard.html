@@ -404,8 +404,16 @@
             margin-bottom: 1.5rem;
         }
 
-        .request-dropdown.active {
+        details.request-panel[open] .request-dropdown {
             display: block;
+        }
+
+        details.request-panel summary {
+            list-style: none;
+        }
+
+        details.request-panel summary::-webkit-details-marker {
+            display: none;
         }
 
         .request-status-msg {
@@ -620,7 +628,8 @@
         </div>
 
         <!-- New Request Button -->
-        <button class="new-request-btn" onclick="toggleRequestDropdown()">📝 Request Tutoring Help</button>
+        <details id="requestPanel" class="request-panel">
+        <summary class="new-request-btn">📝 Request Tutoring Help</summary>
         <div id="requestDropdown" class="request-dropdown">
             <input type="hidden" id="quickSelectedTutorId">
             <div id="quickSelectedTutorNotice" style="display:none; margin-bottom: 1rem; padding: 0.75rem; border-radius: 8px; background: rgba(74, 124, 158, 0.2); border: 1px solid rgba(74, 124, 158, 0.4); color: #60a5fa;"></div>
@@ -656,6 +665,7 @@
             </div>
             <div id="quickRequestStatus" class="request-status-msg"></div>
         </div>
+        </details>
 
         <!-- Info Banner -->
         <div
@@ -1047,24 +1057,18 @@
                 }
             }
 
-            function toggleRequestDropdown() {
-                const dropdown = document.getElementById('requestDropdown');
-                dropdown.classList.toggle('active');
-                if (dropdown.classList.contains('active')) {
-                    dropdown.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            }
-
             function closeRequestDropdown() {
-                const dropdown = document.getElementById('requestDropdown');
-                dropdown.classList.remove('active');
+                const panel = document.getElementById('requestPanel');
+                if (panel) panel.open = false;
             }
 
             function openQuickRequestForTutor(tutorId, tutorName) {
-                const dropdown = document.getElementById('requestDropdown');
+                const panel = document.getElementById('requestPanel');
                 const tutorIdInput = document.getElementById('quickSelectedTutorId');
                 const tutorNotice = document.getElementById('quickSelectedTutorNotice');
-                dropdown.classList.add('active');
+                if (panel) {
+                    panel.open = true;
+                }
                 tutorIdInput.value = tutorId || '';
                 if (tutorId) {
                     tutorNotice.style.display = 'block';
@@ -1073,7 +1077,8 @@
                     tutorNotice.style.display = 'none';
                     tutorNotice.textContent = '';
                 }
-                dropdown.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                const dropdown = document.getElementById('requestDropdown');
+                if (dropdown) dropdown.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
 
             function showQuickRequestStatus(message, type = 'success') {
