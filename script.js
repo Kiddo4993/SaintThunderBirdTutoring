@@ -135,13 +135,15 @@
 
   // ===== NAVIGATION =====
   const nav = $('#nav');
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 100) {
-      nav.classList.add('scrolled');
-    } else {
-      nav.classList.remove('scrolled');
-    }
-  }, { passive: true });
+  if (nav) {
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 100) {
+        nav.classList.add('scrolled');
+      } else {
+        nav.classList.remove('scrolled');
+      }
+    }, { passive: true });
+  }
 
   // ===== SMOOTH SCROLL =====
   $$('a[href^="#"]').forEach(anchor => {

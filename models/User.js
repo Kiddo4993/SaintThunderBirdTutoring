@@ -38,6 +38,7 @@ const userSchema = new mongoose.Schema({
         description: String,
         priority: String,
         requestedTime: String, // e.g., '30min', '1hour', '1.5hours', '2hours'
+        requestedTutorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
         status: { type: String, default: 'pending' },
         createdAt: { type: Date, default: Date.now },
         acceptedAt: Date,

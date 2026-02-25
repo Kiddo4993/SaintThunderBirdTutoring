@@ -456,15 +456,20 @@
             document.querySelector('.theme-toggle-btn').textContent = isLight ? '☀️' : '🌓';
         }
 
-        const savedTheme = localStorage.getItem('st-theme');
-        if (savedTheme === 'light') {
-            document.body.classList.add('light-mode');
-            document.querySelector('.theme-toggle-btn').textContent = '☀️';
-        }
+        (function applySavedTheme() {
+            const savedTheme = localStorage.getItem('st-theme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+                document.querySelector('.theme-toggle-btn').textContent = '☀️';
+            }
+        })();
 
         function switchTab(tab) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
+            const clickEvent = window.event;
+            if (clickEvent && clickEvent.target) {
+                clickEvent.target.classList.add('active');
+            }
 
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.getElementById(tab + '-content').classList.add('active');
@@ -477,144 +482,87 @@
             }
         }
 
-        // STUDENT LOGIN - Only once
+        async function handleLogin(userType) {
+            const isTutor = userType === 'tutor';
+            const emailInputId = isTutor ? 'tutorEmail' : 'studentEmail';
+            const passwordInputId = isTutor ? 'tutorPassword' : 'studentPassword';
+            const rememberInputId = isTutor ? 'tutorRemember' : 'studentRemember';
+
+            const email = document.getElementById(emailInputId).value;
+            const password = document.getElementById(passwordInputId).value;
+            const remember = document.getElementById(rememberInputId).checked;
+
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await res.json();
+
+            if (!data.success) {
+                alert('❌ Error: ' + data.error);
+                return;
+            }
+
+            const user = data.user;
+            const appStatus = user.tutorApplication?.status || 'approved';
+
+            if (!isTutor && user.userType !== 'student') {
+                alert('❌ Error: You are not a student. Please use the Tutor tab.');
+                return;
+            }
+
+            if (isTutor && user.email !== 'dylanduancanada@gmail.com') {
+                if (appStatus === 'denied') {
+                    alert('❌ Your tutor application was denied. Please contact support.');
+                    return;
+                }
+                if (user.userType !== 'tutor' && appStatus !== 'pending') {
+                    alert('❌ Error: You are not an approved tutor yet.');
+                    return;
+                }
+            }
+
+            localStorage.setItem('authToken', data.token);
+            localStorage.setItem('user', JSON.stringify(user));
+
+            if (remember) {
+                localStorage.setItem('rememberEmail', email);
+            }
+
+            if (isTutor) {
+                const isAdmin = user.email === 'dylanduancanada@gmail.com';
+                if (!isAdmin && appStatus === 'pending') {
+                    alert('⏳ Your tutor application is pending approval.');
+                    window.location.href = 'tutor-pending.html';
+                } else {
+                    alert('✅ Welcome back, ' + user.firstName + '!');
+                    window.location.href = 'tutor-dashboard.html';
+                }
+            } else {
+                alert('✅ Welcome back, ' + user.firstName + '!');
+                window.location.href = 'student-dashboard.html';
+            }
+        }
+
         document.getElementById('studentLoginForm').addEventListener('submit', async function (e) {
             e.preventDefault();
-            e.stopImmediatePropagation(); // Prevent cached/duplicate handlers from firing
-
-            const email = document.getElementById('studentEmail').value;
-            const password = document.getElementById('studentPassword').value;
-            const remember = document.getElementById('studentRemember').checked;
-
             try {
-                const res = await fetch('/api/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
-
-                const data = await res.json();
-
-                if (data.success) {
-                    // Check if this is a pending tutor applicant
-                    if (data.user.tutorApplication && data.user.tutorApplication.status === 'pending') {
-                        localStorage.setItem('authToken', data.token);
-                        localStorage.setItem('user', JSON.stringify(data.user));
-                        alert('⏳ Your tutor application is pending approval. Redirecting to status page...');
-                        window.location.href = 'tutor-pending.html';
-                        return;
-                    }
-
-                    // CHECK IF USER IS STUDENT (and not a pending tutor)
-                    if (data.user.userType !== 'student') {
-                        alert('❌ Error: You are not a student. You are a ' + data.user.userType + '. Please use the Tutor tab.');
-                        return;
-                    }
-
-                    localStorage.setItem('authToken', data.token);
-                    localStorage.setItem('user', JSON.stringify(data.user));
-
-                    if (remember) {
-                        localStorage.setItem('rememberEmail', email);
-                    }
-
-                    alert('✅ Welcome back, ' + data.user.firstName + '!');
-                    window.location.href = 'student-dashboard.html';
-                } else {
-                    alert('❌ Error: ' + data.error);
-                }
+                await handleLogin('student');
             } catch (error) {
                 alert('❌ Connection error: ' + error.message);
             }
         });
 
-        // TUTOR LOGIN - Only once
         document.getElementById('tutorLoginForm').addEventListener('submit', async function (e) {
             e.preventDefault();
-            e.stopImmediatePropagation(); // Prevent cached/duplicate handlers from firing
-
-            const email = document.getElementById('tutorEmail').value;
-            const password = document.getElementById('tutorPassword').value;
-            const remember = document.getElementById('tutorRemember').checked;
-
             try {
-                const res = await fetch('/api/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
-
-                const data = await res.json();
-
-                if (data.success) {
-                    // Allow admin to bypass all checks
-                    if (data.user.email === 'dylanduancanada@gmail.com') {
-                        localStorage.setItem('authToken', data.token);
-                        localStorage.setItem('user', JSON.stringify(data.user));
-                        if (remember) localStorage.setItem('rememberEmail', email);
-                        alert('✅ Welcome back, Admin!');
-                        window.location.href = 'tutor-dashboard.html';
-                        return;
-                    }
-
-                    // CHECK IF TUTOR IS APPROVED
-                    // Allow admin to bypass
-                    if (data.user.email !== 'dylanduancanada@gmail.com') {
-                        const appStatus = data.user.tutorApplication?.status || 'approved';
-
-                        if (appStatus === 'denied') {
-                            alert('❌ Your tutor application was denied. You cannot log in as a tutor.');
-                            return;
-                    // Check if this is a pending tutor applicant (they have userType 'student' but tutorApplication pending)
-                    if (data.user.tutorApplication && data.user.tutorApplication.status === 'pending') {
-                        localStorage.setItem('authToken', data.token);
-                        localStorage.setItem('user', JSON.stringify(data.user));
-                        alert('⏳ Your tutor application is pending approval. Redirecting to status page...');
-                        window.location.href = 'tutor-pending.html';
-                        return;
-                    }
-
-                    // Check if application was denied
-                    if (data.user.tutorApplication && data.user.tutorApplication.status === 'denied') {
-                        alert('❌ Your tutor application was denied. Please contact support for more information.');
-                        return;
-                    }
-
-                    // CHECK IF USER IS AN APPROVED TUTOR
-                    if (data.user.userType !== 'tutor') {
-                        // They might be a student without any tutor application
-                        if (!data.user.tutorApplication) {
-                            alert('❌ Error: You are not a tutor. You are a student. Please use the Student tab or apply to become a tutor.');
-                        } else {
-                            alert('❌ Error: Your tutor status is unclear. Please contact support.');
-                        }
-                        return;
-                    }
-
-                    localStorage.setItem('authToken', data.token);
-                    localStorage.setItem('user', JSON.stringify(data.user));
-
-                    if (remember) {
-                        localStorage.setItem('rememberEmail', email);
-                    }
-
-                    alert('✅ Welcome back, ' + data.user.firstName + '!');
-                    const appStatus = data.user.tutorApplication?.status || 'approved';
-                    if (data.user.email !== 'dylanduancanada@gmail.com' && appStatus === 'pending') {
-                        alert('⏳ Your tutor application is still pending approval.');
-                        window.location.href = 'tutor-pending.html';
-                    } else {
-                        window.location.href = 'tutor-dashboard.html';
-                    }
-                } else {
-                    alert('❌ Error: ' + data.error);
-                }
+                await handleLogin('tutor');
             } catch (error) {
                 alert('❌ Connection error: ' + error.message);
             }
         });
 
-        // Load remembered email on page load
         window.addEventListener('load', function () {
             const remembered = localStorage.getItem('rememberEmail');
             if (remembered) {

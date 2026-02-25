@@ -198,61 +198,71 @@
     </div>
 
     <script>
-        // Display user email
-        const user = JSON.parse(localStorage.getItem('user'));
-        if (user) {
-            if (user.userType === 'student') {
-                window.location.href = 'student-dashboard.html';
-            }
-            document.getElementById('emailDisplay').textContent = 'Check ' + user.email + ' for updates';
-        } else {
-            window.location.href = 'login.html';
-        }
-
         function goHome() {
             window.location.href = 'index.html';
         }
 
-        // Check approval status every 10 seconds
-        setInterval(async () => {
+        async function checkApplicationStatus({ showAlerts = false } = {}) {
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+            const token = localStorage.getItem('authToken');
+
+            if (!user || !token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            document.getElementById('emailDisplay').textContent = `Check ${user.email} for updates`;
+
             try {
-                const token = localStorage.getItem('authToken');
-                const res = await fetch('/api/auth/profile', {
+                const res = await fetch('/api/tutor/application-status', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                
                 const data = await res.json();
-                
-                if (data.user && data.user.userType === 'student') {
-                    window.location.href = 'student-dashboard.html';
-                    return;
-                }
 
-                const status = data.user?.tutorApplication?.status || 'not_applied';
-                if (data.user && data.user.userType === 'tutor' && status === 'approved') {
-                if (data.user && data.user.userType === 'tutor') {
-                    // Approved!
-                    localStorage.setItem('user', JSON.stringify(data.user)); // Update local storage
-                    alert('🎉 Congratulations! Your tutor application has been approved!');
+                if (!data.success) return;
+
+                const status = data.status || 'not_applied';
+                const isApprovedTutor = data.userType === 'tutor' && status === 'approved';
+                const isPendingTutorApplicant = status === 'pending';
+
+                if (isApprovedTutor) {
+                    if (showAlerts) {
+                        alert('🎉 Congratulations! Your tutor application has been approved!');
+                    }
+                    const updatedUser = {
+                        ...user,
+                        userType: 'tutor',
+                        tutorApplication: { ...(user.tutorApplication || {}), status: 'approved' }
+                    };
+                    localStorage.setItem('user', JSON.stringify(updatedUser));
                     window.location.href = 'tutor-dashboard.html';
                     return;
                 }
 
                 if (status === 'denied') {
-                    alert('❌ Your tutor application was denied.');
-                    window.location.href = 'login.html';
+                    if (showAlerts) {
+                        alert('❌ Your tutor application was not approved. You can continue as a student.');
+                    }
+                    const updatedUser = {
+                        ...user,
+                        tutorApplication: { ...(user.tutorApplication || {}), status: 'denied' }
+                    };
+                    localStorage.setItem('user', JSON.stringify(updatedUser));
+                    window.location.href = 'student-dashboard.html';
+                    return;
                 }
 
-                // Check if denied
-                if (data.user && data.user.tutorApplication && data.user.tutorApplication.status === 'denied') {
-                    alert('❌ Your tutor application was not approved. You can still use Saint Thunderbird as a student.');
-                    localStorage.setItem('user', JSON.stringify(data.user));
+                // Only stay on this page while truly pending.
+                if (!isPendingTutorApplicant) {
                     window.location.href = 'student-dashboard.html';
                 }
             } catch (error) {
-                console.log('Checking status...');
+                console.log('Status check failed, retrying...');
             }
-        }, 10000); // Check every 10 seconds
+        }
+
+        checkApplicationStatus({ showAlerts: false });
+        setInterval(() => checkApplicationStatus({ showAlerts: true }), 10000);
     </script>
 </body>
 </html>

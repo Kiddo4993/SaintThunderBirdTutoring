@@ -582,7 +582,7 @@
         </div>
 
         <!-- New Request Button -->
-        <button class="new-request-btn" onclick="openRequestModal()">📝 Request Tutoring Help</button>
+        <button class="new-request-btn" onclick="openRequestModal(null)">📝 Request Tutoring Help</button>
 
         <!-- Info Banner -->
         <div
@@ -622,15 +622,6 @@
                 <div class="loading">Loading available tutors...</div>
             </div>
         </div>
-    <!-- Your Requests -->
-    <div class="card">
-        <div class="card-title">📝 Your Requests</div>
-        <div id="yourRequests">
-            <div class="loading">Loading requests...</div>
-        </div>
-    </div>
-
-
         <!-- New Request Modal -->
         <div class="modal" id="requestModal">
             <div class="modal-content">
@@ -640,6 +631,8 @@
                 </div>
 
                 <form onsubmit="submitRequest(event)">
+                    <input type="hidden" id="selectedTutorId">
+                    <div id="selectedTutorNotice" style="display:none; margin-bottom: 1rem; padding: 0.75rem; border-radius: 8px; background: rgba(74, 124, 158, 0.2); border: 1px solid rgba(74, 124, 158, 0.4); color: #60a5fa;"></div>
                     <div class="form-group">
                         <label>Subject</label>
                         <select id="requestSubject" required>
@@ -744,6 +737,7 @@
 
                             // Get initials for avatar
                             const initials = (tutor.firstName[0] + tutor.lastName[0]).toUpperCase();
+                            const safeTutorName = `${tutor.firstName} ${tutor.lastName}`.replace(/'/g, "\\'");
 
                             return `
                     <div class="tutor-card">
@@ -765,7 +759,7 @@
                             </p>
                         </div>
                         
-                        <button class="btn-primary" style="width: 100%; margin-top: auto;" onclick="openRequestModal()">
+                        <button class="btn-primary" style="width: 100%; margin-top: auto;" onclick="openRequestModal('${tutor._id}', '${safeTutorName}')">
                             Request Help
                         </button>
                     </div>
@@ -949,11 +943,22 @@
             }
 
             // Modal functions
-            function openRequestModal() {
+            function openRequestModal(tutorId, tutorName = '') {
                 console.log('🎯 Opening request modal...');
                 const modal = document.getElementById('requestModal');
+                const tutorIdInput = document.getElementById('selectedTutorId');
+                const tutorNotice = document.getElementById('selectedTutorNotice');
                 console.log('Modal element:', modal);
                 if (modal) {
+                    if (tutorId) {
+                        tutorIdInput.value = tutorId;
+                        tutorNotice.style.display = 'block';
+                        tutorNotice.textContent = `Tutor selected: ${tutorName || 'Specific tutor'} (request will be sent to this tutor).`;
+                    } else {
+                        tutorIdInput.value = '';
+                        tutorNotice.style.display = 'none';
+                        tutorNotice.textContent = '';
+                    }
                     modal.classList.add('active');
                     console.log('✅ Modal opened');
                 } else {
@@ -985,6 +990,7 @@
                 const description = document.getElementById('requestDescription').value;
                 const priority = document.getElementById('requestPriority').value;
                 const requestedTime = document.getElementById('requestTime').value;
+                const selectedTutorId = document.getElementById('selectedTutorId').value;
 
                 console.log('📝 Submitting request:', { subject, description, priority, requestedTime });
 
@@ -1010,7 +1016,7 @@
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${token}`
                         },
-                        body: JSON.stringify({ subject, description, priority, requestedTime })
+                        body: JSON.stringify({ subject, description, priority, requestedTime, selectedTutorId })
                     });
 
                     console.log('📡 Response status:', res.status);
@@ -1028,6 +1034,10 @@
                         document.getElementById('requestDescription').value = '';
                         document.getElementById('requestPriority').value = 'medium';
                         document.getElementById('requestTime').value = '';
+                        document.getElementById('selectedTutorId').value = '';
+                        const tutorNotice = document.getElementById('selectedTutorNotice');
+                        tutorNotice.style.display = 'none';
+                        tutorNotice.textContent = '';
 
                         // Reload dashboard
                         loadDashboard();

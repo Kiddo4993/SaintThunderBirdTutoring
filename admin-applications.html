@@ -427,7 +427,25 @@
         if (!checkAuthorization()) {
             // Show unauthorized message
         } else {
+            loadSummary();
             loadApplications();
+        }
+
+        async function loadSummary() {
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch(`${API_BASE}/tutor/admin-summary`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById('pendingCount').textContent = data.pendingCount ?? 0;
+                    document.getElementById('totalCount').textContent = data.totalApplications ?? 0;
+                    document.getElementById('approvedCount').textContent = data.approvedCount ?? 0;
+                }
+            } catch (error) {
+                console.error('Error loading admin summary:', error);
+            }
         }
 
         async function loadApplications() {
@@ -455,13 +473,6 @@
 
         function displayApplications(applications) {
             const container = document.getElementById('applicationsContainer');
-            const durationLabels = {
-                '30min': '30 minutes',
-                '1hour': '1 hour',
-                '1.5hours': '1.5 hours',
-                '2hours': '2 hours'
-            };
-
             if (applications.length === 0) {
                 container.innerHTML = `
                     <div class="empty">
@@ -469,7 +480,6 @@
                         <p>No pending applications. All caught up!</p>
                     </div>
                 `;
-                document.getElementById('pendingCount').textContent = '0';
                 return;
             }
 
@@ -499,18 +509,16 @@
                         </div>
 
                         <div class="detail">
-                            <div class="detail-label">⏱️ Session Durations</div>
-                            <div class="detail-value">${(app.tutorProfile?.availableTimes || []).length > 0
-                    ? app.tutorProfile.availableTimes.map(t => durationLabels[t] || t).join(', ')
-                    : 'Not specified'}</div>
-                        </div>
-
-                        <div class="detail">
                             <div class="detail-label">📅 Applied At</div>
                             <div class="detail-value">${app.tutorApplication?.appliedAt
                     ? new Date(app.tutorApplication.appliedAt).toLocaleString()
                     : 'Not available'}</div>
-                            <div class="detail-value">${app.tutorProfile?.education || 'Not specified'}</div>
+                        </div>
+
+                        <div class="detail">
+                            <div class="detail-label">🧾 Full Application Status</div>
+                            <div class="detail-value">${app.tutorApplication?.status || 'Unknown'}</div>
+                            <div class="detail-value">Account Created: ${app.createdAt ? new Date(app.createdAt).toLocaleString() : 'Unknown'}</div>
                         </div>
 
                         <div class="detail" style="grid-column: 1 / -1;">
@@ -557,6 +565,7 @@
 
                 if (data.success) {
                     alert(`✅ ${name} has been approved!`);
+                    loadSummary();
                     loadApplications();
                 } else {
                     alert('❌ Error: ' + data.error);
@@ -588,6 +597,7 @@
 
                 if (data.success) {
                     alert('❌ Application denied');
+                    loadSummary();
                     loadApplications();
                 } else {
                     alert('❌ Error: ' + data.error);
@@ -608,6 +618,7 @@
         // Refresh every 30 seconds
         setInterval(() => {
             if (checkAuthorization()) {
+                loadSummary();
                 loadApplications();
             }
         }, 30000);

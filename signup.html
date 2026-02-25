@@ -600,132 +600,102 @@
             document.querySelector('.theme-toggle-btn').textContent = isLight ? '☀️' : '🌓';
         }
 
-        const savedTheme = localStorage.getItem('st-theme');
-        if (savedTheme === 'light') {
-            document.body.classList.add('light-mode');
-            document.querySelector('.theme-toggle-btn').textContent = '☀️';
-        }
+        (function applySavedTheme() {
+            const savedTheme = localStorage.getItem('st-theme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+                document.querySelector('.theme-toggle-btn').textContent = '☀️';
+            }
+        })();
 
         function switchTab(tab) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
+            const clickEvent = window.event;
+            if (clickEvent && clickEvent.target) {
+                clickEvent.target.classList.add('active');
+            }
 
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.getElementById(tab + '-content').classList.add('active');
         }
 
+        async function submitSignup(payload, redirectPath) {
+            const res = await fetch('/api/auth/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+            if (!data.success) {
+                alert('❌ Error: ' + data.error);
+                return;
+            }
+
+            localStorage.setItem('authToken', data.token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+            window.location.href = redirectPath;
+        }
+
         document.getElementById('studentSignupForm').addEventListener('submit', async function (e) {
             e.preventDefault();
-            e.stopImmediatePropagation();
 
             const password = document.getElementById('studentPassword').value;
             const confirmPassword = document.getElementById('studentConfirmPassword').value;
-
             if (password !== confirmPassword) {
                 alert('❌ Passwords do not match!');
                 return;
             }
 
-            const firstName = document.getElementById('studentFirstName').value;
-            const lastName = document.getElementById('studentLastName').value;
-            const email = document.getElementById('studentEmail').value;
-
-            const subjects = Array.from(document.querySelectorAll('.student-subject:checked')).map(el => el.value);
+            const payload = {
+                firstName: document.getElementById('studentFirstName').value,
+                lastName: document.getElementById('studentLastName').value,
+                email: document.getElementById('studentEmail').value,
+                password,
+                userType: 'student'
+            };
 
             try {
-                // Use relative URL so it works in all environments
-                const res = await fetch('/api/auth/signup', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        firstName,
-                        lastName,
-                        email,
-                        password,
-                        userType: 'student'
-                    })
-                });
-
-                const data = await res.json();
-
-                if (data.success) {
-                    localStorage.setItem('authToken', data.token);
-                    localStorage.setItem('user', JSON.stringify(data.user));
-                    alert('✅ Signup successful! Redirecting to dashboard...');
-                    window.location.href = 'student-dashboard.html';
-                } else {
-                    alert('❌ Error: ' + data.error);
-                }
+                await submitSignup(payload, 'student-dashboard.html');
+                alert('✅ Signup successful! Redirecting to dashboard...');
             } catch (error) {
                 alert('❌ Connection error: ' + error.message);
             }
         });
 
-        // Tutor Signup Form - Sends application to admin for approval
         document.getElementById('tutorSignupForm').addEventListener('submit', async function (e) {
             e.preventDefault();
-            e.stopImmediatePropagation();
 
             const password = document.getElementById('tutorPassword').value;
             const confirmPassword = document.getElementById('tutorConfirmPassword').value;
-
             if (password !== confirmPassword) {
                 alert('❌ Passwords do not match!');
                 return;
             }
 
-            const firstName = document.getElementById('tutorFirstName').value;
-            const lastName = document.getElementById('tutorLastName').value;
-            const email = document.getElementById('tutorEmail').value;
-            const education = document.getElementById('tutorEducation').value;
-            const experience = document.getElementById('tutorExperience').value;
-            const motivation = document.getElementById('tutorMotivation').value;
-
-            // Get selected subjects
             const subjects = Array.from(document.querySelectorAll('.tutor-subject:checked')).map(el => el.value);
-
             if (subjects.length === 0) {
                 alert('❌ Please select at least one subject you can teach!');
                 return;
             }
 
-            try {
-                // Use relative URL so it works in all environments
-                const res = await fetch('/api/auth/signup', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        firstName,
-                        lastName,
-                        email,
-                        password,
-                        userType: 'tutor', // Backend will keep as 'student' until approved
-                        tutorProfile: {
-                            subjects: subjects,
-                            educationLevel: education,
-                            availableTimes: availableTimes,
-                            experience: experience,
-                            motivation: motivation
-                            experience: experience,
-                            availability: availability,
-                            motivation: motivation,
-                            education: education
-                        }
-                    })
-                });
-
-                const data = await res.json();
-
-                if (data.success) {
-                    localStorage.setItem('authToken', data.token);
-                    localStorage.setItem('user', JSON.stringify(data.user));
-                    
-                    // Note: User will have userType 'student' but tutorApplication.status 'pending'
-                    alert('✅ Application submitted! An admin will review your application. You will receive an email when approved.');
-                    window.location.href = 'tutor-pending.html';
-                } else {
-                    alert('❌ Error: ' + data.error);
+            const payload = {
+                firstName: document.getElementById('tutorFirstName').value,
+                lastName: document.getElementById('tutorLastName').value,
+                email: document.getElementById('tutorEmail').value,
+                password,
+                userType: 'tutor',
+                tutorProfile: {
+                    subjects,
+                    educationLevel: document.getElementById('tutorEducation').value,
+                    experience: document.getElementById('tutorExperience').value,
+                    motivation: document.getElementById('tutorMotivation').value
                 }
+            };
+
+            try {
+                await submitSignup(payload, 'tutor-pending.html');
+                alert('✅ Application submitted! Admin review is required before tutor approval.');
             } catch (error) {
                 alert('❌ Connection error: ' + error.message);
             }

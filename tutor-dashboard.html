@@ -413,8 +413,14 @@
             </div>
         </div>
 
-        <!-- My Sessions -->
-        
+        <!-- Completed Sessions -->
+        <div class="card">
+            <div class="card-title">✅ Completed Sessions</div>
+            <div id="mySessions">
+                <div class="loading">Loading completed sessions...</div>
+            </div>
+        </div>
+
     </div>
 
     <script src="auth.js"></script>
@@ -466,7 +472,7 @@
             // Load everything at once
             loadTutorStats(token);
             loadStudentRequests(token);
-            loadUpcomingSessions(token);
+            loadCompletedSessions(token);
         }
 
         // Load tutor stats from correct endpoint
@@ -519,12 +525,6 @@
 
                 const data = await response.json();
                 console.log('📦 Requests data:', data);
-
-                // Update Requests Waiting count
-                const requestsWaitingCountEl = document.getElementById('requestsWaitingCount');
-                if (requestsWaitingCountEl) {
-                    requestsWaitingCountEl.textContent = data.success && data.requests ? data.requests.length : 0;
-                }
 
                 if (data.success && data.requests && data.requests.length > 0) {
                     container.innerHTML = data.requests.map(req => {
@@ -621,7 +621,7 @@
                 console.log('📦 Accept response:', data);
 
                 if (response.ok && data.success) {
-                    alert('✅ Request accepted! Zoom meeting created and emails sent to both you and the student.');
+                    alert('✅ Request accepted! Check your email for the Zoom link details. The student received the same link.');
                     // Refresh the dashboard
                     loadDashboard();
                 } else {
@@ -635,8 +635,8 @@
             }
         }
 
-        // Load upcoming sessions with Zoom links
-        async function loadUpcomingSessions(token) {
+        // Load only completed sessions
+        async function loadCompletedSessions(token) {
             const container = document.getElementById('mySessions');
             if (!container) return;
 
@@ -648,11 +648,11 @@
                 const data = await response.json();
                 console.log('📦 Sessions data:', data);
 
-                if (data.success && data.sessions && data.sessions.length > 0) {
-                    container.innerHTML = data.sessions.map(session => {
+                const completedSessions = (data.sessions || []).filter((s) => s.status === 'completed');
+
+                if (data.success && completedSessions.length > 0) {
+                    container.innerHTML = completedSessions.map(session => {
                         const sessionDate = new Date(session.scheduledTime);
-                        const isPast = sessionDate < new Date();
-                        const isCompleted = session.status === 'completed';
 
                         return `
                             <div class="student-request-card" style="margin-bottom: 1.5rem;">
@@ -678,28 +678,18 @@
                                     </div>
                                 ` : ''}
                                 
-                                ${isCompleted ? `
-                                    <div style="background: rgba(34, 197, 94, 0.2); border: 2px solid rgba(34, 197, 94, 0.5); padding: 1rem; border-radius: 8px; text-align: center; color: #22c55e; font-weight: 600;">
-                                        ✅ Session Completed
-                                    </div>
-                                ` : isPast ? `
-                                    <div style="margin-top: 1rem;">
-                                        <label style="display: block; color: var(--text-secondary); margin-bottom: 0.5rem; font-weight: 600;">Hours Spent:</label>
-                                        <input type="number" id="hours-${session._id}" min="0.5" max="10" step="0.5" value="1" style="width: 100px; padding: 0.5rem; background: rgba(212, 165, 116, 0.1); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); margin-right: 1rem;">
-                                        <button class="accept-btn" onclick="completeSession('${session._id}')" style="width: auto; display: inline-block; margin-top: 0;">
-                                            ✅ Mark as Completed
-                                        </button>
-                                    </div>
-                                ` : ''}
+                                <div style="background: rgba(34, 197, 94, 0.2); border: 2px solid rgba(34, 197, 94, 0.5); padding: 1rem; border-radius: 8px; text-align: center; color: #22c55e; font-weight: 600;">
+                                    ✅ Session Completed${session.completedAt ? ` on ${new Date(session.completedAt).toLocaleString()}` : ''}
+                                </div>
                             </div>
                         `;
                     }).join('');
                 } else {
                     container.innerHTML = `
                         <div class="empty-state">
-                            <div class="empty-state-icon">📅</div>
-                            <div class="empty-state-text">No sessions yet</div>
-                            <div class="empty-state-subtext">Accept a student request to create a session</div>
+                            <div class="empty-state-icon">✅</div>
+                            <div class="empty-state-text">No completed sessions yet</div>
+                            <div class="empty-state-subtext">Completed sessions will appear here</div>
                         </div>
                     `;
                 }
@@ -753,6 +743,10 @@
             localStorage.removeItem('authToken');
             localStorage.removeItem('user');
             window.location.href = 'index.html';
+        }
+
+        function goToAdmin() {
+            window.location.href = 'admin-applications.html';
         }
         // ==========================================
         // 👑 ADMIN ACCESS BUTTON (Only for Dylan)

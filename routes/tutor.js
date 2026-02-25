@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { ADMIN_EMAIL, sendEmail } = require('../services/emailService');
 const { sendBiweeklyTutorSummary } = require('../jobs/biweeklyTutorSummary');
+const { createSessionMeeting } = require('../services/zoomService');
 const router = express.Router();
 
 const ADMIN_URL = process.env.ADMIN_URL || 'http://localhost:5000';
@@ -25,6 +26,10 @@ function durationToHours(value) {
         '2hours': 2
     };
     return map[value] || 1;
+}
+
+function durationToMinutes(value) {
+    return Math.round(durationToHours(value) * 60);
 }
 
 async function sendEmailSafe({ to, subject, html, successLog, errorLog }) {
@@ -209,7 +214,7 @@ router.get('/deny/:userId', async (req, res) => {
 // CREATE A TUTORING REQUEST (Student)
 router.post('/create-request', authMiddleware, async (req, res) => {
     try {
-        const { subject, description, priority, requestedTime } = req.body;
+        const { subject, description, priority, requestedTime, selectedTutorId } = req.body;
 
         // Validate required fields
         if (!subject) {
@@ -242,6 +247,21 @@ router.post('/create-request', authMiddleware, async (req, res) => {
             });
         }
 
+        if (selectedTutorId) {
+            const selectedTutor = await User.findOne({
+                _id: selectedTutorId,
+                userType: 'tutor',
+                'tutorApplication.status': 'approved'
+            });
+
+            if (!selectedTutor) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Selected tutor is unavailable'
+                });
+            }
+        }
+
         if (!student.tutorRequests) {
             student.tutorRequests = [];
         }
@@ -251,6 +271,7 @@ router.post('/create-request', authMiddleware, async (req, res) => {
             description: description || '',
             priority: priority || 'medium',
             requestedTime: requestedTime,
+            requestedTutorId: selectedTutorId || undefined,
             createdAt: new Date(),
             status: 'pending'
         };
@@ -512,13 +533,12 @@ router.get('/requests', authMiddleware, async (req, res) => {
                     const hasGeneral = tutorSubjects.some(s => s === 'General' || s === 'General Help');
                     const subjectMatches = hasGeneral || tutorSubjects.includes(req.subject);
 
-                    const timeMatches = tutorAvailableTimes.length === 0 || tutorAvailableTimes.includes(req.requestedTime);
+                    const requestTutorMatches = !req.requestedTutorId
+                        || req.requestedTutorId.toString() === tutor._id.toString();
 
-                    if (req.status === 'pending' && subjectMatches) {
-                        // Create a reliable requestId using studentId and request index
-                        const requestId = `${student._id}-${index}-${req.createdAt ? new Date(req.createdAt).getTime() : Date.now()}`;
+                    if (req.status === 'pending' && subjectMatches && requestTutorMatches) {
                         requests.push({
-                            _id: requestId,
+                            _id: req._id?.toString() || `${student._id}-${index}`,
                             studentId: student._id,
                             requestIndex: index, // Store index for easier lookup
                             studentName: `${student.firstName} ${student.lastName}`,
@@ -558,56 +578,76 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
             tutor.tutorSessions = [];
         }
 
-        // Parse requestId format: "studentId-index-timestamp"
-        const parts = requestId.split('-');
-        const studentId = parts[0];
-        const requestIndex = parseInt(parts[1]); // Get the index from requestId
+        // Find matching student/request by request subdocument id (primary path)
+        let student = await User.findOne({ 'tutorRequests._id': requestId });
+        let matchingRequest = null;
+        let requestIndex = -1;
+        let studentId = null;
 
-        const student = await User.findById(studentId);
-
-        if (!student) {
-            return res.status(404).json({ error: 'Student not found' });
+        if (student) {
+            requestIndex = (student.tutorRequests || []).findIndex(
+                (req) => req._id?.toString() === requestId && req.status === 'pending'
+            );
+            if (requestIndex >= 0) {
+                matchingRequest = student.tutorRequests[requestIndex];
+                studentId = student._id;
+            }
         }
 
-        // Find the specific request using the index
-        let matchingRequest = null;
+        // Legacy fallback for old IDs: "studentId-index-*"
+        if (!matchingRequest) {
+            const parts = String(requestId || '').split('-');
+            studentId = parts[0];
+            requestIndex = parseInt(parts[1], 10);
+
+            if (studentId) {
+                student = await User.findById(studentId);
+            }
+
+            if (!student) {
+                return res.status(404).json({ error: 'Student not found' });
+            }
+
+            if (
+                Array.isArray(student.tutorRequests)
+                && Number.isInteger(requestIndex)
+                && requestIndex >= 0
+                && requestIndex < student.tutorRequests.length
+            ) {
+                const reqAtIndex = student.tutorRequests[requestIndex];
+                if (reqAtIndex && reqAtIndex.status === 'pending') {
+                    matchingRequest = reqAtIndex;
+                }
+            }
+        }
+
+        if (!student || !matchingRequest) {
+            return res.status(404).json({ error: 'Request not found or already accepted' });
+        }
+
         let requestSubject = 'Mathematics';
         let requestedTime = '1hour';
         let plannedHours = 1;
 
-        if (student.tutorRequests && Array.isArray(student.tutorRequests) && student.tutorRequests.length > 0) {
-            // Use index if valid, otherwise find first pending request
-            if (!isNaN(requestIndex) && requestIndex >= 0 && requestIndex < student.tutorRequests.length) {
-                const req = student.tutorRequests[requestIndex];
-                if (req && req.status === 'pending') {
-                    matchingRequest = req;
-                }
-            }
+        requestSubject = matchingRequest.subject || 'Mathematics';
+        requestedTime = matchingRequest.requestedTime || '1hour';
+        plannedHours = durationToHours(requestedTime);
 
-            // Fallback: find first pending request
-            if (!matchingRequest) {
-                matchingRequest = student.tutorRequests.find(req => req.status === 'pending');
-            }
-
-            if (matchingRequest) {
-                requestSubject = matchingRequest.subject || 'Mathematics';
-                requestedTime = matchingRequest.requestedTime || '1hour';
-                plannedHours = durationToHours(requestedTime);
-            }
-        }
-
-        // Generate session reference ID for coordination
-        // NOTE: This is a placeholder - tutors should create their own Zoom/Google Meet link
-        const sessionRefId = Math.floor(Math.random() * 9000000000) + 1000000000;
-        const zoomPassword = 'Tutoring2025';
-        // This is a placeholder link - tutors should create their own meeting
-        const zoomLink = `https://zoom.us/j/${sessionRefId}?pwd=${zoomPassword}`;
+        const scheduledTime = new Date(Date.now() + 24 * 60 * 60 * 1000);
+        const meeting = await createSessionMeeting({
+            topic: `Saint Thunderbird - ${requestSubject} with ${student.firstName}`,
+            durationMinutes: durationToMinutes(requestedTime),
+            startTime: scheduledTime
+        });
+        const sessionRefId = meeting.id;
+        const zoomPassword = meeting.password || '';
+        const zoomLink = meeting.joinUrl;
 
         // Create session with session reference
         const session = {
             studentId: studentId,
             subject: requestSubject,
-            scheduledTime: new Date(Date.now() + 24 * 60 * 60 * 1000),
+            scheduledTime,
             status: 'scheduled',
             createdAt: new Date(),
             zoomMeetingId: sessionRefId,
@@ -621,14 +661,10 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
         const createdTutorSession = tutor.tutorSessions[tutor.tutorSessions.length - 1];
 
         // Update student request status - use the matching request we found earlier
-        if (matchingRequest) {
-            matchingRequest.status = 'accepted';
-            matchingRequest.acceptedAt = new Date();
-            matchingRequest.tutorId = tutor._id;
-            await student.save();
-        } else {
-            console.warn('⚠️ No matching request found to update status');
-        }
+        matchingRequest.status = 'accepted';
+        matchingRequest.acceptedAt = new Date();
+        matchingRequest.tutorId = tutor._id;
+        await student.save();
 
         // Also create a session entry for the student (using studentSessions field)
         if (!student.studentSessions) {
@@ -638,7 +674,7 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
             tutorId: tutor._id,
             tutorName: `${tutor.firstName} ${tutor.lastName}`,
             subject: requestSubject,
-            scheduledTime: session.scheduledTime,
+            scheduledTime,
             status: 'scheduled',
             zoomLink: zoomLink,
             zoomMeetingId: sessionRefId,
@@ -664,16 +700,17 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
                         <p><strong>Scheduled:</strong> Tomorrow at your preferred time</p>
                         <p><strong>Session Reference:</strong> #${sessionRefId}</p>
 
-                        <div style="background: #fff3cd; padding: 15px; border-left: 4px solid #ffc107; margin: 20px 0;">
-                            <h3 style="color: #856404; margin-top: 0;">⚠️ Important: Set Up Your Meeting</h3>
-                            <p style="color: #856404; margin-bottom: 0;">Please create your own Zoom or Google Meet link and email it directly to the student at <strong>${student.email}</strong>.</p>
+                        <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #d4a574; margin: 20px 0;">
+                            <h3 style="color: #8b4513; margin-top: 0;">🎥 Session Zoom Link</h3>
+                            <p><strong>Join Link:</strong> <a href="${zoomLink}" target="_blank">${zoomLink}</a></p>
+                            <p><strong>Meeting ID:</strong> ${sessionRefId}</p>
+                            <p><strong>Password:</strong> ${zoomPassword}</p>
                         </div>
 
                         <h3 style="color: #8b4513;">📋 Next Steps:</h3>
                         <ol style="color: #666; line-height: 1.8;">
-                            <li>Create a Zoom meeting or Google Meet link</li>
-                            <li>Email the meeting link to the student: <a href="mailto:${student.email}">${student.email}</a></li>
-                            <li>Coordinate a time that works for both of you</li>
+                            <li>Coordinate the exact session time with the student</li>
+                            <li>Use the Zoom link above for this session</li>
                             <li>Join 5 minutes early to test audio/video</li>
                             <li>After the session, mark it as complete in your dashboard</li>
                         </ol>
@@ -721,11 +758,14 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
                             <p><strong>Tutor Email:</strong> <a href="mailto:${tutor.email}">${tutor.email}</a></p>
                             <p><strong>Subject:</strong> ${requestSubject}</p>
                             <p><strong>Session Reference:</strong> #${sessionRefId}</p>
+                            <p><strong>Join Link:</strong> <a href="${zoomLink}" target="_blank">${zoomLink}</a></p>
+                            <p><strong>Meeting ID:</strong> ${sessionRefId}</p>
+                            <p><strong>Password:</strong> ${zoomPassword}</p>
                         </div>
                         
                         <div style="background: #d4edda; padding: 15px; border-left: 4px solid #28a745; margin: 20px 0;">
                             <h3 style="color: #155724; margin-top: 0;">📧 What Happens Next?</h3>
-                            <p style="color: #155724; margin-bottom: 0;">Your tutor will email you directly with a Zoom or Google Meet link. Keep an eye on your inbox for a message from <strong>${tutor.email}</strong>.</p>
+                            <p style="color: #155724; margin-bottom: 0;">Check your email and dashboard for this Zoom link. Your tutor may also follow up to confirm the exact time.</p>
                         </div>
                         
                         <h3 style="color: #8b4513;">💻 How to Prepare:</h3>
@@ -737,7 +777,7 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
                             <li>Reply to your tutor's email to confirm the meeting time</li>
                         </ul>
 
-                        <p style="margin-top: 20px;">If you don't hear from your tutor within 24 hours, feel free to email them directly at <a href="mailto:${tutor.email}">${tutor.email}</a>.</p>
+                        <p style="margin-top: 20px;">If you need to reschedule, email your tutor directly at <a href="mailto:${tutor.email}">${tutor.email}</a>.</p>
 
                         <p>Looking forward to helping you succeed! 📚⚡</p>
                         <p style="color: #888; font-size: 12px;">Saint Thunderbird Tutoring Platform</p>
@@ -789,9 +829,10 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
 
         res.json({
             success: true,
-            message: 'Request accepted! Session created - tutor will contact student with meeting link.',
+            message: 'Request accepted! Session created and Zoom link emailed to both tutor and student.',
             sessionRefId: sessionRefId,
-            tutorEmail: tutor.email
+            tutorEmail: tutor.email,
+            zoomLink
         });
     } catch (error) {
         console.error('Error in accept-request:', error);
@@ -1040,6 +1081,31 @@ router.get('/pending-applications', authMiddleware, async (req, res) => {
     }
 });
 
+// ADMIN DASHBOARD SUMMARY COUNTS
+router.get('/admin-summary', authMiddleware, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.userId);
+        if (!user || user.email !== ADMIN_EMAIL) {
+            return res.status(403).json({ error: 'Unauthorized: Admin access only' });
+        }
+
+        const [pendingCount, approvedCount, totalApplications] = await Promise.all([
+            User.countDocuments({ 'tutorApplication.status': 'pending' }),
+            User.countDocuments({ 'tutorApplication.status': 'approved', userType: 'tutor' }),
+            User.countDocuments({ tutorApplication: { $exists: true } })
+        ]);
+
+        res.json({
+            success: true,
+            pendingCount,
+            approvedCount,
+            totalApplications
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // 2. APPROVE TUTOR (Via Admin Panel Button)
 router.post('/approve-tutor/:userId', authMiddleware, async (req, res) => {
     try {
@@ -1092,44 +1158,6 @@ router.post('/approve-tutor/:userId', authMiddleware, async (req, res) => {
             errorLog: '❌ Approval email error:'
         });
 
-        res.json({ success: true, message: 'Approved successfully' });
-        // Send approval email to the tutor
-        const mailOptions = {
-            from: process.env.EMAIL_USER,
-            to: user.email,
-            subject: 'Your Tutor Application Has Been Approved! 🎉',
-            html: `
-                <div style="font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px;">
-                    <div style="background: white; padding: 30px; border-radius: 10px; max-width: 600px; margin: 0 auto;">
-                        <h2 style="color: #8b4513;">🎉 Congratulations ${user.firstName}!</h2>
-                        <p>Your tutor application has been <strong style="color: #22c55e;">APPROVED</strong>!</p>
-                        <p>You can now log in to your tutor dashboard and start helping students.</p>
-                        
-                        <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #d4a574; margin: 20px 0;">
-                            <h3 style="color: #8b4513; margin-top: 0;">Next Steps:</h3>
-                            <ul style="color: #666;">
-                                <li>Log in at the Saint Thunderbird website</li>
-                                <li>Use the "Tutor" tab to access your dashboard</li>
-                                <li>Wait for student requests to appear</li>
-                                <li>Accept requests and help students succeed!</li>
-                            </ul>
-                        </div>
-                        
-                        <p>Welcome to the Saint Thunderbird tutoring team! ⚡</p>
-                        <p style="color: #888; font-size: 12px;">Saint Thunderbird Tutoring Platform</p>
-                    </div>
-                </div>
-            `
-        };
-
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error('❌ Approval email error:', error.message);
-            } else {
-                console.log('✅ Approval email sent to:', user.email);
-            }
-        });
-
         res.json({ success: true, message: 'Tutor approved and email sent!' });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -1175,43 +1203,6 @@ router.post('/deny-tutor/:userId', authMiddleware, async (req, res) => {
             `,
             successLog: `✅ Denial email sent successfully to: ${targetUser.email}`,
             errorLog: '❌ Denial email error:'
-        });
-
-        res.json({ success: true, message: 'Application denied' });
-        // Send denial email to the applicant
-        const mailOptions = {
-            from: process.env.EMAIL_USER,
-            to: targetUser.email,
-            subject: 'Update on Your Tutor Application - Saint Thunderbird',
-            html: `
-                <div style="font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px;">
-                    <div style="background: white; padding: 30px; border-radius: 10px; max-width: 600px; margin: 0 auto;">
-                        <h2 style="color: #8b4513;">Tutor Application Update</h2>
-                        <p>Dear ${targetUser.firstName},</p>
-                        <p>Thank you for your interest in becoming a tutor at Saint Thunderbird.</p>
-                        <p>After careful review, we regret to inform you that your application has not been approved at this time.</p>
-                        
-                        ${reason ? `
-                        <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #d4a574; margin: 20px 0;">
-                            <p><strong>Reason:</strong> ${reason}</p>
-                        </div>
-                        ` : ''}
-                        
-                        <p>You are still welcome to use Saint Thunderbird as a student. If you believe this decision was made in error, please contact us at dylanduancanada@gmail.com.</p>
-                        
-                        <p>Thank you for your understanding.</p>
-                        <p style="color: #888; font-size: 12px;">Saint Thunderbird Tutoring Platform</p>
-                    </div>
-                </div>
-            `
-        };
-
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error('❌ Denial email error:', error.message);
-            } else {
-                console.log('✅ Denial email sent to:', targetUser.email);
-            }
         });
 
         res.json({ success: true, message: 'Application denied and email sent' });

@@ -93,7 +93,6 @@ async function sendSignupEmails(user) {
             <p><strong>Email:</strong> ${user.email}</p>
             <p><strong>Education Level:</strong> ${tutorProfile.educationLevel || 'Not provided'}</p>
             <p><strong>Subjects:</strong> ${(tutorProfile.subjects || []).join(', ') || 'Not provided'}</p>
-            <p><strong>Session Durations:</strong> ${(tutorProfile.availableTimes || []).join(', ') || 'Not provided'}</p>
             <p><strong>Experience:</strong> ${tutorProfile.experience || 'Not provided'}</p>
             <p><strong>Motivation:</strong> ${tutorProfile.motivation || 'Not provided'}</p>
             <p><strong>Applied At:</strong> ${new Date().toLocaleString()}</p>
