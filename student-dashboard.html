@@ -595,7 +595,7 @@
         </div>
 
         <!-- New Request Button -->
-        <button class="new-request-btn" onclick="toggleRequestDropdown()">📝 Request Tutoring Help</button>
+        <button class="new-request-btn" onclick="(function(){const d=document.getElementById('requestDropdown');if(!d)return;d.style.display=(d.style.display==='block'?'none':'block');})();">📝 Request Tutoring Help</button>
         <div id="requestDropdown" class="request-dropdown">
             <div class="form-group">
                 <label>Subject</label>
@@ -1027,6 +1027,7 @@
             function closeRequestDropdown() {
                 const dropdown = document.getElementById('requestDropdown');
                 dropdown.classList.remove('active');
+                dropdown.style.display = 'none';
             }
 
             async function submitQuickRequest() {
