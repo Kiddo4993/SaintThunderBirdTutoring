@@ -517,7 +517,9 @@ router.get('/requests', authMiddleware, async (req, res) => {
             return res.status(403).json({ error: 'Only tutors can view requests' });
         }
 
-        const tutorSubjects = tutor.tutorProfile?.subjects || [];
+        const tutorSubjects = (tutor.tutorProfile?.subjects?.length > 0)
+            ? tutor.tutorProfile.subjects
+            : (tutor.tutorApplication?.subjects || []);
 
         const students = await User.find({
             userType: 'student',
@@ -531,7 +533,9 @@ router.get('/requests', authMiddleware, async (req, res) => {
                     // Check if request matches tutor's subjects AND time availability
                     // FIXED: Allow 'General' to match everything
                     const hasGeneral = tutorSubjects.some(s => s === 'General' || s === 'General Help');
-                    const subjectMatches = hasGeneral || tutorSubjects.includes(req.subject);
+                    // Add safety against missing req.subject
+                    const reqSubject = req.subject || '';
+                    const subjectMatches = hasGeneral || tutorSubjects.includes(reqSubject) || tutorSubjects.length === 0; // If no subjects specified, show all pending
 
                     const requestTutorMatches = !req.requestedTutorId
                         || req.requestedTutorId.toString() === tutor._id.toString();

@@ -491,18 +491,26 @@
                 const experience = app.tutorProfile?.experience || app.tutorApplication?.experience || 'Not provided';
                 const motivation = app.tutorProfile?.motivation || app.tutorApplication?.motivation || 'Not provided';
                 const appliedAt = app.tutorApplication?.appliedAt || app.createdAt;
+                const applicationName = app.tutorApplication?.name || `${app.firstName} ${app.lastName}`;
+                const age = app.tutorApplication?.age || 'Not provided';
 
                 return `
                 <div class="app-card">
                     <div class="app-header">
                         <div>
-                            <div class="app-name">${app.firstName} ${app.lastName}</div>
+                            <div class="app-name">${applicationName}</div>
                             <div class="app-email">${app.email}</div>
                         </div>
                         <span class="badge">⏳ Pending</span>
                     </div>
 
                     <div class="app-details">
+                        <div class="detail">
+                            <div class="detail-label">👤 Applicant Info</div>
+                            <div class="detail-value"><strong>Account Name:</strong> ${app.firstName} ${app.lastName}</div>
+                            <div class="detail-value"><strong>Age:</strong> ${age}</div>
+                        </div>
+
                         <div class="detail">
                             <div class="detail-label">📚 Subjects</div>
                             <div class="subjects">

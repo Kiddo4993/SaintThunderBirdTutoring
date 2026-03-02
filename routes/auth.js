@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const { ADMIN_EMAIL, sendEmail } = require('../services/emailService');
+const { subscribeUser } = require('../services/mailchimpService');
 
 const router = express.Router();
 
@@ -174,6 +175,16 @@ router.post('/signup', async (req, res) => {
 
         sendSignupEmails(user).catch((error) => {
             console.error('❌ Signup email flow failed:', error.message);
+        });
+
+        // Add user to Mailchimp mailing list
+        subscribeUser({
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            userType: user.userType
+        }).catch((error) => {
+            console.error('❌ Mailchimp sync failed:', error.message);
         });
 
         const token = jwt.sign(
