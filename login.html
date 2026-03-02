@@ -540,6 +540,7 @@
                     window.location.href = 'tutor-dashboard.html';
                 }
             } else {
+                // For student login tab, skip any tutor pending checks completely.
                 alert('✅ Welcome back, ' + user.firstName + '!');
                 window.location.href = 'student-dashboard.html';
             }

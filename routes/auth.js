@@ -54,7 +54,7 @@ function createAuthUserPayload(user) {
 async function sendSignupEmails(user) {
     const fullName = `${user.firstName} ${user.lastName}`;
 
-    if (user.userType === 'student') {
+    if (!user.tutorApplication) {
         const adminHtml = `
             <h2>New Student Signup</h2>
             <p><strong>Name:</strong> ${fullName}</p>
@@ -85,16 +85,16 @@ async function sendSignupEmails(user) {
         return;
     }
 
-    if (user.userType === 'tutor') {
+    if (user.tutorApplication) {
         const tutorProfile = user.tutorProfile || {};
         const adminHtml = `
             <h2>New Tutor Application</h2>
             <p><strong>Name:</strong> ${fullName}</p>
             <p><strong>Email:</strong> ${user.email}</p>
-            <p><strong>Education Level:</strong> ${tutorProfile.educationLevel || 'Not provided'}</p>
-            <p><strong>Subjects:</strong> ${(tutorProfile.subjects || []).join(', ') || 'Not provided'}</p>
-            <p><strong>Experience:</strong> ${tutorProfile.experience || 'Not provided'}</p>
-            <p><strong>Motivation:</strong> ${tutorProfile.motivation || 'Not provided'}</p>
+            <p><strong>Education Level:</strong> ${user.tutorApplication.educationLevel || 'Not provided'}</p>
+            <p><strong>Subjects:</strong> ${(user.tutorApplication.subjects || []).join(', ') || 'Not provided'}</p>
+            <p><strong>Experience:</strong> ${user.tutorApplication.experience || 'Not provided'}</p>
+            <p><strong>Motivation:</strong> ${user.tutorApplication.motivation || 'Not provided'}</p>
             <p><strong>Applied At:</strong> ${new Date().toLocaleString()}</p>
         `;
 
