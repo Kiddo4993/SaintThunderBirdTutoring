@@ -321,6 +321,59 @@ router.post('/create-request', authMiddleware, async (req, res) => {
             errorLog: '❌ Admin notification error:'
         });
 
+        // ===== EMAIL TO TUTOR(S) WHEN STUDENT CREATES REQUEST =====
+        let targetEmails = [];
+        if (selectedTutor) {
+            targetEmails = [selectedTutor.email];
+        } else {
+            const allTutors = await User.find({
+                userType: 'tutor',
+                'tutorApplication.status': 'approved'
+            });
+            targetEmails = allTutors.filter(tutor => {
+                const tutorSubjects = (tutor.tutorProfile?.subjects?.length > 0)
+                    ? tutor.tutorProfile.subjects
+                    : (tutor.tutorApplication?.subjects || []);
+                const hasGeneral = tutorSubjects.some(s => s === 'General' || s === 'General Help');
+                const subjectMatches = hasGeneral || tutorSubjects.includes(subject) || tutorSubjects.length === 0;
+                return subjectMatches;
+            }).map(t => t.email);
+        }
+
+        if (targetEmails.length > 0) {
+            const tutorNotificationOptions = {
+                to: targetEmails.join(','),
+                subject: selectedTutor ? `📢 New Tutoring Request for You! - ${subject}` : `📢 Open Tutoring Request Available - ${subject}`,
+                html: `
+                    <div style="font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px;">
+                        <div style="background: white; padding: 30px; border-radius: 10px; max-width: 600px; margin: 0 auto;">
+                            <h2 style="color: #8b4513;">📢 New Tutoring Request</h2>
+                            <p>${selectedTutor ? 'Hi ' + selectedTutor.firstName + ',' : 'Hello Tutors,'}</p>
+                            <p><strong>${student.firstName} ${student.lastName}</strong> has requested a tutoring session ${selectedTutor ? 'with you directly' : 'in a subject you teach'}!</p>
+                            
+                            <h3 style="color: #8b4513; margin-top: 20px;">📚 Request Details:</h3>
+                            <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #d4a574; margin: 10px 0;">
+                                <p><strong>Subject:</strong> ${subject}</p>
+                                <p><strong>Session Duration:</strong> ${toDurationLabel(requestedTime)}</p>
+                                <p><strong>Description:</strong> ${description || 'No description provided'}</p>
+                            </div>
+                            
+                            <p style="margin-top: 20px;">
+                                Please log in to your tutor dashboard to <strong>accept the request</strong>. 
+                                Once accepted, a Zoom link will be automatically generated and emailed to both you and the student.
+                            </p>
+                            <p style="color: #888; font-size: 12px;">Saint Thunderbird Tutoring Platform</p>
+                        </div>
+                    </div>
+                `
+            };
+            sendEmailSafe({
+                ...tutorNotificationOptions,
+                successLog: `✅ Notified ${targetEmails.length} tutor(s) of new request`,
+                errorLog: '❌ Tutor notification error:'
+            });
+        }
+
         res.json({
             success: true,
             message: 'Request created successfully',
