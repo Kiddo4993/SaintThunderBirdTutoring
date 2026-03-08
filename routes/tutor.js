@@ -323,6 +323,16 @@ router.post('/create-request', authMiddleware, async (req, res) => {
 
         // ===== EMAIL TO TUTOR(S) WHEN STUDENT CREATES REQUEST =====
         let targetEmails = [];
+        // Look up the selected tutor if one was specified
+        let selectedTutor = null;
+        if (selectedTutorId) {
+            selectedTutor = await User.findOne({
+                _id: selectedTutorId,
+                userType: 'tutor',
+                'tutorApplication.status': 'approved'
+            });
+        }
+
         if (selectedTutor) {
             targetEmails = [selectedTutor.email];
         } else {

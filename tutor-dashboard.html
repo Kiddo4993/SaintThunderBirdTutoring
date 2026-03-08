@@ -458,6 +458,9 @@
             if (nameEl) nameEl.textContent = user.firstName;
 
             loadDashboard();
+
+            // Auto-refresh every 30 seconds
+            setInterval(loadDashboard, 30000);
         });
 
         async function loadDashboard() {
