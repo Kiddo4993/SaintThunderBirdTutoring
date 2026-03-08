@@ -838,62 +838,68 @@
                 const res = await fetch(`${API_URL}/tutor/available-tutors`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
+
+                if (!res.ok) throw new Error(`API error: ${res.status}`);
                 const data = await res.json();
-                if (data.success && data.tutors) {
-                    const subjectEmojis = {
-                        'Mathematics': '📐', 'Sciences': '🔬', 'Languages': '🌐',
-                        'Social Studies': '📚', 'Technology': '💻', 'Arts & Culture': '🎨',
-                        'General': '📖', 'General Help': '📖'
-                    };
-                    // Collect unique subjects from all approved tutors
-                    const subjects = new Set();
-                    data.tutors.forEach(tutor => {
-                        const tutorSubjects = tutor.tutorProfile?.subjects || [];
-                        tutorSubjects.forEach(s => {
-                            if (s && s !== 'General' && s !== 'General Help') subjects.add(s);
-                        });
+                if (!data.success || !data.tutors) throw new Error('Invalid API response');
+
+                const subjectEmojis = {
+                    'Mathematics': '📐', 'Sciences': '🔬', 'Languages': '🌐',
+                    'Social Studies': '📚', 'Technology': '💻', 'Arts & Culture': '🎨',
+                    'General': '📖', 'General Help': '📖'
+                };
+                // Collect unique subjects from all approved tutors
+                const subjects = new Set();
+                data.tutors.forEach(tutor => {
+                    const tutorSubjects = tutor.tutorProfile?.subjects || [];
+                    tutorSubjects.forEach(s => {
+                        if (s && s !== 'General' && s !== 'General Help') subjects.add(s);
                     });
+                });
 
-                    // If no specific subjects found, show all defaults
-                    if (subjects.size === 0) {
-                        ['Mathematics', 'Sciences', 'Languages', 'Social Studies', 'Technology', 'Arts & Culture'].forEach(s => subjects.add(s));
-                    }
+                // If no specific subjects found, show all defaults
+                if (subjects.size === 0) {
+                    ['Mathematics', 'Sciences', 'Languages', 'Social Studies', 'Technology', 'Arts & Culture'].forEach(s => subjects.add(s));
+                }
 
-                    // Populate quick request dropdown
-                    const quickSelect = document.getElementById('quickRequestSubject');
-                    if (quickSelect) {
-                        quickSelect.innerHTML = '<option value="">Select a subject</option>';
-                        Array.from(subjects).sort().forEach(s => {
-                            const emoji = subjectEmojis[s] || '📚';
-                            quickSelect.innerHTML += `<option value="${s}">${s} ${emoji}</option>`;
-                        });
-                    }
+                // Populate quick request dropdown
+                const quickSelect = document.getElementById('quickRequestSubject');
+                if (quickSelect) {
+                    quickSelect.innerHTML = '<option value="">Select a subject</option>';
+                    Array.from(subjects).sort().forEach(s => {
+                        const emoji = subjectEmojis[s] || '📚';
+                        quickSelect.innerHTML += `<option value="${s}">${s} ${emoji}</option>`;
+                    });
+                }
 
-                    // Also populate modal dropdown
-                    const modalSelect = document.getElementById('requestSubject');
-                    if (modalSelect) {
-                        modalSelect.innerHTML = '<option value="">Select a subject</option>';
-                        Array.from(subjects).sort().forEach(s => {
-                            const emoji = subjectEmojis[s] || '📚';
-                            modalSelect.innerHTML += `<option value="${s}">${s} ${emoji}</option>`;
-                        });
-                    }
+                // Also populate modal dropdown
+                const modalSelect = document.getElementById('requestSubject');
+                if (modalSelect) {
+                    modalSelect.innerHTML = '<option value="">Select a subject</option>';
+                    Array.from(subjects).sort().forEach(s => {
+                        const emoji = subjectEmojis[s] || '📚';
+                        modalSelect.innerHTML += `<option value="${s}">${s} ${emoji}</option>`;
+                    });
                 }
             } catch (error) {
                 console.error('Error loading subjects:', error);
-                // Fallback: populate with defaults
+
+                // Fallback options
+                const fallbackOptions = `
+                    <option value="">Select a subject</option>
+                    <option value="Mathematics">Mathematics 📐</option>
+                    <option value="Sciences">Sciences 🔬</option>
+                    <option value="Languages">Languages 🌐</option>
+                    <option value="Social Studies">Social Studies 📚</option>
+                    <option value="Technology">Technology 💻</option>
+                    <option value="Arts & Culture">Arts & Culture 🎨</option>
+                `;
+
                 const quickSelect = document.getElementById('quickRequestSubject');
-                if (quickSelect) {
-                    quickSelect.innerHTML = `
-                        <option value="">Select a subject</option>
-                        <option value="Mathematics">Mathematics 📐</option>
-                        <option value="Sciences">Sciences 🔬</option>
-                        <option value="Languages">Languages 🌐</option>
-                        <option value="Social Studies">Social Studies 📚</option>
-                        <option value="Technology">Technology 💻</option>
-                        <option value="Arts & Culture">Arts & Culture 🎨</option>
-                    `;
-                }
+                if (quickSelect) quickSelect.innerHTML = fallbackOptions;
+
+                const modalSelect = document.getElementById('requestSubject');
+                if (modalSelect) modalSelect.innerHTML = fallbackOptions;
             }
         }
 
