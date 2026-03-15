@@ -1,7 +1,10 @@
 function buildFallbackMeeting(durationMinutes = 60) {
-    const meetingId = Math.floor(Math.random() * 9000000000) + 1000000000;
-    const password = 'Tutoring2025';
-    const joinUrl = `https://zoom.us/j/${meetingId}?pwd=${password}`;
+    const meetingId = 'STB-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+    const password = '';
+    // NOTE: Without Zoom API credentials, we can't generate real meeting links.
+    // The tutor and student will coordinate via email instead.
+    const joinUrl = '';
+    console.warn('⚠️ Zoom API credentials not configured. Session created without a meeting link. Tutor and student will coordinate via email.');
     return {
         provider: 'fallback',
         id: meetingId,

@@ -753,6 +753,22 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
         await student.save();
 
         // ===== EMAIL TO TUTOR =====
+        const zoomSection = zoomLink ? `
+                        <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #d4a574; margin: 20px 0;">
+                            <h3 style="color: #8b4513; margin-top: 0;">🎥 Session Zoom Link</h3>
+                            <p><strong>Join Link:</strong> <a href="${zoomLink}" target="_blank">${zoomLink}</a></p>
+                            <p><strong>Meeting ID:</strong> ${sessionRefId}</p>
+                            <p><strong>Password:</strong> ${zoomPassword}</p>
+                        </div>
+        ` : `
+                        <div style="background: #fff3cd; padding: 15px; border-left: 4px solid #ffc107; margin: 20px 0;">
+                            <h3 style="color: #856404; margin-top: 0;">🎥 Meeting Link Needed</h3>
+                            <p>Zoom API is not yet configured. Please create your own Zoom or Google Meet link and share it with the student via email.</p>
+                            <p><strong>Student Email:</strong> <a href="mailto:${student.email}">${student.email}</a></p>
+                            <p><strong>Session Reference:</strong> #${sessionRefId}</p>
+                        </div>
+        `;
+
         const tutorMailOptions = {
             to: tutor.email,
             subject: `🎓 New Student Session - Action Required`,
@@ -767,28 +783,15 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
                         <p><strong>Scheduled:</strong> Tomorrow at your preferred time</p>
                         <p><strong>Session Reference:</strong> #${sessionRefId}</p>
 
-                        <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #d4a574; margin: 20px 0;">
-                            <h3 style="color: #8b4513; margin-top: 0;">🎥 Session Zoom Link</h3>
-                            <p><strong>Join Link:</strong> <a href="${zoomLink}" target="_blank">${zoomLink}</a></p>
-                            <p><strong>Meeting ID:</strong> ${sessionRefId}</p>
-                            <p><strong>Password:</strong> ${zoomPassword}</p>
-                        </div>
+                        ${zoomSection}
 
                         <h3 style="color: #8b4513;">📋 Next Steps:</h3>
                         <ol style="color: #666; line-height: 1.8;">
-                            <li>Coordinate the exact session time with the student</li>
-                            <li>Use the Zoom link above for this session</li>
+                            <li>Email the student at <a href="mailto:${student.email}">${student.email}</a> to coordinate the exact session time</li>
+                            <li>${zoomLink ? 'Use the Zoom link above for this session' : 'Create a Zoom or Google Meet link and share it with the student'}</li>
                             <li>Join 5 minutes early to test audio/video</li>
                             <li>After the session, mark it as complete in your dashboard</li>
                         </ol>
-
-                        <h3 style="color: #8b4513;">💡 Session Tips:</h3>
-                        <ul style="color: #666;">
-                            <li>Have your screen sharing ready</li>
-                            <li>Keep notes on session progress</li>
-                            <li>Be patient and encouraging</li>
-                            <li>Track your hours for volunteer credit</li>
-                        </ul>
 
                         <p>Good luck with your session! 🌩️⚡</p>
                         <p style="color: #888; font-size: 12px;">Saint Thunderbird Tutoring Platform</p>
@@ -803,6 +806,26 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
         });
 
         // ===== EMAIL TO STUDENT =====
+        const studentZoomSection = zoomLink ? `
+                        <h3 style="color: #8b4513;">🎥 Zoom Information (UNIQUE TO YOUR SESSION)</h3>
+                        <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #d4a574; margin: 20px 0;">
+                            <p><strong>Tutor:</strong> ${tutor.firstName} ${tutor.lastName}</p>
+                            <p><strong>Tutor Email:</strong> <a href="mailto:${tutor.email}">${tutor.email}</a></p>
+                            <p><strong>Subject:</strong> ${requestSubject}</p>
+                            <p><strong>Session Reference:</strong> #${sessionRefId}</p>
+                            <p><strong>Join Link:</strong> <a href="${zoomLink}" target="_blank">${zoomLink}</a></p>
+                            <p><strong>Meeting ID:</strong> ${sessionRefId}</p>
+                            <p><strong>Password:</strong> ${zoomPassword}</p>
+                        </div>
+        ` : `
+                        <div style="background: #d4edda; padding: 15px; border-left: 4px solid #28a745; margin: 20px 0;">
+                            <h3 style="color: #155724; margin-top: 0;">📧 What Happens Next?</h3>
+                            <p style="color: #155724;">Your tutor <strong>${tutor.firstName} ${tutor.lastName}</strong> will email you at this address with a Zoom or Google Meet link for your session.</p>
+                            <p style="color: #155724;"><strong>Tutor Email:</strong> <a href="mailto:${tutor.email}">${tutor.email}</a></p>
+                            <p style="color: #155724;"><strong>Session Reference:</strong> #${sessionRefId}</p>
+                        </div>
+        `;
+
         const studentMailOptions = {
             to: student.email,
             subject: `✅ Tutor ${tutor.firstName} Accepted Your Request!`,
@@ -817,23 +840,8 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
                         <p><strong>Email:</strong> ${tutor.email}</p>
                         <p><strong>Subject:</strong> ${requestSubject}</p>
                         <p><strong>Session Length:</strong> ${toDurationLabel(requestedTime)}</p>
-                        <p><strong>Subjects Taught:</strong> ${tutor.tutorProfile?.subjects?.join(', ') || 'Various'}</p>
                         
-                        <h3 style="color: #8b4513;">🎥 Zoom Information (UNIQUE TO YOUR SESSION)</h3>
-                        <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #d4a574; margin: 20px 0;">
-                            <p><strong>Tutor:</strong> ${tutor.firstName} ${tutor.lastName}</p>
-                            <p><strong>Tutor Email:</strong> <a href="mailto:${tutor.email}">${tutor.email}</a></p>
-                            <p><strong>Subject:</strong> ${requestSubject}</p>
-                            <p><strong>Session Reference:</strong> #${sessionRefId}</p>
-                            <p><strong>Join Link:</strong> <a href="${zoomLink}" target="_blank">${zoomLink}</a></p>
-                            <p><strong>Meeting ID:</strong> ${sessionRefId}</p>
-                            <p><strong>Password:</strong> ${zoomPassword}</p>
-                        </div>
-                        
-                        <div style="background: #d4edda; padding: 15px; border-left: 4px solid #28a745; margin: 20px 0;">
-                            <h3 style="color: #155724; margin-top: 0;">📧 What Happens Next?</h3>
-                            <p style="color: #155724; margin-bottom: 0;">Check your email and dashboard for this Zoom link. Your tutor may also follow up to confirm the exact time.</p>
-                        </div>
+                        ${studentZoomSection}
                         
                         <h3 style="color: #8b4513;">💻 How to Prepare:</h3>
                         <ul style="color: #666; line-height: 1.8;">
@@ -845,7 +853,6 @@ router.post('/accept-request', authMiddleware, async (req, res) => {
                         </ul>
 
                         <p style="margin-top: 20px;">If you need to reschedule, email your tutor directly at <a href="mailto:${tutor.email}">${tutor.email}</a>.</p>
-
                         <p>Looking forward to helping you succeed! 📚⚡</p>
                         <p style="color: #888; font-size: 12px;">Saint Thunderbird Tutoring Platform</p>
                     </div>

@@ -435,6 +435,46 @@
             color: #22c55e;
         }
 
+        /* Request Sent inline success UI */
+        .request-sent-banner {
+            display: none;
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.25), rgba(22, 163, 74, 0.2));
+            border: 2px solid rgba(34, 197, 94, 0.6);
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            animation: bannerSlideIn 0.4s ease-out;
+        }
+
+        .request-sent-banner.show {
+            display: block;
+        }
+
+        .request-sent-banner .banner-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .request-sent-banner .banner-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #22c55e;
+            margin-bottom: 0.25rem;
+            text-transform: uppercase;
+        }
+
+        .request-sent-banner .banner-subtitle {
+            font-size: 0.9rem;
+            color: #86efac;
+            font-weight: 600;
+        }
+
+        @keyframes bannerSlideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .request-status-msg.error {
             background: rgba(239, 68, 68, 0.2);
             border: 1px solid rgba(239, 68, 68, 0.5);
@@ -683,7 +723,13 @@
                 <div class="form-group">
                     <label>Subject</label>
                     <select id="quickRequestSubject">
-                        <option value="">Loading subjects...</option>
+                        <option value="">Select a subject</option>
+                        <option value="Mathematics">Mathematics 📐</option>
+                        <option value="Sciences">Sciences 🔬</option>
+                        <option value="Languages">Languages 🌐</option>
+                        <option value="Social Studies">Social Studies 📚</option>
+                        <option value="Technology">Technology 💻</option>
+                        <option value="Arts & Culture">Arts & Culture 🎨</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -702,10 +748,17 @@
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn-secondary" onclick="closeRequestDropdown()">Cancel</button>
-                    <button type="button" class="btn-primary" onclick="submitQuickRequest()">Send Request</button>
+                    <button type="button" class="btn-primary" id="sendRequestBtn" onclick="submitQuickRequest()">Send Request</button>
                 </div>
             </div>
         </details>
+
+        <!-- Request Sent Success Banner -->
+        <div id="requestSentBanner" class="request-sent-banner">
+            <div class="banner-icon">✅</div>
+            <div class="banner-title">Request Sent!</div>
+            <div class="banner-subtitle">A tutor will be notified and contact you via email with session details.</div>
+        </div>
 
 
         <!-- Info Banner -->
@@ -715,8 +768,8 @@
                 🎥 <strong>How It Works:</strong><br>
                 1. Submit a tutoring request below<br>
                 2. A tutor will accept your request<br>
-                3. The tutor will email you directly with a Zoom or Google Meet link<br>
-                4. Join the meeting at the scheduled time for your session!
+                3. Both you and the tutor will receive an email with each other's contact info<br>
+                4. The tutor will email you a Zoom or Google Meet link for your session!
             </div>
             <div style="border-top: 2px solid rgba(59, 130, 246, 0.5); padding-top: 1rem;">
                 💻 <strong>Requirements:</strong> You need a computer with Zoom or Google Meet installed, plus a working
@@ -1219,10 +1272,18 @@
                 return;
             }
 
+            // Disable send button to prevent double-clicks
+            const sendBtn = document.getElementById('sendRequestBtn');
+            if (sendBtn) {
+                sendBtn.disabled = true;
+                sendBtn.textContent = 'Sending...';
+            }
+
             try {
                 const token = localStorage.getItem('authToken');
                 if (!token) {
                     showQuickRequestStatus('You are logged out. Please log in again.', 'error');
+                    if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = 'Send Request'; }
                     setTimeout(() => { window.location.href = 'login.html'; }, 900);
                     return;
                 }
@@ -1244,10 +1305,11 @@
                 const data = await res.json();
                 if (!data.success) {
                     showQuickRequestStatus(data.error || 'Request failed. Please try again.', 'error');
+                    if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = 'Send Request'; }
                     return;
                 }
 
-                // Close form immediately, then show toast
+                // Close the request panel
                 const panel = document.getElementById('requestPanel');
                 if (panel) panel.open = false;
 
@@ -1260,12 +1322,26 @@
                 tutorNotice.style.display = 'none';
                 tutorNotice.textContent = '';
 
-                // Show toast notification at bottom-left
-                showToast('✅ Request sent!', 'success');
+                // Re-enable send button
+                if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = 'Send Request'; }
+
+                // Show the inline "Request Sent" banner
+                const banner = document.getElementById('requestSentBanner');
+                if (banner) {
+                    banner.classList.add('show');
+                    // Auto-hide the banner after 3 seconds
+                    setTimeout(() => {
+                        banner.classList.remove('show');
+                    }, 3000);
+                }
+
+                // Also show toast
+                showToast('✅ Request sent! Check your email for updates.', 'success');
 
                 loadDashboard();
             } catch (error) {
                 showQuickRequestStatus('Error submitting request: ' + error.message, 'error');
+                if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = 'Send Request'; }
             }
         }
 
