@@ -505,7 +505,7 @@
             }
 
             const user = data.user;
-            const appStatus = user.tutorApplication?.status || 'approved';
+            const appStatus = user.tutorApplication?.status || 'none';
 
             if (!isTutor && user.userType !== 'student') {
                 alert('❌ Error: You are not a student. Please use the Tutor tab.');
@@ -517,8 +517,8 @@
                     alert('❌ Your tutor application was denied. Please contact support.');
                     return;
                 }
-                if (user.userType !== 'tutor' && appStatus !== 'pending') {
-                    alert('❌ Error: You are not an approved tutor yet.');
+                if (user.userType !== 'tutor' && appStatus !== 'pending' && appStatus !== 'approved') {
+                    alert('❌ Error: You do not have a tutor application. Please sign up as a tutor first.');
                     return;
                 }
             }

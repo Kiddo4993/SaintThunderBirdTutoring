@@ -111,12 +111,6 @@ async function login(email, password, userType = 'student') {
                 dashboard = (data.user.email !== 'dylanduancanada@gmail.com' && tutorStatus === 'pending')
                     ? 'tutor-pending.html'
                     : 'tutor-dashboard.html';
-            } else if (data.user.tutorApplication && data.user.tutorApplication.status === 'pending') {
-                // Even if their userType is 'student' currently (because they are pending tutor), 
-                // if they logged in as a tutor, we check their application status.
-                // However, we already verify `userType === 'tutor'` above for tutor login, 
-                // so pure students just go to student-dashboard.html
-                dashboard = (data.user.email !== 'dylanduancanada@gmail.com') ? 'tutor-pending.html' : 'tutor-dashboard.html';
             }
             window.location.href = dashboard;
         } else {
