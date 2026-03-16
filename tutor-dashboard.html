@@ -422,13 +422,42 @@
         // FIX 1: Ensure API_URL points to the correct base
         const API_URL = '/api';
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const user = getUser();
+        document.addEventListener('DOMContentLoaded', async function () {
+            let user = getUser();
 
             // Safety check: if no user, go to login
             if (!user) {
                 window.location.href = 'login.html';
                 return;
+            }
+
+            // CRITICAL: Re-fetch user profile from server to get latest approval status
+            // This fixes the bug where approved tutors still see the pending page
+            const token = localStorage.getItem('authToken');
+            if (token) {
+                try {
+                    const profileRes = await fetch('/api/auth/profile', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (profileRes.ok) {
+                        const profileData = await profileRes.json();
+                        if (profileData.success && profileData.user) {
+                            // Update localStorage with fresh data
+                            user = {
+                                id: profileData.user._id,
+                                firstName: profileData.user.firstName,
+                                lastName: profileData.user.lastName,
+                                email: profileData.user.email,
+                                userType: profileData.user.userType,
+                                tutorApplication: profileData.user.tutorApplication,
+                                tutorProfile: profileData.user.tutorProfile
+                            };
+                            localStorage.setItem('user', JSON.stringify(user));
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Could not refresh profile, using cached data:', e.message);
+                }
             }
 
             // Admin Redirect Logic
@@ -439,19 +468,14 @@
 
             // Ensure only tutors (or admin) stay here
             if (user.userType !== 'tutor' && user.email !== 'dylanduancanada@gmail.com') {
-                window.location.href = 'login.html';
-                return;
-            }
-
-            // EXTRA SECURITY: Check if approved
-            const appStatus = (user.tutorApplication && user.tutorApplication.status) ? user.tutorApplication.status : undefined;
-            // Allow admin (dylanduan) to bypass this check
-            if (user.email !== 'dylanduancanada@gmail.com') {
-                if (appStatus !== 'approved') {
-                    alert('⚠️ Access Denied: Your tutor application is ' + (appStatus || 'pending') + '.');
-                    window.location.href = appStatus === 'pending' ? 'tutor-pending.html' : 'login.html';
-                    return;
+                // Check if they have a pending application — send to pending page
+                const appStatus = user.tutorApplication?.status;
+                if (appStatus === 'pending') {
+                    window.location.href = 'tutor-pending.html';
+                } else {
+                    window.location.href = 'login.html';
                 }
+                return;
             }
 
             const nameEl = document.getElementById('tutorName');

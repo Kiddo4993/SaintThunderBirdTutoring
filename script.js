@@ -658,7 +658,7 @@ async function loadTutors() {
   try {
     // 2. Fetch data from the backend
     // Note: You need to be logged in (have a token) for this to work
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('authToken');
 
     const response = await fetch('/api/tutor/available-tutors', {
       method: 'GET',

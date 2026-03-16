@@ -81,38 +81,45 @@ async function login(email, password, userType = 'student') {
         const data = await response.json();
 
         if (data.success) {
-            // CHECK IF LOGIN TYPE MATCHES USER TYPE
-            if (userType === 'student' && data.user.userType !== 'student') {
-                alert('❌ Error: You are not a student. You are a ' + data.user.userType + '. Please login in the Tutor tab.');
-                return;
-            }
-
-            if (userType === 'tutor' && data.user.userType !== 'tutor') {
-                alert('❌ Error: You are not a tutor. You are a ' + data.user.userType + '. Please login in the Student tab.');
-                return;
-            }
-
-            if (userType === 'tutor' && data.user.email !== 'dylanduancanada@gmail.com') {
-                const tutorStatus = data.user.tutorApplication?.status || 'approved';
-                if (tutorStatus === 'denied') {
-                    alert('❌ Your tutor application was denied. You cannot log in as a tutor.');
-                    return;
-                }
-            }
+            const user = data.user;
+            const appStatus = user.tutorApplication?.status || 'none';
+            const isAdmin = user.email === 'dylanduancanada@gmail.com';
 
             localStorage.setItem('authToken', data.token);
-            localStorage.setItem('user', JSON.stringify(data.user));
-            alert(`✅ Welcome back, ${data.user.firstName}!`);
+            localStorage.setItem('user', JSON.stringify(user));
 
-            // Redirect based on user type
-            let dashboard = 'student-dashboard.html';
-            if (data.user.userType === 'tutor') {
-                const tutorStatus = data.user.tutorApplication?.status || 'approved';
-                dashboard = (data.user.email !== 'dylanduancanada@gmail.com' && tutorStatus === 'pending')
-                    ? 'tutor-pending.html'
-                    : 'tutor-dashboard.html';
+            // STUDENT TAB — always go to student dashboard
+            if (userType !== 'tutor') {
+                alert(`✅ Welcome back, ${user.firstName}!`);
+                window.location.href = 'student-dashboard.html';
+                return;
             }
-            window.location.href = dashboard;
+
+            // TUTOR TAB — route based on role + approval status
+            if (isAdmin) {
+                alert(`✅ Welcome back, Admin!`);
+                window.location.href = 'tutor-dashboard.html';
+                return;
+            }
+
+            if (user.userType === 'tutor' && appStatus === 'approved') {
+                alert(`✅ Welcome back, ${user.firstName}!`);
+                window.location.href = 'tutor-dashboard.html';
+                return;
+            }
+
+            if (appStatus === 'pending') {
+                alert('⏳ Your tutor application is pending approval.');
+                window.location.href = 'tutor-pending.html';
+                return;
+            }
+
+            if (appStatus === 'denied') {
+                alert('❌ Your tutor application was denied. Please contact support.');
+                return;
+            }
+
+            alert('❌ You do not have a tutor application. Please sign up as a tutor first.');
         } else {
             alert('❌ Error: ' + data.error);
         }
