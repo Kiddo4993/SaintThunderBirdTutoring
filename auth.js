@@ -88,38 +88,52 @@ async function login(email, password, userType = 'student') {
             localStorage.setItem('authToken', data.token);
             localStorage.setItem('user', JSON.stringify(user));
 
-            // STUDENT TAB — always go to student dashboard
-            if (userType !== 'tutor') {
-                alert(`✅ Welcome back, ${user.firstName}!`);
-                window.location.href = 'student-dashboard.html';
-                return;
-            }
-
-            // TUTOR TAB — route based on role + approval status
+            // Route based on ACTUAL DB role/status, not which tab they clicked
+            // 1. Admin always goes to tutor dashboard (has admin button there)
             if (isAdmin) {
                 alert(`✅ Welcome back, Admin!`);
                 window.location.href = 'tutor-dashboard.html';
                 return;
             }
 
+            // 2. Approved tutors go to tutor dashboard
             if (user.userType === 'tutor' && appStatus === 'approved') {
                 alert(`✅ Welcome back, ${user.firstName}!`);
                 window.location.href = 'tutor-dashboard.html';
                 return;
             }
 
+            // 3. Pending tutor applicants (stored as userType:'student' with pending app)
             if (appStatus === 'pending') {
                 alert('⏳ Your tutor application is pending approval.');
                 window.location.href = 'tutor-pending.html';
                 return;
             }
 
+            // 4. Denied tutor applicants — show error
             if (appStatus === 'denied') {
                 alert('❌ Your tutor application was denied. Please contact support.');
                 return;
             }
 
-            alert('❌ You do not have a tutor application. Please sign up as a tutor first.');
+            // 5. Pure students (no tutor application) go to student dashboard
+            if (user.userType === 'student' && appStatus === 'none') {
+                alert(`✅ Welcome back, ${user.firstName}!`);
+                window.location.href = 'student-dashboard.html';
+                return;
+            }
+
+            // 6. Fallback: if somehow userType is 'tutor' but status isn't approved
+            //    (shouldn't happen, but safety net)
+            if (user.userType === 'tutor') {
+                alert(`✅ Welcome back, ${user.firstName}!`);
+                window.location.href = 'tutor-dashboard.html';
+                return;
+            }
+
+            // 7. Default fallback
+            alert(`✅ Welcome back, ${user.firstName}!`);
+            window.location.href = 'student-dashboard.html';
         } else {
             alert('❌ Error: ' + data.error);
         }

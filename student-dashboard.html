@@ -710,48 +710,67 @@
                 <div class="stat-value" id="hoursCount">0</div>
                 <div class="stat-label">Hours Learned</div>
             </div>
+          <!-- Request Modal -->
+        <div id="requestModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:1000;align-items:center;justify-content:center;">
+          <div style="background:#1a1a1a;border:1px solid #c8932a;border-radius:12px;padding:32px;width:90%;max-width:420px;">
+            <h3 style="color:#c8932a;margin-bottom:20px;">Request Tutoring Help</h3>
+            <label style="color:#ccc;display:block;margin-bottom:6px;">Subject</label>
+            <select id="req-subject" style="width:100%;padding:10px;background:#111;color:#fff;border:1px solid #444;border-radius:6px;margin-bottom:16px;">
+              <option value="">Select a subject...</option>
+              <option>Mathematics</option>
+              <option>English &amp; Literature</option>
+              <option>Science</option>
+              <option>Social Studies</option>
+              <option>Computer Science</option>
+              <option>Arts &amp; Culture</option>
+            </select>
+            <label style="color:#ccc;display:block;margin-bottom:6px;">Hours Requested</label>
+            <select id="req-hours" style="width:100%;padding:10px;background:#111;color:#fff;border:1px solid #444;border-radius:6px;margin-bottom:24px;">
+              <option value="">Select hours...</option>
+              <option value="0.5">30 Minutes</option>
+              <option value="1">1 Hour</option>
+              <option value="1.5">1.5 Hours</option>
+              <option value="2">2 Hours</option>
+            </select>
+            <div style="display:flex;gap:12px;">
+              <button onclick="submitRequest()" style="flex:1;padding:12px;background:#c8932a;color:#000;border:none;border-radius:6px;font-weight:bold;cursor:pointer;">Send Request</button>
+              <button onclick="document.getElementById('requestModal').style.display='none'" style="flex:1;padding:12px;background:#333;color:#fff;border:none;border-radius:6px;cursor:pointer;">Cancel</button>
+            </div>
+            <p id="req-status" style="color:#4CAF50;text-align:center;margin-top:12px;display:none;">Request sent!</p>
+          </div>
         </div>
 
-        <!-- New Request Button -->
-        <details id="requestPanel" class="request-panel">
-            <summary class="new-request-btn">📝 Request Tutoring Help</summary>
-            <div id="requestDropdown" class="request-dropdown">
-                <input type="hidden" id="quickSelectedTutorId">
-                <div id="quickSelectedTutorNotice"
-                    style="display:none; margin-bottom: 1rem; padding: 0.75rem; border-radius: 8px; background: rgba(74, 124, 158, 0.2); border: 1px solid rgba(74, 124, 158, 0.4); color: #60a5fa;">
-                </div>
-                <div class="form-group">
-                    <label>Subject</label>
-                    <select id="quickRequestSubject">
-                        <option value="">Select a subject</option>
-                        <option value="Mathematics">Mathematics 📐</option>
-                        <option value="Sciences">Sciences 🔬</option>
-                        <option value="Languages">Languages 🌐</option>
-                        <option value="Social Studies">Social Studies 📚</option>
-                        <option value="Technology">Technology 💻</option>
-                        <option value="Arts & Culture">Arts & Culture 🎨</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Hours</label>
-                    <select id="quickRequestTime">
-                        <option value="">Select duration</option>
-                        <option value="30min">30 minutes</option>
-                        <option value="1hour">1 hour</option>
-                        <option value="1.5hours">1.5 hours</option>
-                        <option value="2hours">2 hours</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Details (optional)</label>
-                    <textarea id="quickRequestDescription" placeholder="What do you need help with?"></textarea>
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn-secondary" onclick="closeRequestDropdown()">Cancel</button>
-                    <button type="button" class="btn-primary" id="sendRequestBtn" onclick="submitQuickRequest()">Send Request</button>
-                </div>
-            </div>
-        </details>
+        <!-- The button -->
+        <button onclick="document.getElementById('requestModal').style.display='flex'" style="width:100%;padding:16px;background:#c8932a;color:#000;border:none;border-radius:8px;font-weight:bold;font-size:16px;cursor:pointer;">
+          ⚡ REQUEST TUTORING HELP
+        </button>
+
+        <script>
+        async function submitRequest() {
+          const subject = document.getElementById('req-subject').value;
+          const hours = document.getElementById('req-hours').value;
+          if (!subject || !hours) { alert('Please select both a subject and hours.'); return; }
+          const token = localStorage.getItem('authToken');
+          const res = await fetch('/api/sessions/request', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ subject, hours: parseFloat(hours) })
+          });
+          const data = await res.json();
+          if (res.ok) {
+            document.getElementById('req-status').style.display = 'block';
+            setTimeout(() => {
+              document.getElementById('requestModal').style.display = 'none';
+              document.getElementById('req-status').style.display = 'none';
+              loadRequests();
+            }, 1500);
+          } else {
+            alert(data.message || 'Error sending request');
+          }
+        }
+        </script>
+        </div>
+
 
         <!-- Request Sent Success Banner -->
         <div id="requestSentBanner" class="request-sent-banner">

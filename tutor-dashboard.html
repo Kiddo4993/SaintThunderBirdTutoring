@@ -523,69 +523,45 @@
                     }
                 }
             } catch (error) {
-                console.error('❌ Stats error:', error);
-            }
-        }
-
-        // Load real student requests from the DB
+                console.error('❌ Stats e        // Load real student requests from the DB
         async function loadStudentRequests(token) {
+            const tokenToUse = token || localStorage.getItem('authToken');
+            const res = await fetch('/api/sessions/pending', {
+                headers: { 'Authorization': `Bearer ${tokenToUse}` }
+            });
+            const requests = await res.json();
             const container = document.getElementById('studentRequests');
-            if (!container) {
-                console.error('❌ Container #studentRequests not found');
+            if (!requests.length) {
+                container.innerHTML = '<p style="color:#888;text-align:center;">No pending requests</p>';
                 return;
             }
+            container.innerHTML = requests.map(r => `
+                <div style="background:#1a1a1a;border:1px solid #333;border-radius:8px;padding:16px;margin-bottom:12px;">
+                  <div style="color:#c8932a;font-weight:bold;">${r.studentName}</div>
+                  <div style="color:#ccc;font-size:14px;">${r.subject} — ${r.hours} hour(s)</div>
+                  <button onclick="acceptRequest('${r._id}', ${r.hours})" 
+                    style="margin-top:10px;padding:8px 20px;background:#4CAF50;color:#fff;border:none;border-radius:6px;cursor:pointer;">
+                    Accept
+                  </button>
+                </div>
+            `).join('');
+        }
 
-            try {
-                const response = await fetch(`${API_URL}/tutor/requests`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                console.log('📦 Requests data:', data);
-
-                if (data.success && data.requests && data.requests.length > 0) {
-                    container.innerHTML = data.requests.map(req => {
-                        // Escape HTML to prevent XSS
-                        const escapeHtml = (text) => {
-                            const div = document.createElement('div');
-                            div.textContent = text;
-                            return div.innerHTML;
-                        };
-
-                        const timeLabels = {
-                            '30min': '30 minutes',
-                            '1hour': '1 hour',
-                            '1.5hours': '1.5 hours',
-                            '2hours': '2 hours'
-                        };
-                        const timeLabel = timeLabels[req.requestedTime] || req.requestedTime || 'Not specified';
-
-                        return `
-                        <div class="student-request-card">
-                            <div class="student-name">${escapeHtml(req.studentName || 'Unknown Student')}</div>
-                            <div class="student-subject">${escapeHtml(req.subject || 'General')}</div>
-                            <div class="student-description">${escapeHtml(req.description || 'No additional details provided')}</div>
-                            
-                            <div class="request-info">
-                                <div class="info-item">
-                                    <div class="info-label">Student Email</div>
-                                    <div class="info-value" style="font-size: 0.9rem;">${escapeHtml(req.studentEmail || 'N/A')}</div>
-                                </div>
-                                <div class="info-item">
-                                    <div class="info-label">Session Duration</div>
-                                    <div class="info-value">${escapeHtml(timeLabel)}</div>
-                                </div>
-                                <div class="info-item">
-                                    <div class="info-label">Priority</div>
-                                    <div class="info-value">${escapeHtml(req.priority || 'medium')}</div>
-                                </div>
-                            </div>
-                            
-                            <button class="accept-btn" onclick="acceptRequest('${req._id.replace(/'/g, "\\'")}')">
+        async function acceptRequest(requestId, hours) {
+            const token = localStorage.getItem('authToken');
+            const res = await fetch(`/api/sessions/accept/${requestId}`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (res.ok) {
+                alert('Request accepted! Both you and the student will receive an email with the Zoom link.');
+                loadStudentRequests();
+                loadTutorStats();
+            } else {
+                alert(data.message || 'Error accepting request');
+            }
+        }ptRequest('${req._id.replace(/'/g, "\\'")}')">
                                 ✅ Accept Request & Generate Zoom Meeting
                             </button>
                         </div>

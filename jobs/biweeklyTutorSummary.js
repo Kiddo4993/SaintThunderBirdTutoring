@@ -79,6 +79,32 @@ async function sendBiweeklyTutorSummary({ force = false } = {}) {
         html
     });
 
+    // Send individual summary emails to each tutor
+    const tutorEmails = rows.map((row) => {
+        const tutorHtml = `
+            <div style="font-family: Arial, sans-serif; color: #222;">
+                <h2>Your Biweekly Tutoring Summary</h2>
+                <p>Hi ${row.fullName},</p>
+                <p>Here is your tutoring summary for the past two weeks:</p>
+                <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #d4a574; margin: 16px 0;">
+                    <p><strong>Completed Sessions:</strong> ${row.completedCount}</p>
+                    <p><strong>Total Hours Taught:</strong> ${row.totalHours.toFixed(1)}</p>
+                </div>
+                <p>Thank you for making a difference! Keep up the great work. 🌩️⚡</p>
+                <p style="color: #888; font-size: 12px;">Saint Thunderbird Tutoring Platform</p>
+            </div>
+        `;
+        return sendEmail({
+            to: row.email,
+            subject: `Your Tutoring Summary - ${now.toLocaleDateString()}`,
+            html: tutorHtml
+        }).catch((err) => {
+            console.error(`❌ Failed to send summary to ${row.email}:`, err.message);
+        });
+    });
+
+    await Promise.allSettled(tutorEmails);
+
     await SystemSetting.findOneAndUpdate(
         { key: SUMMARY_SETTING_KEY },
         { key: SUMMARY_SETTING_KEY, valueDate: now },

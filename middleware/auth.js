@@ -17,10 +17,3 @@ const authMiddleware = (req, res, next) => {
 };
 
 module.exports = authMiddleware;
-
-const authMiddleware = require('./middleware/auth');
-
-// Only logged-in users can access
-app.get('/api/dashboard', authMiddleware, (req, res) => {
-    res.json({ message: `Welcome ${req.user.email}` });
-});
