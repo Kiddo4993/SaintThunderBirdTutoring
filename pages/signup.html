@@ -14,7 +14,7 @@
 
 <body>
     <div class="mesh-gradient"></div>
-    <button class="theme-toggle-btn" onclick="toggleTheme()">🌓</button>
+    <button type="button" class="theme-toggle-btn" id="signupThemeToggle">🌓</button>
 
     <div class="signup-container">
         <div class="logo">
@@ -25,8 +25,8 @@
         <p class="subtitle">Create your account and start your learning journey</p>
 
         <div class="tabs">
-            <div class="tab active" onclick="switchTab('student')">Student</div>
-            <div class="tab" onclick="switchTab('tutor')">Tutor</div>
+            <div class="tab active" data-tab="student" role="button" tabindex="0">Student</div>
+            <div class="tab" data-tab="tutor" role="button" tabindex="0">Tutor</div>
         </div>
 
         <!-- Student Sign Up -->
@@ -228,115 +228,7 @@
         </div>
     </div>
 
-    <script>
-        function toggleTheme() {
-            document.body.classList.toggle('light-mode');
-            const isLight = document.body.classList.contains('light-mode');
-            localStorage.setItem('st-theme', isLight ? 'light' : 'dark');
-            document.querySelector('.theme-toggle-btn').textContent = isLight ? '☀️' : '🌓';
-        }
-
-        (function applySavedTheme() {
-            const savedTheme = localStorage.getItem('st-theme');
-            if (savedTheme === 'light') {
-                document.body.classList.add('light-mode');
-                document.querySelector('.theme-toggle-btn').textContent = '☀️';
-            }
-        })();
-
-        function switchTab(tab) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            const clickEvent = window.event;
-            if (clickEvent && clickEvent.target) {
-                clickEvent.target.classList.add('active');
-            }
-
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.getElementById(tab + '-content').classList.add('active');
-        }
-
-        async function submitSignup(payload, redirectPath) {
-            const res = await fetch('/api/auth/signup', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            const data = await res.json();
-            if (!data.success) {
-                alert('❌ Error: ' + data.error);
-                return;
-            }
-
-            localStorage.setItem('authToken', data.token);
-            localStorage.setItem('user', JSON.stringify(data.user));
-            window.location.href = redirectPath;
-        }
-
-        document.getElementById('studentSignupForm').addEventListener('submit', async function (e) {
-            e.preventDefault();
-
-            const password = document.getElementById('studentPassword').value;
-            const confirmPassword = document.getElementById('studentConfirmPassword').value;
-            if (password !== confirmPassword) {
-                alert('❌ Passwords do not match!');
-                return;
-            }
-
-            const payload = {
-                firstName: document.getElementById('studentFirstName').value,
-                lastName: document.getElementById('studentLastName').value,
-                email: document.getElementById('studentEmail').value,
-                password,
-                userType: 'student'
-            };
-
-            try {
-                await submitSignup(payload, 'student-dashboard.html');
-                alert('✅ Signup successful! Redirecting to dashboard...');
-            } catch (error) {
-                alert('❌ Connection error: ' + error.message);
-            }
-        });
-
-        document.getElementById('tutorSignupForm').addEventListener('submit', async function (e) {
-            e.preventDefault();
-
-            const password = document.getElementById('tutorPassword').value;
-            const confirmPassword = document.getElementById('tutorConfirmPassword').value;
-            if (password !== confirmPassword) {
-                alert('❌ Passwords do not match!');
-                return;
-            }
-
-            const subjects = Array.from(document.querySelectorAll('.tutor-subject:checked')).map(el => el.value);
-            if (subjects.length === 0) {
-                alert('❌ Please select at least one subject you can teach!');
-                return;
-            }
-
-            const payload = {
-                firstName: document.getElementById('tutorFirstName').value,
-                lastName: document.getElementById('tutorLastName').value,
-                email: document.getElementById('tutorEmail').value,
-                password,
-                userType: 'tutor',
-                tutorProfile: {
-                    subjects,
-                    educationLevel: document.getElementById('tutorEducation').value,
-                    experience: document.getElementById('tutorExperience').value,
-                    motivation: document.getElementById('tutorMotivation').value
-                }
-            };
-
-            try {
-                await submitSignup(payload, 'tutor-pending.html');
-                alert('✅ Application submitted! Admin review is required before tutor approval.');
-            } catch (error) {
-                alert('❌ Connection error: ' + error.message);
-            }
-        });
-    </script>
+    <script src="../scripts/signup.js"></script>
 </body>
 
 </html>

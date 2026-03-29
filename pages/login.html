@@ -14,7 +14,7 @@
 
 <body>
     <div class="mesh-gradient"></div>
-    <button class="theme-toggle-btn" onclick="toggleTheme()">🌓</button>
+    <button type="button" class="theme-toggle-btn" id="loginThemeToggle">🌓</button>
 
     <div class="login-container">
         <div class="logo">
@@ -25,8 +25,8 @@
         <p class="subtitle">Welcome back to your learning journey</p>
 
         <div class="tabs">
-            <div class="tab active" onclick="switchTab('student')">Student</div>
-            <div class="tab" onclick="switchTab('tutor')">Tutor</div>
+            <div class="tab active" data-tab="student" role="button" tabindex="0">Student</div>
+            <div class="tab" data-tab="tutor" role="button" tabindex="0">Tutor</div>
         </div>
 
         <!-- Student Login -->
@@ -42,7 +42,7 @@
                     <input type="password" id="studentPassword" name="password" placeholder="Enter your password"
                         required>
                     <div class="forgot-password">
-                        <a onclick="forgotPassword('student'); return false;">Forgot Password?</a>
+                        <a href="#" class="forgot-link" data-user-type="student">Forgot Password?</a>
                     </div>
                 </div>
 
@@ -74,7 +74,7 @@
                     <input type="password" id="tutorPassword" name="password" placeholder="Enter your password"
                         required>
                     <div class="forgot-password">
-                        <a onclick="forgotPassword('tutor'); return false;">Forgot Password?</a>
+                        <a href="#" class="forgot-link" data-user-type="tutor">Forgot Password?</a>
                     </div>
                 </div>
 
@@ -96,136 +96,8 @@
         <a href="index.html" class="back-link">← Back to Home</a>
     </div>
 
-    <script>
-        function toggleTheme() {
-            document.body.classList.toggle('light-mode');
-            const isLight = document.body.classList.contains('light-mode');
-            localStorage.setItem('st-theme', isLight ? 'light' : 'dark');
-            document.querySelector('.theme-toggle-btn').textContent = isLight ? '☀️' : '🌓';
-        }
-
-        (function applySavedTheme() {
-            const savedTheme = localStorage.getItem('st-theme');
-            if (savedTheme === 'light') {
-                document.body.classList.add('light-mode');
-                document.querySelector('.theme-toggle-btn').textContent = '☀️';
-            }
-        })();
-
-        function switchTab(tab) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            const clickEvent = window.event;
-            if (clickEvent && clickEvent.target) {
-                clickEvent.target.classList.add('active');
-            }
-
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.getElementById(tab + '-content').classList.add('active');
-        }
-
-        function forgotPassword(userType) {
-            const email = prompt(`Enter your ${userType} email address to reset your password:`);
-            if (email) {
-                alert(`Password reset link has been sent to ${email}. Please check your inbox.`);
-            }
-        }
-
-        async function handleLogin(userType) {
-            const isTutor = userType === 'tutor';
-            const emailInputId = isTutor ? 'tutorEmail' : 'studentEmail';
-            const passwordInputId = isTutor ? 'tutorPassword' : 'studentPassword';
-            const rememberInputId = isTutor ? 'tutorRemember' : 'studentRemember';
-
-            const email = document.getElementById(emailInputId).value;
-            const password = document.getElementById(passwordInputId).value;
-            const remember = document.getElementById(rememberInputId).checked;
-
-            const res = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            });
-            const data = await res.json();
-
-            if (!data.success) {
-                alert('❌ Error: ' + data.error);
-                return;
-            }
-
-            const user = data.user;
-            const appStatus = user.tutorApplication?.status || 'none';
-            const isAdmin = user.email === 'dylanduancanada@gmail.com';
-
-            // Store auth data
-            localStorage.setItem('authToken', data.token);
-            localStorage.setItem('user', JSON.stringify(user));
-
-            if (remember) {
-                localStorage.setItem('rememberEmail', email);
-            }
-
-            // STUDENT TAB — always go to student dashboard
-            if (!isTutor) {
-                alert('✅ Welcome back, ' + user.firstName + '!');
-                window.location.href = 'student-dashboard.html';
-                return;
-            }
-
-            // TUTOR TAB — route based on role + approval status
-            if (isAdmin) {
-                alert('✅ Welcome back, Admin!');
-                window.location.href = 'tutor-dashboard.html';
-                return;
-            }
-
-            if (user.userType === 'tutor' && appStatus === 'approved') {
-                alert('✅ Welcome back, ' + user.firstName + '!');
-                window.location.href = 'tutor-dashboard.html';
-                return;
-            }
-
-            if (appStatus === 'pending') {
-                alert('⏳ Your tutor application is pending approval.');
-                window.location.href = 'tutor-pending.html';
-                return;
-            }
-
-            if (appStatus === 'denied') {
-                alert('❌ Your tutor application was denied. Please contact support.');
-                return;
-            }
-
-            // No tutor application at all
-            alert('❌ You do not have a tutor application. Please sign up as a tutor first.');
-        }
-
-        document.getElementById('studentLoginForm').addEventListener('submit', async function (e) {
-            e.preventDefault();
-            try {
-                await handleLogin('student');
-            } catch (error) {
-                alert('❌ Connection error: ' + error.message);
-            }
-        });
-
-        document.getElementById('tutorLoginForm').addEventListener('submit', async function (e) {
-            e.preventDefault();
-            try {
-                await handleLogin('tutor');
-            } catch (error) {
-                alert('❌ Connection error: ' + error.message);
-            }
-        });
-
-        window.addEventListener('load', function () {
-            const remembered = localStorage.getItem('rememberEmail');
-            if (remembered) {
-                document.getElementById('studentEmail').value = remembered;
-                document.getElementById('tutorEmail').value = remembered;
-            }
-        });
-    </script>
-    <script src="../auth.js"></script>
+    <script src="../scripts/login.js"></script>
+    <script src="../scripts/auth.js"></script>
 </body>
 
 </html>

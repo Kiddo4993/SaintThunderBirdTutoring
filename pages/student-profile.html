@@ -20,8 +20,8 @@
                 <p>Your student profile & learning preferences</p>
             </div>
             <div class="header-actions">
-                <button class="btn-secondary" onclick="goToStudentDashboard()">📚 Go to Dashboard</button>
-                <button class="btn-secondary" onclick="logout()">🚪 Logout</button>
+                <button type="button" class="btn-secondary" id="profileDashboardBtn">📚 Go to Dashboard</button>
+                <button type="button" class="btn-secondary" id="profileLogoutBtn">🚪 Logout</button>
             </div>
         </div>
 
@@ -79,32 +79,32 @@
                 <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Select the subjects you'd like to focus on. This helps us match you with the right tutors.</p>
 
                 <div class="interests-grid">
-                    <div class="interest-item" onclick="toggleInterest(event, 'Mathematics')">
+                    <div class="interest-item">
                         <div class="interest-checkmark">✓</div>
                         <div class="interest-icon">📐</div>
                         <div class="interest-name">Mathematics</div>
                     </div>
-                    <div class="interest-item" onclick="toggleInterest(event, 'Sciences')">
+                    <div class="interest-item">
                         <div class="interest-checkmark">✓</div>
                         <div class="interest-icon">🔬</div>
                         <div class="interest-name">Sciences</div>
                     </div>
-                    <div class="interest-item" onclick="toggleInterest(event, 'Languages')">
+                    <div class="interest-item">
                         <div class="interest-checkmark">✓</div>
                         <div class="interest-icon">🌐</div>
                         <div class="interest-name">Languages</div>
                     </div>
-                    <div class="interest-item" onclick="toggleInterest(event, 'Social Studies')">
+                    <div class="interest-item">
                         <div class="interest-checkmark">✓</div>
                         <div class="interest-icon">📚</div>
                         <div class="interest-name">Social Studies</div>
                     </div>
-                    <div class="interest-item" onclick="toggleInterest(event, 'Technology')">
+                    <div class="interest-item">
                         <div class="interest-checkmark">✓</div>
                         <div class="interest-icon">💻</div>
                         <div class="interest-name">Technology</div>
                     </div>
-                    <div class="interest-item" onclick="toggleInterest(event, 'Arts & Culture')">
+                    <div class="interest-item">
                         <div class="interest-checkmark">✓</div>
                         <div class="interest-icon">🎨</div>
                         <div class="interest-name">Arts & Culture</div>
@@ -113,7 +113,7 @@
 
                 <div class="grade-section">
                     <div class="grade-label">📚 Your Grade Level</div>
-                    <select id="gradeLevel" onchange="updateGrade()">
+                    <select id="gradeLevel">
                         <option value="">Select your grade level</option>
                         <option value="elementary">Elementary (K-5)</option>
                         <option value="middle">Middle School (6-8)</option>
@@ -122,7 +122,7 @@
                     </select>
                 </div>
 
-                <button class="save-btn" onclick="savePreferences()">Save Preferences</button>
+                <button type="button" class="save-btn" id="savePreferencesBtn">Save Preferences</button>
             </div>
 
             <!-- Email Preferences -->
@@ -133,23 +133,23 @@
                 <div class="email-settings">
                     <div class="email-setting-item">
                         <div class="email-setting-label">Tutor Acceptance Alerts</div>
-                        <div class="toggle-switch active" onclick="toggleEmailSetting(this)"></div>
+                        <div class="toggle-switch active" role="button" tabindex="0"></div>
                     </div>
                     <div class="email-setting-item">
                         <div class="email-setting-label">Session Reminders</div>
-                        <div class="toggle-switch active" onclick="toggleEmailSetting(this)"></div>
+                        <div class="toggle-switch active" role="button" tabindex="0"></div>
                     </div>
                     <div class="email-setting-item">
                         <div class="email-setting-label">Learning Tips & Resources</div>
-                        <div class="toggle-switch active" onclick="toggleEmailSetting(this)"></div>
+                        <div class="toggle-switch active" role="button" tabindex="0"></div>
                     </div>
                     <div class="email-setting-item">
                         <div class="email-setting-label">Progress Updates</div>
-                        <div class="toggle-switch active" onclick="toggleEmailSetting(this)"></div>
+                        <div class="toggle-switch active" role="button" tabindex="0"></div>
                     </div>
                     <div class="email-setting-item">
                         <div class="email-setting-label">Platform Updates</div>
-                        <div class="toggle-switch active" onclick="toggleEmailSetting(this)"></div>
+                        <div class="toggle-switch active" role="button" tabindex="0"></div>
                     </div>
                 </div>
             </div>
@@ -166,143 +166,8 @@
         </div>
     </div>
 
-    <script src="../auth.js"></script>
-    <script>
-        const API_URL = 'https://saintthunderbirdtutoring.onrender.com';
-        let selectedInterests = new Set();
-        let userGrade = '';
 
-        const user = getUser();
-        if (!user || user.userType !== 'student') {
-            window.location.href = 'login.html';
-        }
-
-        // Set student name
-        document.getElementById('studentName').textContent = user.firstName;
-
-        // Load user's current preferences
-        async function loadUserPreferences() {
-            try {
-                const token = localStorage.getItem('authToken');
-                const res = await fetch(`${API_URL}/api/tutor/available-tutors`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await res.json();
-                document.getElementById('tutorsCount').textContent = data.tutors.length || 0;
-            } catch (error) {
-                console.error('Error loading tutors count:', error);
-            }
-
-            if (user.interests && user.interests.length > 0) {
-                selectedInterests = new Set(user.interests);
-                updateInterestUI();
-            }
-
-            if (user.grade) {
-                document.getElementById('gradeLevel').value = user.grade;
-                userGrade = user.grade;
-            }
-
-            loadRequests();
-        }
-
-        function toggleInterest(event, interest) {
-            const item = event.target.closest('.interest-item');
-            if (selectedInterests.has(interest)) {
-                selectedInterests.delete(interest);
-                item.classList.remove('selected');
-            } else {
-                selectedInterests.add(interest);
-                item.classList.add('selected');
-            }
-        }
-
-        function updateInterestUI() {
-            const items = document.querySelectorAll('.interest-item');
-            items.forEach(item => {
-                const interestName = item.querySelector('.interest-name').textContent;
-                if (selectedInterests.has(interestName)) {
-                    item.classList.add('selected');
-                }
-            });
-        }
-
-        function updateGrade() {
-            userGrade = document.getElementById('gradeLevel').value;
-        }
-
-        async function savePreferences() {
-            try {
-                const token = localStorage.getItem('authToken');
-                const res = await fetch(`${API_URL}/api/tutor/update-student-preferences`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({
-                        interests: Array.from(selectedInterests),
-                        grade: userGrade
-                    })
-                });
-
-                const data = await res.json();
-
-                if (data.success) {
-                    alert('✅ Preferences saved successfully!');
-                } else {
-                    alert('❌ Error: ' + data.error);
-                }
-            } catch (error) {
-                alert('Error saving preferences: ' + error.message);
-            }
-        }
-
-        function toggleEmailSetting(element) {
-            element.classList.toggle('active');
-        }
-
-        function goToStudentDashboard() {
-            window.location.href = 'student-dashboard.html';
-        }
-
-        function logout() {
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('user');
-            window.location.href = 'login.html';
-        }
-
-        // Load requests
-        async function loadRequests() {
-            try {
-                const token = localStorage.getItem('authToken');
-                const res = await fetch(`${API_URL}/api/tutor/my-requests`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                const data = await res.json();
-
-                if (data.success && data.requests.length > 0) {
-                    const html = data.requests.map(req => `
-                        <div class="request-item">
-                            <div class="request-header">
-                                <div class="request-subject">${req.subject}</div>
-                                <div class="request-status ${req.status}">${req.status.toUpperCase()}</div>
-                            </div>
-                            <div class="request-message">${req.description || 'No description provided'}</div>
-                            <div class="request-time">${new Date(req.createdAt).toLocaleDateString()}</div>
-                        </div>
-                    `).join('');
-                    document.getElementById('requestsList').innerHTML = html;
-                    document.getElementById('requestsCount').textContent = data.requests.length;
-                }
-            } catch (error) {
-                console.error('Error loading requests:', error);
-            }
-        }
-
-        // Load data on page load
-        loadUserPreferences();
-    </script>
+    <script src="../scripts/auth.js"></script>
+    <script src="../scripts/student-profile.js"></script>
 </body>
 </html>
