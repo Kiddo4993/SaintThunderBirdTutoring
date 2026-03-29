@@ -112,4 +112,42 @@ From any file under **`pages/`**:
 
 ---
 
-*Last updated to reflect the modular `pages/`, `styles/`, and `scripts/` layout and related server behavior.*
+## 10. Next.js frontend (incremental migration) + Tailwind
+
+### Layout
+
+| Location | Purpose |
+|----------|---------|
+| **`web/`** | Next.js 15 App Router app (React 19). **`web/app/`** holds routes and global CSS. |
+| **`web/components/home/`** | Home page: **`HomeClient`** (client shell), **`SiteNav`**, **`HomeContent`** (server markup), **`HomeEffects`** (interactivity ported from **`scripts/script.js`**). |
+| **`web/lib/site-data.js`** | Popup and info-card copy shared with the legacy **`scripts/script.js`** data. |
+| **`web/app/site-legacy.css`** | Snapshot of **`styles/style.css`** with a duplicate `*` / `body` block removed (avoids conflicting overrides mid-file). Imported from **`web/app/globals.css`** after Tailwind. |
+| **`web/public/favicon.svg`** | Copy of repo-root **`favicon.svg`**. |
+
+### Styling strategy
+
+- **Tailwind CSS v4** is loaded via **`@import "tailwindcss"`** in **`web/app/globals.css`**. Layout and one-off spacing on the migrated home page use Tailwind utility classes where practical.
+- Visual parity for the first migrated route relies on **legacy class names** (`.glass-card`, `.hero`, `.st-popup`, etc.) backed by **`site-legacy.css`**, so the migration stays incremental without re-specifying every effect in utilities immediately.
+
+### Express API and legacy HTML during development
+
+- **`server.js`** is unchanged: **`/api/*`**, static **`pages/*.html`**, **`styles/`**, and **`scripts/`** continue to be served from the Express app (default port **5000**).
+- **`web/next.config.mjs`** can **rewrite** `/api/*`, `/styles/*`, `/scripts/*`, and listed **`*.html`** routes to a backend origin when **`BACKEND_ORIGIN`** (or **`NEXT_PUBLIC_BACKEND_ORIGIN`**) is set. Copy **`web/.env.example`** to **`web/.env.local`** and set e.g. `BACKEND_ORIGIN=http://127.0.0.1:5000` so **`npm run dev`** inside **`web/`** (port **3000**) can open legacy pages and hit the API from one browser origin.
+- If **`BACKEND_ORIGIN`** is unset, rewrites are disabled; nav links to **`/login.html`** and similar resolve only on the Next origin or when you run Express separately.
+
+### NPM scripts
+
+| Command | Purpose |
+|---------|---------|
+| **`npm run dev --prefix web`** or **`npm run dev:web`** (repo root) | Next dev server. |
+| **`npm run build --prefix web`** or **`npm run build:web`** | Production build of **`web/`**. |
+| **`npm run test:web`** (repo root) | Runs **`web`** ESLint + **`next build`** (regression gate for the frontend). |
+
+### Scope of this increment
+
+- **Migrated:** marketing home page **`/`** in Next with behavior aligned to **`pages/index.html`** + **`scripts/script.js`** (theme, nav scroll, stars, counters, progress bars, reveal, popups, music panel, info menu / premium cards, scroll-to-top). The **`index-intro.js` → `loading.html`** redirect is **not** applied on the Next home route (avoids an extra redirect when developing **`/`** on port 3000).
+- **Not migrated yet:** other **`pages/*.html`** and their **`scripts/*.js`** modules remain Express-only until moved into **`web/`**.
+
+---
+
+*Last updated to reflect the modular `pages/`, `styles/`, and `scripts/` layout, the **`web/`** Next.js app (incremental migration), and related server behavior.*

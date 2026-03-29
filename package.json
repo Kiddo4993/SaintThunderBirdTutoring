@@ -5,8 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "test:web": "npm run test --prefix web",
     "start": "node server.js",
-    "dev": "bun --watch server.js"
+    "dev": "bun --watch server.js",
+    "dev:web": "npm run dev --prefix web",
+    "build:web": "npm run build --prefix web"
   },
   "keywords": [],
   "author": "",
