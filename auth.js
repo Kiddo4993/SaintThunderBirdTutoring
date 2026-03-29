@@ -3,14 +3,15 @@
 // ========================================
 
 // Use relative URL so it works in all environments (local, staging, production)
-const API_URL = '/api/auth';
+// Named AUTH_API_URL so pages can declare their own API_URL without redeclaration errors.
+const AUTH_API_URL = '/api/auth';
 
 // ========== SIGNUP HANDLERS ==========
 
 // Student Signup
 async function signupStudent(firstName, lastName, email, password, userType = 'student') {
     try {
-        const response = await fetch(`${API_URL}/signup`, {
+        const response = await fetch(`${AUTH_API_URL}/signup`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -40,7 +41,7 @@ async function signupStudent(firstName, lastName, email, password, userType = 's
 // Tutor Signup - REDIRECT TO PENDING PAGE
 async function signupTutor(firstName, lastName, email, password, userType = 'tutor') {
     try {
-        const response = await fetch(`${API_URL}/signup`, {
+        const response = await fetch(`${AUTH_API_URL}/signup`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -72,7 +73,7 @@ async function signupTutor(firstName, lastName, email, password, userType = 'tut
 
 async function login(email, password, userType = 'student') {
     try {
-        const response = await fetch(`${API_URL}/login`, {
+        const response = await fetch(`${AUTH_API_URL}/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
