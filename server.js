@@ -11,8 +11,9 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Serve Static Files (HTML/CSS/JS)
+// Serve Static Files (HTML/CSS/JS at project root, then HTML pages at site root)
 app.use(express.static(path.join(__dirname, './')));
+app.use(express.static(path.join(__dirname, 'pages')));
 
 // Database Connection with better error handling for Render
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/saintthunderbird')
@@ -46,11 +47,6 @@ const tutorRoutes = require('./routes/tutor');
 // --- USE ROUTES ---
 app.use('/api/auth', authRoutes);
 app.use('/api/tutor', tutorRoutes);
-
-// Frontend Route (Fixes "Cannot GET /" errors)
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
 
 // Start Server
 const PORT = process.env.PORT || 5000;

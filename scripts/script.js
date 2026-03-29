@@ -444,6 +444,12 @@ document.addEventListener('DOMContentLoaded', () => {
   if (themeBtn && document.body.classList.contains('light-mode')) {
     themeBtn.textContent = '☀️';
   }
+  document.querySelectorAll('.theme-toggle').forEach((btn) => {
+    btn.addEventListener('click', () => window.toggleTheme());
+  });
+  document.querySelectorAll('.info-menu-btn').forEach((btn) => {
+    btn.addEventListener('click', () => toggleInfoMenu());
+  });
   setupInfoTabs();
 });
 

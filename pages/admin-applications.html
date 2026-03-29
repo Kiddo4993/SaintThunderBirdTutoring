@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Tutor Applications - Saint Thunderbird</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    
+    <link rel="stylesheet" href="../styles/admin-applications.css">
+</head>
+
+<body>
+    <div id="mainContainer" style="display: none;">
+        <div class="container">
+            <header>
+                <h1>🎓 Tutor Applications</h1>
+                <div class="admin-info">
+                    <div class="admin-email" id="adminEmail">Loading...</div>
+                    <button type="button" class="logout-btn" id="adminLogoutBtn">Logout</button>
+                </div>
+            </header>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="pendingCount">0</div>
+                    <div class="stat-label">Pending Applications</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalCount">0</div>
+                    <div class="stat-label">Total Applications</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="approvedCount">0</div>
+                    <div class="stat-label">Approved Tutors</div>
+                </div>
+            </div>
+
+            <div id="applicationsContainer" class="applications">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading applications...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="unauthorizedContainer" class="unauthorized">
+        <div class="unauthorized-content">
+            <h1>❌ Unauthorized</h1>
+            <p>You must be logged in as dylanduancanada@gmail.com to access the admin panel.</p>
+            <button type="button" id="adminGoLoginBtn" style="width: 100%; padding: 1rem;">
+                Go to Login
+            </button>
+        </div>
+    </div>
+
+
+    <script src="../scripts/admin-applications.js"></script>
+</body>
+
+</html>

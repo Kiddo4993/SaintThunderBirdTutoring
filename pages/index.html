@@ -5,23 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Saint Thunderbird Tutoring</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="stylesheet" href="../styles/style.css">
     
-    <script>
-        // Hide page immediately to prevent flash
-        document.documentElement.style.display = 'none';
-        
-        const skipIntro = localStorage.getItem('skip_intro');
-        
-        if (skipIntro === 'true') {
-            localStorage.removeItem('skip_intro');
-            document.documentElement.style.display = 'block';
-        } else {
-            localStorage.setItem('skip_intro', 'true');
-            window.location.replace('loading.html');
-        }
-    </script>
+    <script src="../scripts/index-intro.js"></script>
 </head>
 
 <body>
@@ -36,8 +23,8 @@
                 <li><a href="subject.html" class="nav-link">Subjects</a></li>
                 <li><a href="students.html" class="nav-link">Students</a></li>
                 <li><a href="mentors.html" class="nav-link">Mentors</a></li>
-                <li><button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">🌓</button></li>
-                <li><button class="info-menu-btn" onclick="toggleInfoMenu()" title="Organization Info">☰</button></li>
+                <li><button type="button" class="theme-toggle" title="Toggle Theme">🌓</button></li>
+                <li><button type="button" class="info-menu-btn" title="Organization Info">☰</button></li>
                 <li><a href="login.html" class="profile-icon" title="Login / Sign Up">👤</a></li>
             </ul>
         
@@ -351,7 +338,7 @@
       <p>Empowering communities through education</p>
   </footer>
 
-    <script src="script.js"></script>
+    <script src="../scripts/script.js"></script>
 </body>
 
 </html>

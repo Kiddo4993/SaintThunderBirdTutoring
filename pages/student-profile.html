@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Profile - Saint Thunderbird</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    
+    <link rel="stylesheet" href="../styles/student-profile.css">
+</head>
+<body>
+    <div class="mesh-gradient"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <h1>⚡ Welcome, <span id="studentName">Student</span>!</h1>
+                <p>Your student profile & learning preferences</p>
+            </div>
+            <div class="header-actions">
+                <button type="button" class="btn-secondary" id="profileDashboardBtn">📚 Go to Dashboard</button>
+                <button type="button" class="btn-secondary" id="profileLogoutBtn">🚪 Logout</button>
+            </div>
+        </div>
+
+        <!-- Welcome Status & Stats -->
+        <div class="grid-2">
+            <!-- Welcome Status -->
+            <div class="card">
+                <div class="welcome-badge">👋 Welcome to Saint Thunderbird</div>
+                <div class="card-title">🎓 Start Your Learning Journey</div>
+                
+                <div class="info-box">
+                    <p>Welcome to Saint Thunderbird Tutoring! A free, volunteer-powered tutoring platform dedicated to helping First Nations students succeed. Select your learning interests and let us find the perfect tutor for you.</p>
+                </div>
+
+                <div style="background: rgba(212, 165, 116, 0.05); padding: 1rem; border-radius: 8px;">
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.75rem;"><strong>📧 Email Notifications:</strong></p>
+                    <p style="color: var(--text-secondary); font-size: 0.85rem;">We'll send you emails when:</p>
+                    <ul style="list-style: none; margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">
+                        <li>✓ A tutor accepts your request</li>
+                        <li>✓ Your session is confirmed</li>
+                        <li>✓ Important learning tips & resources</li>
+                        <li>✓ Session reminders and updates</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="requestsCount">0</div>
+                        <div class="stat-label">Requests</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="tutorsCount">0</div>
+                        <div class="stat-label">Tutors</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="sessionsCount">0</div>
+                        <div class="stat-label">Sessions</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="hoursCount">0</div>
+                        <div class="stat-label">Hours</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid-2">
+            <!-- Learning Interests -->
+            <div class="card">
+                <div class="card-title">📖 Learning Interests</div>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Select the subjects you'd like to focus on. This helps us match you with the right tutors.</p>
+
+                <div class="interests-grid">
+                    <div class="interest-item">
+                        <div class="interest-checkmark">✓</div>
+                        <div class="interest-icon">📐</div>
+                        <div class="interest-name">Mathematics</div>
+                    </div>
+                    <div class="interest-item">
+                        <div class="interest-checkmark">✓</div>
+                        <div class="interest-icon">🔬</div>
+                        <div class="interest-name">Sciences</div>
+                    </div>
+                    <div class="interest-item">
+                        <div class="interest-checkmark">✓</div>
+                        <div class="interest-icon">🌐</div>
+                        <div class="interest-name">Languages</div>
+                    </div>
+                    <div class="interest-item">
+                        <div class="interest-checkmark">✓</div>
+                        <div class="interest-icon">📚</div>
+                        <div class="interest-name">Social Studies</div>
+                    </div>
+                    <div class="interest-item">
+                        <div class="interest-checkmark">✓</div>
+                        <div class="interest-icon">💻</div>
+                        <div class="interest-name">Technology</div>
+                    </div>
+                    <div class="interest-item">
+                        <div class="interest-checkmark">✓</div>
+                        <div class="interest-icon">🎨</div>
+                        <div class="interest-name">Arts & Culture</div>
+                    </div>
+                </div>
+
+                <div class="grade-section">
+                    <div class="grade-label">📚 Your Grade Level</div>
+                    <select id="gradeLevel">
+                        <option value="">Select your grade level</option>
+                        <option value="elementary">Elementary (K-5)</option>
+                        <option value="middle">Middle School (6-8)</option>
+                        <option value="high">High School (9-12)</option>
+                        <option value="post-secondary">Post-Secondary</option>
+                    </select>
+                </div>
+
+                <button type="button" class="save-btn" id="savePreferencesBtn">Save Preferences</button>
+            </div>
+
+            <!-- Email Preferences -->
+            <div class="card">
+                <div class="card-title">📧 Email Preferences</div>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Control how and when you receive notifications from Saint Thunderbird.</p>
+
+                <div class="email-settings">
+                    <div class="email-setting-item">
+                        <div class="email-setting-label">Tutor Acceptance Alerts</div>
+                        <div class="toggle-switch active" role="button" tabindex="0"></div>
+                    </div>
+                    <div class="email-setting-item">
+                        <div class="email-setting-label">Session Reminders</div>
+                        <div class="toggle-switch active" role="button" tabindex="0"></div>
+                    </div>
+                    <div class="email-setting-item">
+                        <div class="email-setting-label">Learning Tips & Resources</div>
+                        <div class="toggle-switch active" role="button" tabindex="0"></div>
+                    </div>
+                    <div class="email-setting-item">
+                        <div class="email-setting-label">Progress Updates</div>
+                        <div class="toggle-switch active" role="button" tabindex="0"></div>
+                    </div>
+                    <div class="email-setting-item">
+                        <div class="email-setting-label">Platform Updates</div>
+                        <div class="toggle-switch active" role="button" tabindex="0"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Tutoring Requests -->
+        <div class="card">
+            <div class="card-title">📝 Your Tutoring Requests</div>
+            <div class="tutoring-requests" id="requestsList">
+                <div style="color: var(--text-secondary); text-align: center; padding: 2rem;">
+                    <p>No active requests yet. Head to the dashboard to submit your first tutoring request!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="../scripts/auth.js"></script>
+    <script src="../scripts/student-profile.js"></script>
+</body>
+</html>
