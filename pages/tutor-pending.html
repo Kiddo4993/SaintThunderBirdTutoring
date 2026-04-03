@@ -88,20 +88,17 @@
 
                 if (status === 'denied') {
                     if (showAlerts) {
-                        alert('❌ Your tutor application was not approved. You can continue as a student.');
+                        alert('❌ Your tutor application was not approved. Please contact support.');
                     }
-                    const updatedUser = {
-                        ...user,
-                        tutorApplication: { ...(user.tutorApplication || {}), status: 'denied' }
-                    };
-                    localStorage.setItem('user', JSON.stringify(updatedUser));
-                    window.location.href = 'student-dashboard.html';
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('user');
+                    window.location.href = 'login.html';
                     return;
                 }
 
                 // Only stay on this page while truly pending.
                 if (!isPendingTutorApplicant) {
-                    window.location.href = 'student-dashboard.html';
+                    window.location.href = 'login.html';
                 }
             } catch (error) {
                 console.log('Status check failed, retrying...');

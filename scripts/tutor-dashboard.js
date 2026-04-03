@@ -45,16 +45,17 @@
                 if (adminBtn) adminBtn.style.display = 'inline-block';
             }
 
-            // Ensure only tutors (or admin) stay here
-            if (user.userType !== 'tutor' && user.email !== 'dylanduancanada@gmail.com') {
-                // Check if they have a pending application — send to pending page
+            // Ensure only approved tutors (or admin) stay here
+            if (user.email !== 'dylanduancanada@gmail.com') {
                 const appStatus = user.tutorApplication?.status;
-                if (appStatus === 'pending') {
-                    window.location.href = 'tutor-pending.html';
-                } else {
-                    window.location.href = 'login.html';
+                if (appStatus !== 'approved') {
+                    if (appStatus === 'pending') {
+                        window.location.href = 'tutor-pending.html';
+                    } else {
+                        window.location.href = 'login.html';
+                    }
+                    return;
                 }
-                return;
             }
 
             const nameEl = document.getElementById('tutorName');

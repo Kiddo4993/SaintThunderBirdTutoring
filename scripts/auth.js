@@ -104,7 +104,7 @@ async function login(email, password, userType = 'student') {
                 return;
             }
 
-            // 3. Pending tutor applicants (stored as userType:'student' with pending app)
+            // 3. Pending tutor applicants (userType:'tutor', appStatus:'pending')
             if (appStatus === 'pending') {
                 alert('⏳ Your tutor application is pending approval.');
                 window.location.href = 'tutor-pending.html';

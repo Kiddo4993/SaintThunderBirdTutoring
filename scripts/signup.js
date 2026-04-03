@@ -51,12 +51,15 @@ document.getElementById('studentSignupForm').addEventListener('submit', async fu
         return;
     }
 
+    const interests = Array.from(document.querySelectorAll('.student-subject:checked')).map((el) => el.value);
+
     const payload = {
         firstName: document.getElementById('studentFirstName').value,
         lastName: document.getElementById('studentLastName').value,
         email: document.getElementById('studentEmail').value,
         password,
-        userType: 'student'
+        userType: 'student',
+        interests
     };
 
     try {

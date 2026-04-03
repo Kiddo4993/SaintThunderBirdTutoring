@@ -140,10 +140,8 @@ router.post('/signup', async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // SECURITY FIX: Tutor applicants stay as 'student' until approved by admin
-        // Only students get immediate 'student' userType
-        // Tutors get 'student' userType + tutorApplication with 'pending' status
-        const actualUserType = userType === 'tutor' ? 'student' : userType;
+        // Tutors are stored as 'tutor' from signup. Access is controlled by tutorApplication.status.
+        const actualUserType = userType;
         const tutorProfileInput = req.body.tutorProfile || {};
 
         const userData = {
@@ -152,6 +150,7 @@ router.post('/signup', async (req, res) => {
             email,
             password: hashedPassword,
             userType: actualUserType,
+            interests: userType === 'student' && Array.isArray(req.body.interests) ? req.body.interests : [],
             tutorApplication: userType === 'tutor'
                 ? {
                     status: 'pending',

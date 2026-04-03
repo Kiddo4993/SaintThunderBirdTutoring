@@ -166,49 +166,6 @@ router.get('/approve/:userId', async (req, res) => {
     }
 });
 
-// ===== ADMIN: DENY TUTOR =====
-router.get('/deny/:userId', async (req, res) => {
-    try {
-        const { userId } = req.params;
-
-        const user = await User.findById(userId);
-
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-
-        await User.findByIdAndUpdate(
-            userId,
-            { $unset: { tutorApplication: 1 } },
-            { new: true }
-        );
-
-        const mailOptions = {
-            to: user.email,
-            subject: 'Your Tutor Application Status',
-            html: `
-                <h2>Tutor Application Update</h2>
-                <p>Thank you for applying to become a tutor on Saint Thunderbird.</p>
-                <p>Unfortunately, your application has been <strong>DENIED</strong> at this time.</p>
-                <p>You can apply again in the future. Thank you for your interest!</p>
-            `
-        };
-
-        sendEmailSafe({
-            ...mailOptions,
-            successLog: `✅ Denial email sent successfully to: ${user.email}`,
-            errorLog: '❌ Denial email error:'
-        });
-
-        res.json({
-            success: true,
-            message: 'Application denied and email sent!'
-        });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
 // ===== STUDENT ENDPOINTS =====
 
 // CREATE A TUTORING REQUEST (Student)
@@ -578,6 +535,10 @@ router.get('/requests', authMiddleware, async (req, res) => {
 
         if (!tutor || tutor.userType !== 'tutor') {
             return res.status(403).json({ error: 'Only tutors can view requests' });
+        }
+
+        if (tutor.tutorApplication?.status !== 'approved') {
+            return res.status(403).json({ error: 'Tutor application not yet approved' });
         }
 
         const tutorSubjects = (tutor.tutorProfile?.subjects?.length > 0)
@@ -1113,6 +1074,14 @@ router.post('/update-specialties', authMiddleware, async (req, res) => {
 router.get('/stats', authMiddleware, async (req, res) => {
     try {
         const tutor = await User.findById(req.user.userId);
+
+        if (!tutor || tutor.userType !== 'tutor') {
+            return res.status(403).json({ error: 'Only tutors can view stats' });
+        }
+
+        if (tutor.tutorApplication?.status !== 'approved') {
+            return res.status(403).json({ error: 'Tutor application not yet approved' });
+        }
 
         const completedSessions = tutor.tutorSessions?.filter(
             s => s.status === 'completed'
