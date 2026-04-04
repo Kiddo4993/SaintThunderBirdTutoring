@@ -5,9 +5,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /** @type {import('next').NextConfig} */
 
-const backend =
-  process.env.BACKEND_ORIGIN || process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "";
-
 const nextConfig = {
   turbopack: {
     root: __dirname,
@@ -30,12 +27,6 @@ const nextConfig = {
       { source: "/volunteer-hours-guide.html", destination: "/volunteer-hours-guide", permanent: true },
       { source: "/tutor-pending.html", destination: "/tutor-pending", permanent: true },
       { source: "/terms.html", destination: "/terms", permanent: true },
-    ];
-  },
-  async rewrites() {
-    if (!backend) return [];
-    return [
-      { source: "/api/:path*", destination: `${backend}/api/:path*` },
     ];
   },
 };

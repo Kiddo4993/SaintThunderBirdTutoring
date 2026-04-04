@@ -12,7 +12,11 @@
   "dependencies": {
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "next": "15.5.14"
+    "next": "15.5.14",
+    "mongoose": "^8.9.5",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "nodemailer": "^6.9.16"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

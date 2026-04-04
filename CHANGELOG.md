@@ -206,3 +206,79 @@ All 15 pages have been migrated from Express-served static HTML to the **Next.js
 - `scripts/` — all browser JS modules (logic ported to React components)
 
 *Last updated: full Next.js migration complete — Express is API-only, all frontend served by Next.js on Vercel.*
+
+---
+
+## 12. Backend migrated into Next.js (Express removed)
+
+The Express backend (`server.js`, `index.js`, `routes/`, `models/`, `services/`, `jobs/`, `middleware/`) has been fully migrated into the Next.js app under `web/`. Express is no longer part of the project.
+
+### New structure in `web/`
+
+| Location | Purpose |
+|----------|---------|
+| `web/lib/db.js` | MongoDB singleton connection (serverless-safe) |
+| `web/lib/authHelper.js` | `getAuthUser(request)` — JWT verification for API routes |
+| `web/lib/models/User.js` | Mongoose User model |
+| `web/lib/models/SystemSetting.js` | Mongoose SystemSetting model |
+| `web/lib/services/emailService.js` | Nodemailer / Mailchimp transactional email |
+| `web/lib/services/zoomService.js` | Zoom meeting creation (with fallback) |
+| `web/lib/services/mailchimpService.js` | Mailchimp mailing list sync |
+| `web/lib/jobs/biweeklyTutorSummary.js` | Biweekly tutor report generator |
+
+### API routes (`web/app/api/`)
+
+| Route | Method | Description |
+|-------|--------|-------------|
+| `/api/auth/signup` | POST | Register student or tutor applicant |
+| `/api/auth/login` | POST | Login, returns JWT |
+| `/api/auth/profile` | GET | Get current user profile |
+| `/api/tutor/create-request` | POST | Student creates a tutoring request |
+| `/api/tutor/my-requests` | GET | Student's own requests |
+| `/api/tutor/available-tutors` | GET | List approved tutors |
+| `/api/tutor/student-sessions` | GET | Student's sessions |
+| `/api/tutor/student-stats` | GET | Student stats (requests, sessions, hours) |
+| `/api/tutor/update-student-preferences` | POST | Save grade/interests |
+| `/api/tutor/application-status` | GET | Tutor application status (for pending page) |
+| `/api/tutor/requests` | GET | Open requests for a tutor |
+| `/api/tutor/accept-request` | POST | Tutor accepts a request, creates session |
+| `/api/tutor/sessions` | GET | Tutor's sessions |
+| `/api/tutor/complete-session` | POST | Mark session as completed |
+| `/api/tutor/stats` | GET | Tutor stats (sessions, hours) |
+| `/api/tutor/update-specialties` | POST | Update tutor subjects |
+| `/api/tutor/apply-tutor` | POST | Submit tutor application |
+| `/api/tutor/approve/[userId]` | GET | Legacy email link — approve tutor |
+| `/api/tutor/deny/[userId]` | GET | Legacy email link — deny tutor |
+| `/api/tutor/pending-applications` | GET | Admin: list pending applications |
+| `/api/tutor/admin-summary` | GET | Admin: dashboard counts |
+| `/api/tutor/approve-tutor/[userId]` | POST | Admin: approve tutor |
+| `/api/tutor/deny-tutor/[userId]` | POST | Admin: deny tutor |
+| `/api/tutor/admin/send-biweekly-summary` | POST | Admin: trigger biweekly report |
+
+### Dependencies added to `web/package.json`
+
+- `mongoose` — MongoDB ODM
+- `jsonwebtoken` — JWT signing/verification
+- `bcryptjs` — password hashing
+- `nodemailer` — transactional email
+
+### Deleted from repo root
+
+- `server.js`, `index.js` — Express entry points
+- `routes/auth.js`, `routes/tutor.js`, `routes/sessions.js`, `routes/User.js`
+- `models/User.js`, `models/SystemSetting.js`
+- `services/emailService.js`, `services/zoomService.js`, `services/mailchimpService.js`
+- `jobs/biweeklyTutorSummary.js`
+- `middleware/auth.js`
+- `test-request.js`, `user.json`
+
+### next.config.mjs
+
+- Removed the `BACKEND_ORIGIN` API rewrite — API calls are now handled in-process by Next.js.
+
+### Notes
+
+- The biweekly scheduler is no longer running via `setInterval`. Trigger it manually via `POST /api/tutor/admin/send-biweekly-summary`, or configure a Vercel Cron Job to call that endpoint on a schedule.
+- The MongoDB singleton in `web/lib/db.js` reuses the connection across serverless invocations via `global.mongoose`.
+
+*Last updated: backend fully migrated into Next.js — repo is now a single Next.js project.*
