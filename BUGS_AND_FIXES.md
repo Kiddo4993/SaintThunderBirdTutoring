@@ -1,195 +1,195 @@
 # Bugs and Fixes - Saint Thunderbird Tutoring Platform
 
-This document tracks all bugs found in the application and their fixes.
+This document tracks all bugs found in the application and their fixes, including findings from the v2 code audit (March 2026).
 
 ---
 
-## Bug #1: Tutor Auto-Approval Security Issue (CRITICAL)
+## Audit v2 Findings (March 2026)
 
-### Description
-When a user signs up as a tutor, they are immediately assigned `userType: 'tutor'` even though their application status is set to `'pending'`. This creates a security vulnerability where unapproved tutors could potentially access tutor-only features.
+### Bug A1 — Tutor Signup Saves userType as 'student' (CRITICAL) ✅ FIXED
 
-### Affected Files
-- `routes/auth.js` (line 41)
-- `login.html`
+**File:** `web/app/api/auth/signup/route.js`
 
-### Root Cause
-In `routes/auth.js`, the signup endpoint sets:
-```javascript
-userType: userType // If 'tutor' is passed, it's set immediately
+**Problem:** The signup route deliberately saved tutors as `userType: 'student'` in MongoDB. This caused a cascade of failures: approved tutors were redirected to the student dashboard, the tutor request API returned 403 for pending tutors, and JWT tokens cached the wrong userType.
+
+**Root cause line:**
+```js
+// BEFORE (bug)
+const actualUserType = userType === 'tutor' ? 'student' : userType;
 ```
 
-The `tutorApplication.status` is set to `'pending'`, but the `userType` is already `'tutor'`.
+**Fix applied:**
+```js
+// AFTER
+const actualUserType = userType;
+```
 
-### Fix Applied
-1. Changed tutor signup to keep `userType: 'student'` until admin approves
-2. Added `tutorApplication` data to track the pending application
-3. Admin approval endpoint (`/api/tutor/approve-tutor/:userId`) changes `userType` to `'tutor'`
-4. Updated login flow to check for pending applications and redirect accordingly
-
-### Security Impact
-- **Before**: Unapproved tutors had `userType: 'tutor'` immediately
-- **After**: Tutors remain as `userType: 'student'` with a pending application until approved
+**Impact:** Tutors now stored as `userType: 'tutor'` from signup. Access control uses `tutorApplication.status` instead.
 
 ---
 
-## Bug #2: Login Flow Doesn't Handle Pending Tutors Properly
+### Bug A2 — Tutor Dashboard Guard Doesn't Block Pending/Denied Tutors (CRITICAL) ✅ FIXED
 
-### Description
-Users who signed up as tutors but aren't approved yet could be confused about their status. The login page needed better handling to redirect them to the pending page.
+**File:** `web/app/tutor-dashboard/page.js`
 
-### Affected Files
-- `login.html`
+**Problem:** After fixing Bug A1, tutors with `userType: 'tutor'` and `status: 'pending'` would bypass the dashboard guard entirely (the guard only checked `userType !== "tutor"`). Additionally, denied tutors had no explicit redirect to a meaningful page.
 
-### Fix Applied
-Added check in both student and tutor login forms to detect pending tutor applications and redirect to `tutor-pending.html` with appropriate messaging.
+**Fix applied:** Guard now checks both `userType` and `tutorApplication.status`:
+```js
+if (u.email !== ADMIN_EMAIL) {
+  if (u.userType !== "tutor") {
+    router.push("/login"); return;
+  }
+  const appStatus = u.tutorApplication?.status;
+  if (appStatus !== "approved") {
+    router.push(appStatus === "pending" ? "/tutor-pending" : "/login");
+    return;
+  }
+}
+```
 
----
-
-## Bug #3: Zoom Meeting Links Are Placeholder/Fake
-
-### Description
-The application generates random Zoom meeting IDs that aren't connected to real Zoom accounts. Users might be confused thinking these are real meeting links.
-
-### Affected Files
-- `routes/tutor.js`
-- `tutor-dashboard.html`
-- `student-dashboard.html`
-
-### Current Behavior
-- Generates random 10-digit meeting ID
-- Creates a fake Zoom URL: `https://zoom.us/j/{randomId}?pwd=Tutoring2025`
-
-### Fix Applied
-1. Updated email templates to clarify tutors should use their own Zoom/Google Meet link
-2. Added instructions in dashboards explaining the meeting process
-3. Made it clear that the generated link is a placeholder and tutors should coordinate their own video calls
-
-### Recommendation for Future
-Integrate with Zoom API for real meeting creation, or allow tutors to input their own meeting links.
+This correctly routes:
+- Non-tutors → `/login`
+- Pending tutors → `/tutor-pending`
+- Denied tutors → `/login`
+- Approved tutors → dashboard (allowed through)
 
 ---
 
-## Bug #4: Profile Data Not Persisting Properly
+### Bug A3 — Student Dashboard Sends Request to Wrong API Endpoint (CRITICAL) ✅ ALREADY FIXED
 
-### Description
-Tutor profile data (subjects, bio, availability, motivation) needs to be saved correctly during signup and displayed on dashboards.
-
-### Affected Files
-- `routes/auth.js`
-- `signup.html`
-
-### Fix Applied
-Verified that `tutorProfile` object is properly saved during signup and includes:
-- `subjects` - Array of subjects the tutor can teach
-- `availableTimes` - Session durations they offer
-- `experience` - Teaching experience
-- `availability` - Weekly hours available
-- `motivation` - Why they want to tutor
+**Status:** Already corrected during Next.js migration. Both the quick modal and full request modal use `/api/tutor/create-request`.
 
 ---
 
-## Configuration Notes
+### Bug A4 — Tutor Dashboard Fetches Requests from Wrong Endpoint (CRITICAL) ✅ ALREADY FIXED
 
-### Email Configuration
-The application uses Gmail SMTP via Nodemailer. Required environment variables:
-- `EMAIL_USER` - Gmail address
-- `EMAIL_PASSWORD` - Gmail App Password (NOT regular password)
-
-### MongoDB Configuration
-- `MONGODB_URI` - MongoDB connection string
-
-### JWT Configuration
-- `JWT_SECRET` - Secret key for JWT token signing
+**Status:** Already corrected during Next.js migration. Tutor dashboard uses `/api/tutor/requests`.
 
 ---
 
-## Testing Checklist
+### Bug A5 — Signup Returns No Token (CRITICAL) ✅ ALREADY FIXED
 
-### Tutor Application Flow
-- [ ] New tutor signup creates user with `userType: 'student'`
-- [ ] Tutor application has `status: 'pending'`
-- [ ] Login redirects pending tutors to pending page
-- [ ] Admin can view pending applications
-- [ ] Admin approval changes `userType` to `'tutor'`
-- [ ] Approved tutor can access tutor dashboard
-- [ ] Denial removes application and notifies user
-
-### Student Flow
-- [ ] Student signup works correctly
-- [ ] Student can create tutoring requests
-- [ ] Student sees only their own requests and sessions
-- [ ] Student receives email when tutor accepts request
-
-### Tutor Flow (After Approval)
-- [ ] Tutor sees requests matching their subjects
-- [ ] Tutor can accept requests
-- [ ] Both tutor and student receive session emails
-- [ ] Tutor can mark sessions as complete
-- [ ] Hours are tracked for both parties
+**Status:** Already corrected during Next.js migration. Signup route generates and returns a JWT token.
 
 ---
 
----
+### Bug A6 — Two Conflicting User.js Model Files (HIGH) ✅ ALREADY FIXED
 
-## Bug #5: Hardcoded API URLs
-
-### Description
-Several files used hardcoded production URLs (`https://saintthunderbirdtutoring.onrender.com/...`) instead of relative URLs. This caused issues when testing locally.
-
-### Affected Files
-- `auth.js`
-- `signup.html`
-- `tutor-pending.html`
-
-### Fix Applied
-Changed all API URLs to relative paths (e.g., `/api/auth/signup` instead of `https://...`). This allows the app to work in any environment (local, staging, production).
+**Status:** Only one model file exists at `web/lib/models/User.js` with the full schema. Added missing `deniedAt: Date`, `denialReason: String`, and `requestedType: String` fields to the `tutorApplication` sub-schema so deny routes save correctly.
 
 ---
 
-## Summary of All Changes Made
+### Bug A7 — Dashboard Stat Boxes Show 0 (HIGH) ✅ PARTIALLY FIXED
 
-### Files Modified
+**Status:** The Next.js stats routes do not perform a userType check that would return 403 (unlike the old Express backend). Stats will populate correctly once Bug A1 is resolved and tutors are stored with the correct userType. Error logging added to all stat fetch functions in both dashboards so failures appear in the browser console.
 
-1. **routes/auth.js**
-   - Changed tutor signup to keep `userType: 'student'` until admin approves
-   - Added `tutorApplication` with `requestedType: 'tutor'` to track pending applications
-   - Updated login endpoint to return `tutorApplication` and `tutorProfile` data
+---
 
-2. **routes/tutor.js**
-   - Updated approve endpoint to preserve `tutorProfile` data from signup
-   - Added email notification when tutor is approved via admin panel
-   - Updated deny endpoint to set status to 'denied' and send email notification
-   - Improved Zoom-related email templates with clearer instructions
-   - Changed placeholder Zoom links to session references with instructions
+### Bug A8 — Deny Route Deletes Entire tutorApplication (HIGH) ✅ FIXED
 
-3. **login.html**
-   - Added check for pending tutor applicants in both student and tutor login forms
-   - Redirects pending applicants to `tutor-pending.html`
-   - Added proper handling for denied applications
+**File:** `web/app/api/tutor/deny/[userId]/route.js`
 
-4. **signup.html**
-   - Changed API URL from hardcoded production URL to relative path
-   - Updated success message to clarify admin approval process
+**Problem:** The legacy GET deny route (used in admin email links) called `$unset: { tutorApplication: 1 }`, which deleted the entire tutorApplication object from MongoDB. This meant denied tutors had no `status` field, causing login logic to fall through to incorrect redirects.
 
-5. **tutor-pending.html**
-   - Changed API URL from hardcoded production URL to relative path
-   - Added check for denied applications
-   - Updates localStorage when application status changes
+**Fix applied:** Changed to set `status: 'denied'` instead of unsetting the whole object:
+```js
+// BEFORE (bug)
+await User.findByIdAndUpdate(userId, { $unset: { tutorApplication: 1 } });
 
-6. **tutor-dashboard.html**
-   - Updated Zoom info banner with clearer instructions
+// AFTER
+await User.findByIdAndUpdate(userId, {
+    $set: { 'tutorApplication.status': 'denied', 'tutorApplication.deniedAt': new Date() }
+});
+```
 
-7. **student-dashboard.html**
-   - Updated info banner with step-by-step explanation of the process
+The POST deny route at `/api/tutor/deny-tutor/[userId]` already handled this correctly and was unchanged.
 
-8. **auth.js**
-   - Changed API URL from hardcoded production URL to relative path
+---
 
-### New Files Created
+## Remaining TODOs (From Audit v2)
 
-1. **BUGS_AND_FIXES.md** (this file)
-   - Documents all bugs found and fixes applied
+These items are not yet implemented. Ordered by priority.
+
+### HIGH Priority
+
+| # | Task | File(s) |
+|---|------|---------|
+| 1 | Save student `interests` at signup — signup form must collect subject preferences and pass `interests: [...]` to the backend | `web/app/signup/page.js`, `web/app/api/auth/signup/route.js` |
+| 2 | Add Zoom join button to tutor session history cards (already in tutor dashboard — verify it renders clickably for all session types) | `web/app/tutor-dashboard/page.js` |
+
+### MEDIUM Priority
+
+| # | Task | File(s) |
+|---|------|---------|
+| 3 | Filter student request subject dropdown to only show the student's saved `interests` | `web/app/student-dashboard/page.js` |
+| 4 | Build tutor subject sidebar — checkboxes calling `POST /api/tutor/update-specialties` | `web/app/tutor-dashboard/page.js` |
+| 5 | Build student subject sidebar — checkboxes calling `POST /api/tutor/update-student-preferences` | `web/app/student-dashboard/page.js` |
+| 6 | Update admin approval email links to use POST routes instead of GET (security: unauthenticated GET routes can be triggered by anyone with the URL) | `web/app/api/auth/signup/route.js` (email builder), `web/app/api/tutor/approve/[userId]/route.js`, `web/app/api/tutor/deny/[userId]/route.js` |
+
+### LOW / Future (Phase 2–3)
+
+| # | Feature | Notes |
+|---|---------|-------|
+| 7 | Volunteer certificate PDF generator | Auto-generate after 10, 25, 50 hours |
+| 8 | Newsletter system with archive | Admin composes, public archive page |
+| 9 | Student progress tracking | Tutor records notes after each session |
+| 10 | Resource library | Admin uploads PDFs/worksheets by subject |
+| 11 | Indigenous language support | Cree, Ojibwe, Michif language toggle |
+| 12 | Google Calendar integration | Sessions auto-added to calendar on accept |
+| 13 | Volunteer hour reporting export | CSV/PDF download for grant reporting |
+
+---
+
+## Original v1 Audit Findings (2026-02-02)
+
+### Bug #1: Tutor Auto-Approval Security Issue ✅ SUPERSEDED
+
+**See Bug A1 above.** The original v1 fix kept tutors as `userType: 'student'`. The v2 audit identified this as the root cause of multiple bugs. Reverted: tutors are now stored as `userType: 'tutor'` from signup and access is gated by `tutorApplication.status`.
+
+---
+
+### Bug #2: Login Flow Doesn't Handle Pending Tutors ✅ FIXED
+
+Handled by the tutor dashboard guard (Bug A2) and the tutor-pending page profile re-fetch.
+
+---
+
+### Bug #3: Zoom Meeting Links Are Placeholder/Fake ✅ ACCEPTED
+
+Zoom links are generated via `zoomService.createSessionMeeting()` with fallback to a manual placeholder. Email instructions tell both parties to coordinate. Zoom API integration is a Phase 2 item.
+
+---
+
+### Bug #4: Profile Data Not Persisting ✅ FIXED
+
+`tutorProfile` is saved correctly at signup and returned in the auth payload.
+
+---
+
+### Bug #5: Hardcoded API URLs ✅ FIXED
+
+All API calls use relative paths. No production URLs hardcoded in client code.
+
+---
+
+## Security Notes
+
+- `.env` must be in `.gitignore` — never commit `JWT_SECRET`, `MONGO_URI`, or email credentials
+- The GET `/api/tutor/approve/[userId]` and GET `/api/tutor/deny/[userId]` routes are unauthenticated — anyone with the URL can trigger them. These are legacy email links. For production, consider replacing with signed time-limited tokens or requiring admin session auth.
+- Admin identity check uses `email === ADMIN_EMAIL` where `ADMIN_EMAIL` is from environment — this is acceptable as long as `.env` is secure
+
+---
+
+## Configuration Requirements
+
+| Variable | Purpose |
+|----------|---------|
+| `MONGODB_URI` | MongoDB connection string |
+| `JWT_SECRET` | JWT token signing secret |
+| `EMAIL_USER` | Gmail address for Nodemailer |
+| `EMAIL_PASSWORD` | Gmail App Password |
+| `ADMIN_EMAIL` | Admin email for tutor approval notifications |
 
 ---
 
@@ -199,3 +199,5 @@ Changed all API URLs to relative paths (e.g., `/api/auth/signup` instead of `htt
 |------|---------|---------|
 | 2026-02-02 | 1.1.0 | Fixed tutor approval flow, improved Zoom UX, added documentation |
 | 2026-02-02 | 1.1.1 | Fixed hardcoded URLs, added email notifications for admin panel actions |
+| 2026-04-04 | 2.0.0 | Full Next.js + backend migration. Fixed Bugs A3, A4, A5, A6. |
+| 2026-04-04 | 2.1.0 | Fixed Bugs A1 (userType), A2 (dashboard guard), A8 (deny route). Added error logging. |

@@ -112,4 +112,213 @@ From any file under **`pages/`**:
 
 ---
 
-*Last updated to reflect the modular `pages/`, `styles/`, and `scripts/` layout and related server behavior.*
+## 10. Next.js frontend (incremental migration) + Tailwind
+
+### Layout
+
+| Location | Purpose |
+|----------|---------|
+| **`web/`** | Next.js 15 App Router app (React 19). **`web/app/`** holds routes and global CSS. |
+| **`web/components/home/`** | Home page: **`HomeClient`** (client shell), **`SiteNav`**, **`HomeContent`** (server markup), **`HomeEffects`** (interactivity ported from **`scripts/script.js`**). |
+| **`web/lib/site-data.js`** | Popup and info-card copy shared with the legacy **`scripts/script.js`** data. |
+| **`web/app/site-legacy.css`** | Snapshot of **`styles/style.css`** with a duplicate `*` / `body` block removed (avoids conflicting overrides mid-file). Imported from **`web/app/globals.css`** after Tailwind. |
+| **`web/public/favicon.svg`** | Copy of repo-root **`favicon.svg`**. |
+
+### Styling strategy
+
+- **Tailwind CSS v4** is loaded via **`@import "tailwindcss"`** in **`web/app/globals.css`**. Layout and one-off spacing on the migrated home page use Tailwind utility classes where practical.
+- Visual parity for the first migrated route relies on **legacy class names** (`.glass-card`, `.hero`, `.st-popup`, etc.) backed by **`site-legacy.css`**, so the migration stays incremental without re-specifying every effect in utilities immediately.
+
+### Express API and legacy HTML during development
+
+- **`server.js`** is unchanged: **`/api/*`**, static **`pages/*.html`**, **`styles/`**, and **`scripts/`** continue to be served from the Express app (default port **5000**).
+- **`web/next.config.mjs`** can **rewrite** `/api/*`, `/styles/*`, `/scripts/*`, and listed **`*.html`** routes to a backend origin when **`BACKEND_ORIGIN`** (or **`NEXT_PUBLIC_BACKEND_ORIGIN`**) is set. Copy **`web/.env.example`** to **`web/.env.local`** and set e.g. `BACKEND_ORIGIN=http://127.0.0.1:5000` so **`npm run dev`** inside **`web/`** (port **3000**) can open legacy pages and hit the API from one browser origin.
+- If **`BACKEND_ORIGIN`** is unset, rewrites are disabled; nav links to **`/login.html`** and similar resolve only on the Next origin or when you run Express separately.
+
+### NPM scripts
+
+| Command | Purpose |
+|---------|---------|
+| **`npm run dev --prefix web`** or **`npm run dev:web`** (repo root) | Next dev server. |
+| **`npm run build --prefix web`** or **`npm run build:web`** | Production build of **`web/`**. |
+| **`npm run test:web`** (repo root) | Runs **`web`** ESLint + **`next build`** (regression gate for the frontend). |
+
+### Scope of this increment
+
+- **Migrated:** marketing home page **`/`** in Next with behavior aligned to **`pages/index.html`** + **`scripts/script.js`** (theme, nav scroll, stars, counters, progress bars, reveal, popups, music panel, info menu / premium cards, scroll-to-top). The **`index-intro.js` → `loading.html`** redirect is **not** applied on the Next home route (avoids an extra redirect when developing **`/`** on port 3000).
+- **Not migrated yet:** other **`pages/*.html`** and their **`scripts/*.js`** modules remain Express-only until moved into **`web/`**.
+
+---
+
+---
+
+## 11. Full Next.js migration (complete)
+
+All 15 pages have been migrated from Express-served static HTML to the **Next.js 15 App Router** in `web/`. The legacy `pages/`, `styles/`, and `scripts/` directories have been deleted.
+
+### Migrated routes
+
+| Next.js Route | Legacy File |
+|---------------|-------------|
+| `/` | `pages/index.html` |
+| `/about` | `pages/about.html` |
+| `/subjects` | `pages/subject.html` |
+| `/students` | `pages/students.html` |
+| `/mentors` | `pages/mentors.html` |
+| `/login` | `pages/login.html` |
+| `/signup` | `pages/signup.html` |
+| `/loading` | `pages/loading.html` |
+| `/terms` | `pages/terms.html` |
+| `/tutor-pending` | `pages/tutor-pending.html` |
+| `/volunteer-hours-guide` | `pages/volunteer-hours-guide.html` |
+| `/student-dashboard` | `pages/student-dashboard.html` |
+| `/student-profile` | `pages/student-profile.html` |
+| `/tutor-dashboard` | `pages/tutor-dashboard.html` |
+| `/admin-applications` | `pages/admin-applications.html` |
+
+### Shared components
+
+| Component | Purpose |
+|-----------|---------|
+| `web/components/MarketingShell.jsx` | Wrapper for marketing/info pages: renders `SiteNav` + `MarketingEffects` |
+| `web/components/MarketingEffects.jsx` | Nav scroll effect and scroll-to-top button |
+| `web/lib/api.js` | `getToken()`, `getUser()`, `apiFetch()` helpers for auth'd API calls |
+
+### CSS strategy
+
+- All page-specific CSS lives in **`web/app/globals.css`** (global scope, imported after Tailwind + `site-legacy.css`).
+- Marketing pages are server components; auth/dashboard pages are `"use client"` with `localStorage`-based auth.
+
+### server.js
+
+- Removed the two `express.static` calls for `./` and `pages/`. **`server.js` is now API-only** (`/api/auth/*`, `/api/tutor/*`).
+
+### next.config.mjs
+
+- Removed legacy HTML/styles/scripts rewrites.
+- Added **permanent redirects** from all `*.html` URLs to their Next.js equivalents (e.g. `/login.html` → `/login`).
+- API rewrite (`/api/*` → `BACKEND_ORIGIN`) retained for development.
+
+### Deleted
+
+- `pages/` — all 15 static HTML files
+- `styles/` — all CSS files (content merged into `web/app/globals.css`)
+- `scripts/` — all browser JS modules (logic ported to React components)
+
+*Last updated: full Next.js migration complete — Express is API-only, all frontend served by Next.js on Vercel.*
+
+---
+
+## 12. Backend migrated into Next.js (Express removed)
+
+The Express backend (`server.js`, `index.js`, `routes/`, `models/`, `services/`, `jobs/`, `middleware/`) has been fully migrated into the Next.js app under `web/`. Express is no longer part of the project.
+
+### New structure in `web/`
+
+| Location | Purpose |
+|----------|---------|
+| `web/lib/db.js` | MongoDB singleton connection (serverless-safe) |
+| `web/lib/authHelper.js` | `getAuthUser(request)` — JWT verification for API routes |
+| `web/lib/models/User.js` | Mongoose User model |
+| `web/lib/models/SystemSetting.js` | Mongoose SystemSetting model |
+| `web/lib/services/emailService.js` | Nodemailer / Mailchimp transactional email |
+| `web/lib/services/zoomService.js` | Zoom meeting creation (with fallback) |
+| `web/lib/services/mailchimpService.js` | Mailchimp mailing list sync |
+| `web/lib/jobs/biweeklyTutorSummary.js` | Biweekly tutor report generator |
+
+### API routes (`web/app/api/`)
+
+| Route | Method | Description |
+|-------|--------|-------------|
+| `/api/auth/signup` | POST | Register student or tutor applicant |
+| `/api/auth/login` | POST | Login, returns JWT |
+| `/api/auth/profile` | GET | Get current user profile |
+| `/api/tutor/create-request` | POST | Student creates a tutoring request |
+| `/api/tutor/my-requests` | GET | Student's own requests |
+| `/api/tutor/available-tutors` | GET | List approved tutors |
+| `/api/tutor/student-sessions` | GET | Student's sessions |
+| `/api/tutor/student-stats` | GET | Student stats (requests, sessions, hours) |
+| `/api/tutor/update-student-preferences` | POST | Save grade/interests |
+| `/api/tutor/application-status` | GET | Tutor application status (for pending page) |
+| `/api/tutor/requests` | GET | Open requests for a tutor |
+| `/api/tutor/accept-request` | POST | Tutor accepts a request, creates session |
+| `/api/tutor/sessions` | GET | Tutor's sessions |
+| `/api/tutor/complete-session` | POST | Mark session as completed |
+| `/api/tutor/stats` | GET | Tutor stats (sessions, hours) |
+| `/api/tutor/update-specialties` | POST | Update tutor subjects |
+| `/api/tutor/apply-tutor` | POST | Submit tutor application |
+| `/api/tutor/approve/[userId]` | GET | Legacy email link — approve tutor |
+| `/api/tutor/deny/[userId]` | GET | Legacy email link — deny tutor |
+| `/api/tutor/pending-applications` | GET | Admin: list pending applications |
+| `/api/tutor/admin-summary` | GET | Admin: dashboard counts |
+| `/api/tutor/approve-tutor/[userId]` | POST | Admin: approve tutor |
+| `/api/tutor/deny-tutor/[userId]` | POST | Admin: deny tutor |
+| `/api/tutor/admin/send-biweekly-summary` | POST | Admin: trigger biweekly report |
+
+### Dependencies added to `web/package.json`
+
+- `mongoose` — MongoDB ODM
+- `jsonwebtoken` — JWT signing/verification
+- `bcryptjs` — password hashing
+- `nodemailer` — transactional email
+
+### Deleted from repo root
+
+- `server.js`, `index.js` — Express entry points
+- `routes/auth.js`, `routes/tutor.js`, `routes/sessions.js`, `routes/User.js`
+- `models/User.js`, `models/SystemSetting.js`
+- `services/emailService.js`, `services/zoomService.js`, `services/mailchimpService.js`
+- `jobs/biweeklyTutorSummary.js`
+- `middleware/auth.js`
+- `test-request.js`, `user.json`
+
+### next.config.mjs
+
+- Removed the `BACKEND_ORIGIN` API rewrite — API calls are now handled in-process by Next.js.
+
+### Notes
+
+- The biweekly scheduler is no longer running via `setInterval`. Trigger it manually via `POST /api/tutor/admin/send-biweekly-summary`, or configure a Vercel Cron Job to call that endpoint on a schedule.
+- The MongoDB singleton in `web/lib/db.js` reuses the connection across serverless invocations via `global.mongoose`.
+
+*Last updated: backend fully migrated into Next.js — repo is now a single Next.js project.*
+
+---
+
+## 13. Audit v2 Bug Fixes (April 2026)
+
+Based on the full code audit (v2, March 2026). Fixed the 3 remaining critical/high bugs that survived the Next.js migration, plus model and logging improvements.
+
+### Bug fixes
+
+| Bug | File | What changed |
+|-----|------|-------------|
+| **A1 — userType downgrade** | `web/app/api/auth/signup/route.js` | Removed `userType === 'tutor' ? 'student' : userType` — tutors are now stored as `userType: 'tutor'` from signup. Access control uses `tutorApplication.status` only. |
+| **A2 — Dashboard guard** | `web/app/tutor-dashboard/page.js` | Guard now checks both `userType !== 'tutor'` (redirects to `/login`) **and** `tutorApplication.status !== 'approved'` (redirects pending to `/tutor-pending`, denied/undefined to `/login`). Prevents pending and denied tutors from reaching the dashboard after Bug A1 fix. |
+| **A8 — Deny route deletes tutorApplication** | `web/app/api/tutor/deny/[userId]/route.js` | Legacy GET deny route changed from `$unset: { tutorApplication: 1 }` to `$set: { status: 'denied', deniedAt: new Date() }`. Application record is now preserved; login logic can correctly redirect denied tutors. |
+
+### Model improvements
+
+- `web/lib/models/User.js` — Added `deniedAt: Date`, `denialReason: String`, and `requestedType: String` to the `tutorApplication` sub-schema so the deny routes save all fields correctly under strict mode.
+
+### Error logging
+
+- Added `console.error` to all previously-silent `catch {}` blocks in the stat, request, and session fetch functions on both dashboards (`web/app/tutor-dashboard/page.js`, `web/app/student-dashboard/page.js`). API errors and HTTP status codes are now visible in the browser console for easier debugging.
+
+### Already-fixed findings (confirmed, no changes needed)
+
+The following audit v2 bugs were already corrected during the Next.js migration and required no further changes:
+
+- **A3** — Student quick request modal already uses `/api/tutor/create-request`
+- **A4** — Tutor dashboard already fetches from `/api/tutor/requests`
+- **A5** — Signup already returns a JWT token
+- **A6** — Single full-schema `User.js` model in `web/lib/models/`
+
+### Remaining TODOs
+
+See `BUGS_AND_FIXES.md` for the full prioritised list. Key open items:
+
+- **HIGH:** Save student `interests` at signup (form + backend)
+- **MEDIUM:** Filter student subject dropdown to saved interests
+- **MEDIUM:** Subject sidebar UI for tutors and students
+- **MEDIUM:** Harden legacy GET approve/deny email links with auth or signed tokens

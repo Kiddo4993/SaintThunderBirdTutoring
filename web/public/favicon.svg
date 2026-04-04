@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Background -->
+  <rect width="200" height="200" fill="#000000"/>
+  
+  <!-- Main lightning bolt -->
+  <path d="M 100 20 L 140 90 L 110 90 L 160 180 L 60 110 L 90 110 Z" fill="#FFD700" stroke="#d4a574" stroke-width="2"/>
+  
+  <!-- Inner glow -->
+  <path d="M 100 20 L 140 90 L 110 90 L 160 180 L 60 110 L 90 110 Z" fill="none" stroke="#FFED4E" stroke-width="1" opacity="0.6"/>
+  
+  <!-- Highlight on bolt -->
+  <path d="M 105 35 L 125 75 L 105 75 L 130 145" fill="none" stroke="#FFFF99" stroke-width="1.5" opacity="0.8"/>
+</svg>
