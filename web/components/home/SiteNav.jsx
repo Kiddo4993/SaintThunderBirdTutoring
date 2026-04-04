@@ -39,22 +39,22 @@ export default function SiteNav({ onInfoClick }) {
         </div>
         <ul className="nav-links">
           <li>
-            <a href="/about.html" className="nav-link">
+            <a href="/about" className="nav-link">
               About
             </a>
           </li>
           <li>
-            <a href="/subject.html" className="nav-link">
+            <a href="/subjects" className="nav-link">
               Subjects
             </a>
           </li>
           <li>
-            <a href="/students.html" className="nav-link">
+            <a href="/students" className="nav-link">
               Students
             </a>
           </li>
           <li>
-            <a href="/mentors.html" className="nav-link">
+            <a href="/mentors" className="nav-link">
               Mentors
             </a>
           </li>
@@ -79,7 +79,7 @@ export default function SiteNav({ onInfoClick }) {
             </button>
           </li>
           <li>
-            <a href="/login.html" className="profile-icon" title="Login / Sign Up">
+            <a href="/login" className="profile-icon" title="Login / Sign Up">
               👤
             </a>
           </li>

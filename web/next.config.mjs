@@ -8,44 +8,35 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const backend =
   process.env.BACKEND_ORIGIN || process.env.NEXT_PUBLIC_BACKEND_ORIGIN || "";
 
-function legacyRewrites() {
-  if (!backend) return [];
-
-  const html = [
-    "about.html",
-    "mentors.html",
-    "students.html",
-    "subject.html",
-    "index.html",
-    "tutor-dashboard.html",
-    "student-profile.html",
-    "admin-applications.html",
-    "signup.html",
-    "login.html",
-    "loading.html",
-    "student-dashboard.html",
-    "volunteer-hours-guide.html",
-    "tutor-pending.html",
-    "terms.html",
-  ];
-
-  return [
-    { source: "/api/:path*", destination: `${backend}/api/:path*` },
-    { source: "/styles/:path*", destination: `${backend}/styles/:path*` },
-    { source: "/scripts/:path*", destination: `${backend}/scripts/:path*` },
-    ...html.map((name) => ({
-      source: `/${name}`,
-      destination: `${backend}/${name}`,
-    })),
-  ];
-}
-
 const nextConfig = {
   turbopack: {
     root: __dirname,
   },
+  async redirects() {
+    // Redirect legacy .html URLs to Next.js routes
+    return [
+      { source: "/index.html", destination: "/", permanent: true },
+      { source: "/about.html", destination: "/about", permanent: true },
+      { source: "/mentors.html", destination: "/mentors", permanent: true },
+      { source: "/students.html", destination: "/students", permanent: true },
+      { source: "/subject.html", destination: "/subjects", permanent: true },
+      { source: "/login.html", destination: "/login", permanent: true },
+      { source: "/signup.html", destination: "/signup", permanent: true },
+      { source: "/loading.html", destination: "/loading", permanent: true },
+      { source: "/tutor-dashboard.html", destination: "/tutor-dashboard", permanent: true },
+      { source: "/student-dashboard.html", destination: "/student-dashboard", permanent: true },
+      { source: "/student-profile.html", destination: "/student-profile", permanent: true },
+      { source: "/admin-applications.html", destination: "/admin-applications", permanent: true },
+      { source: "/volunteer-hours-guide.html", destination: "/volunteer-hours-guide", permanent: true },
+      { source: "/tutor-pending.html", destination: "/tutor-pending", permanent: true },
+      { source: "/terms.html", destination: "/terms", permanent: true },
+    ];
+  },
   async rewrites() {
-    return legacyRewrites();
+    if (!backend) return [];
+    return [
+      { source: "/api/:path*", destination: `${backend}/api/:path*` },
+    ];
   },
 };
 

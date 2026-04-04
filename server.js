@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const path = require('path');
 const { startBiweeklyTutorSummaryScheduler } = require('./jobs/biweeklyTutorSummary');
 
 const app = express();
@@ -10,10 +9,6 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors());
-
-// Serve Static Files (HTML/CSS/JS at project root, then HTML pages at site root)
-app.use(express.static(path.join(__dirname, './')));
-app.use(express.static(path.join(__dirname, 'pages')));
 
 // Database Connection with better error handling for Render
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/saintthunderbird')

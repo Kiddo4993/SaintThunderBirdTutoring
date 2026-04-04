@@ -150,4 +150,59 @@ From any file under **`pages/`**:
 
 ---
 
-*Last updated to reflect the modular `pages/`, `styles/`, and `scripts/` layout, the **`web/`** Next.js app (incremental migration), and related server behavior.*
+---
+
+## 11. Full Next.js migration (complete)
+
+All 15 pages have been migrated from Express-served static HTML to the **Next.js 15 App Router** in `web/`. The legacy `pages/`, `styles/`, and `scripts/` directories have been deleted.
+
+### Migrated routes
+
+| Next.js Route | Legacy File |
+|---------------|-------------|
+| `/` | `pages/index.html` |
+| `/about` | `pages/about.html` |
+| `/subjects` | `pages/subject.html` |
+| `/students` | `pages/students.html` |
+| `/mentors` | `pages/mentors.html` |
+| `/login` | `pages/login.html` |
+| `/signup` | `pages/signup.html` |
+| `/loading` | `pages/loading.html` |
+| `/terms` | `pages/terms.html` |
+| `/tutor-pending` | `pages/tutor-pending.html` |
+| `/volunteer-hours-guide` | `pages/volunteer-hours-guide.html` |
+| `/student-dashboard` | `pages/student-dashboard.html` |
+| `/student-profile` | `pages/student-profile.html` |
+| `/tutor-dashboard` | `pages/tutor-dashboard.html` |
+| `/admin-applications` | `pages/admin-applications.html` |
+
+### Shared components
+
+| Component | Purpose |
+|-----------|---------|
+| `web/components/MarketingShell.jsx` | Wrapper for marketing/info pages: renders `SiteNav` + `MarketingEffects` |
+| `web/components/MarketingEffects.jsx` | Nav scroll effect and scroll-to-top button |
+| `web/lib/api.js` | `getToken()`, `getUser()`, `apiFetch()` helpers for auth'd API calls |
+
+### CSS strategy
+
+- All page-specific CSS lives in **`web/app/globals.css`** (global scope, imported after Tailwind + `site-legacy.css`).
+- Marketing pages are server components; auth/dashboard pages are `"use client"` with `localStorage`-based auth.
+
+### server.js
+
+- Removed the two `express.static` calls for `./` and `pages/`. **`server.js` is now API-only** (`/api/auth/*`, `/api/tutor/*`).
+
+### next.config.mjs
+
+- Removed legacy HTML/styles/scripts rewrites.
+- Added **permanent redirects** from all `*.html` URLs to their Next.js equivalents (e.g. `/login.html` → `/login`).
+- API rewrite (`/api/*` → `BACKEND_ORIGIN`) retained for development.
+
+### Deleted
+
+- `pages/` — all 15 static HTML files
+- `styles/` — all CSS files (content merged into `web/app/globals.css`)
+- `scripts/` — all browser JS modules (logic ported to React components)
+
+*Last updated: full Next.js migration complete — Express is API-only, all frontend served by Next.js on Vercel.*
