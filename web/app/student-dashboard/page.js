@@ -32,7 +32,8 @@ export default function StudentDashboardPage() {
       const res = await fetch("/api/tutor/student-stats", { headers: { Authorization: `Bearer ${token}` } });
       const data = await res.json();
       if (data.success) setStats({ requestsMade: data.requestsMade || 0, completedSessions: data.completedSessions || 0, hoursLearned: data.hoursLearned || 0 });
-    } catch {}
+      else console.error("Student stats fetch error:", data.error || res.status);
+    } catch (e) { console.error("Student stats fetch exception:", e.message); }
   }, []);
 
   const loadRequests = useCallback(async (token) => {
@@ -40,7 +41,8 @@ export default function StudentDashboardPage() {
       const res = await fetch("/api/tutor/my-requests", { headers: { Authorization: `Bearer ${token}` } });
       const data = await res.json();
       if (data.success) setRequests(data.requests || []);
-    } catch {}
+      else console.error("My-requests fetch error:", data.error || res.status);
+    } catch (e) { console.error("My-requests fetch exception:", e.message); }
   }, []);
 
   const loadSessions = useCallback(async (token) => {
@@ -48,7 +50,8 @@ export default function StudentDashboardPage() {
       const res = await fetch("/api/tutor/student-sessions", { headers: { Authorization: `Bearer ${token}` } });
       const data = await res.json();
       if (data.success) setSessions(data.sessions || []);
-    } catch {}
+      else console.error("Student sessions fetch error:", data.error || res.status);
+    } catch (e) { console.error("Student sessions fetch exception:", e.message); }
   }, []);
 
   const loadDashboard = useCallback(() => {

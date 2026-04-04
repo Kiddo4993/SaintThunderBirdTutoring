@@ -282,3 +282,43 @@ The Express backend (`server.js`, `index.js`, `routes/`, `models/`, `services/`,
 - The MongoDB singleton in `web/lib/db.js` reuses the connection across serverless invocations via `global.mongoose`.
 
 *Last updated: backend fully migrated into Next.js — repo is now a single Next.js project.*
+
+---
+
+## 13. Audit v2 Bug Fixes (April 2026)
+
+Based on the full code audit (v2, March 2026). Fixed the 3 remaining critical/high bugs that survived the Next.js migration, plus model and logging improvements.
+
+### Bug fixes
+
+| Bug | File | What changed |
+|-----|------|-------------|
+| **A1 — userType downgrade** | `web/app/api/auth/signup/route.js` | Removed `userType === 'tutor' ? 'student' : userType` — tutors are now stored as `userType: 'tutor'` from signup. Access control uses `tutorApplication.status` only. |
+| **A2 — Dashboard guard** | `web/app/tutor-dashboard/page.js` | Guard now checks both `userType !== 'tutor'` (redirects to `/login`) **and** `tutorApplication.status !== 'approved'` (redirects pending to `/tutor-pending`, denied/undefined to `/login`). Prevents pending and denied tutors from reaching the dashboard after Bug A1 fix. |
+| **A8 — Deny route deletes tutorApplication** | `web/app/api/tutor/deny/[userId]/route.js` | Legacy GET deny route changed from `$unset: { tutorApplication: 1 }` to `$set: { status: 'denied', deniedAt: new Date() }`. Application record is now preserved; login logic can correctly redirect denied tutors. |
+
+### Model improvements
+
+- `web/lib/models/User.js` — Added `deniedAt: Date`, `denialReason: String`, and `requestedType: String` to the `tutorApplication` sub-schema so the deny routes save all fields correctly under strict mode.
+
+### Error logging
+
+- Added `console.error` to all previously-silent `catch {}` blocks in the stat, request, and session fetch functions on both dashboards (`web/app/tutor-dashboard/page.js`, `web/app/student-dashboard/page.js`). API errors and HTTP status codes are now visible in the browser console for easier debugging.
+
+### Already-fixed findings (confirmed, no changes needed)
+
+The following audit v2 bugs were already corrected during the Next.js migration and required no further changes:
+
+- **A3** — Student quick request modal already uses `/api/tutor/create-request`
+- **A4** — Tutor dashboard already fetches from `/api/tutor/requests`
+- **A5** — Signup already returns a JWT token
+- **A6** — Single full-schema `User.js` model in `web/lib/models/`
+
+### Remaining TODOs
+
+See `BUGS_AND_FIXES.md` for the full prioritised list. Key open items:
+
+- **HIGH:** Save student `interests` at signup (form + backend)
+- **MEDIUM:** Filter student subject dropdown to saved interests
+- **MEDIUM:** Subject sidebar UI for tutors and students
+- **MEDIUM:** Harden legacy GET approve/deny email links with auth or signed tokens

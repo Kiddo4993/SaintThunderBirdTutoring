@@ -85,7 +85,7 @@ export async function POST(request) {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const actualUserType = userType === 'tutor' ? 'student' : userType;
+        const actualUserType = userType;
         const rawProfile = tutorProfileInput || {};
 
         const userData = {

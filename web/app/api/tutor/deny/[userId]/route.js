@@ -11,7 +11,9 @@ export async function GET(request, { params }) {
         const user = await User.findById(userId);
         if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
 
-        await User.findByIdAndUpdate(userId, { $unset: { tutorApplication: 1 } });
+        await User.findByIdAndUpdate(userId, {
+            $set: { 'tutorApplication.status': 'denied', 'tutorApplication.deniedAt': new Date() }
+        });
 
         sendEmail({
             to: user.email,

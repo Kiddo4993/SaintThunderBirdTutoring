@@ -21,7 +21,8 @@ export default function TutorDashboardPage() {
       const res = await fetch("/api/tutor/stats", { headers: { Authorization: `Bearer ${token()}` } });
       const data = await res.json();
       if (data.success) setStats({ sessionsCompleted: data.sessionsCompleted || 0, hoursTaught: data.hoursTaught || 0 });
-    } catch {}
+      else console.error("Stats fetch error:", data.error || res.status);
+    } catch (e) { console.error("Stats fetch exception:", e.message); }
   }, []);
 
   const loadRequests = useCallback(async () => {
@@ -29,7 +30,8 @@ export default function TutorDashboardPage() {
       const res = await fetch("/api/tutor/requests", { headers: { Authorization: `Bearer ${token()}` } });
       const data = await res.json();
       if (data.success) setRequests(data.requests || []);
-    } catch {}
+      else console.error("Requests fetch error:", data.error || res.status);
+    } catch (e) { console.error("Requests fetch exception:", e.message); }
   }, []);
 
   const loadSessions = useCallback(async () => {
@@ -39,8 +41,8 @@ export default function TutorDashboardPage() {
       if (data.success) {
         const rendered = (data.sessions || []).filter((s) => s.status === "completed" || s.status === "scheduled");
         setSessions(rendered);
-      }
-    } catch {}
+      } else console.error("Sessions fetch error:", data.error || res.status);
+    } catch (e) { console.error("Sessions fetch exception:", e.message); }
   }, []);
 
   const loadDashboard = useCallback(() => {
@@ -63,12 +65,18 @@ export default function TutorDashboardPage() {
             localStorage.setItem("user", JSON.stringify(u));
           }
         }
-      } catch {}
+      } catch (e) { console.error("Profile refresh failed:", e.message); }
 
-      if (u.userType !== "tutor" && u.email !== ADMIN_EMAIL) {
+      if (u.email !== ADMIN_EMAIL) {
+        if (u.userType !== "tutor") {
+          router.push("/login");
+          return;
+        }
         const appStatus = u.tutorApplication?.status;
-        router.push(appStatus === "pending" ? "/tutor-pending" : "/login");
-        return;
+        if (appStatus !== "approved") {
+          router.push(appStatus === "pending" ? "/tutor-pending" : "/login");
+          return;
+        }
       }
       setUser(u);
       loadDashboard();
