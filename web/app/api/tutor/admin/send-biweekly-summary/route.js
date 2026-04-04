@@ -1,19 +1,14 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
-import User from '@/lib/models/User';
-import { getAuthUser, unauthorized } from '@/lib/authHelper';
-import { ADMIN_EMAIL } from '@/lib/services/emailService';
 import { sendBiweeklyTutorSummary } from '@/lib/jobs/biweeklyTutorSummary';
 
-export async function POST(request) {
-    const authUser = getAuthUser(request);
-    if (!authUser) return unauthorized();
+export async function GET(request) {
+    const authHeader = request.headers.get('authorization');
+    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     try {
         await connectDB();
-        const admin = await User.findById(authUser.userId);
-        if (!admin || admin.email !== ADMIN_EMAIL) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
-        }
         const result = await sendBiweeklyTutorSummary({ force: true });
         return NextResponse.json({ success: true, result });
     } catch (error) {

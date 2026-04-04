@@ -414,7 +414,6 @@ export default function HomeEffects({ infoMenuOpen, setInfoMenuOpen }) {
     mounted &&
     createPortal(
       <div className={`info-menu-dropdown ${infoMenuOpen ? "active" : ""}`}>
-        <div className="info-menu-stripes">☰</div>
         <div className="info-menu-content">
           {infoCards.map((c, index) => (
             <button
