@@ -320,7 +320,7 @@ export default function HomeContent() {
             Share your knowledge, experience, and passion. Help shape the next generation of indigenous leaders
             and scholars. Apply today to join our community of dedicated educators.
           </p>
-          <a href="/login.html" className="btn btn-primary">
+          <a href="/login" className="btn btn-primary">
             Apply to Tutor →
           </a>
         </div>
