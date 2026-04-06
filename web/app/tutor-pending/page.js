@@ -62,7 +62,7 @@ export default function TutorPendingPage() {
 
   return (
     <>
-      <div className="mesh-gradient"></div>
+      <div className="dash-mesh-gradient"></div>
       <div className="pending-container">
         <div className="pending-logo">⚡</div>
         <h1>Application Submitted</h1>

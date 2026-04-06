@@ -126,7 +126,7 @@ export default function StudentDashboardPage() {
 
   return (
     <>
-      <div className="mesh-gradient"></div>
+      <div className="dash-mesh-gradient"></div>
       {toast && <div className={`toast-notification ${toast.type}`}>{toast.message}</div>}
 
       <div className="container" style={{ padding: "2rem", position: "relative", zIndex: 10 }}>

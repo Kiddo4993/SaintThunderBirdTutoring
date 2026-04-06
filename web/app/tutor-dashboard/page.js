@@ -131,7 +131,7 @@ export default function TutorDashboardPage() {
 
   return (
     <>
-      <div className="mesh-gradient"></div>
+      <div className="dash-mesh-gradient"></div>
       <div className="container" style={{ padding: "2rem", position: "relative", zIndex: 10 }}>
         <div className="header">
           <div className="header-content">
