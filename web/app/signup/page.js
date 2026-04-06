@@ -145,6 +145,7 @@ export default function SignupPage() {
         {isLight ? '☀️' : '🌓'}
       </button>
 
+      <div className="auth-page-wrapper">
       <div className="signup-container">
         <div className="logo">
           <div style={{ fontSize: '4rem', filter: 'drop-shadow(0 0 20px rgba(96,165,250,0.6))' }}>⚡</div>
@@ -356,6 +357,7 @@ export default function SignupPage() {
           <Link href="/login" className="link">Already have an account? Log in →</Link>
           <Link href="/" className="link">← Back to Home</Link>
         </div>
+      </div>
       </div>
     </>
   );

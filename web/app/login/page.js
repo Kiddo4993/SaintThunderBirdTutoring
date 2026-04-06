@@ -99,6 +99,7 @@ export default function LoginPage() {
         {isLight ? '☀️' : '🌓'}
       </button>
 
+      <div className="auth-page-wrapper">
       <div className="login-container">
         <div className="logo">
           <div style={{ fontSize: '4rem', filter: 'drop-shadow(0 0 20px rgba(96,165,250,0.6))' }}>⚡</div>
@@ -235,6 +236,7 @@ export default function LoginPage() {
         </div>
 
         <Link href="/" className="back-link">← Back to Home</Link>
+      </div>
       </div>
     </>
   );
