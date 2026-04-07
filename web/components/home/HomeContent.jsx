@@ -35,7 +35,7 @@ export default function HomeContent() {
           <p className="section-subtitle">Data-driven excellence in indigenous education</p>
         </div>
 
-        <div className="stats-grid subjects-grid mb-24">
+        <div className="stats-grid subjects-grid !grid-cols-1 md:!grid-cols-2 lg:!grid-cols-4 mb-24">
           <div className="stat" data-percent="100">
             <div className="stat-number counter" data-target="500">
               0
@@ -81,9 +81,9 @@ export default function HomeContent() {
           </div>
         </div>
 
-        <div className="mx-auto max-w-[1000px] my-16">
-          <h3 className="mb-12 text-center text-3xl font-black uppercase">Subject Excellence</h3>
-          <div className="grid gap-8">
+        <div className="section-header mx-auto max-w-[1000px] my-16">
+          <h3 className="section-title text-3xl font-black uppercase mb-12">Subject Excellence</h3>
+          <div className="subjects-grid gap-8 !grid-cols-1 md:!grid-cols-2 lg:!grid-cols-4">
             {["Mathematics", "Sciences", "Languages", "Technology"].map((label) => (
               <div key={label} className="glass-card p-8">
                 <div className="mb-4 flex items-center justify-between">
@@ -256,7 +256,7 @@ export default function HomeContent() {
           </h2>
         </div>
 
-        <div className="stats-grid subjects-grid">
+        <div className="stats-grid subjects-grid !grid-cols-1 md:!grid-cols-2 lg:!grid-cols-4">
           <div className="stat">
             <div className="stat-number counter" data-target="500">
               0
@@ -314,9 +314,9 @@ export default function HomeContent() {
           </div>
         </div>
 
-        <div className="mx-auto mt-24 max-w-[800px] text-center">
-          <h3 className="mb-6 text-5xl font-black uppercase tracking-wide">Become a Tutor</h3>
-          <p className="mb-10 text-xl leading-relaxed text-[var(--beige-light)]">
+        <div className="section-header mx-auto mt-24 max-w-[800px]">
+          <h2 className="section-title text-5xl font-black uppercase tracking-wide mb-6">Become a Tutor</h2>
+          <p className="section-subtitle mb-10 text-xl leading-relaxed text-[var(--beige-light)]">
             Share your knowledge, experience, and passion. Help shape the next generation of indigenous leaders
             and scholars. Apply today to join our community of dedicated educators.
           </p>
