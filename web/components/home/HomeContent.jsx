@@ -86,9 +86,9 @@ export default function HomeContent() {
           <div className="subjects-grid gap-8 !grid-cols-1 md:!grid-cols-2 lg:!grid-cols-4">
             {["Mathematics", "Sciences", "Languages", "Technology"].map((label) => (
               <div key={label} className="glass-card p-8">
-                <div className="mb-4 flex items-center justify-between">
-                  <span className="text-lg font-bold">{label}</span>
-                  <span className="font-bold text-[var(--beige)]">100%</span>
+                <div className="mb-4 flex items-center justify-between gap-4">
+                  <span className="text-lg font-bold truncate">{label}</span>
+                  <span className="font-bold text-[var(--beige)] shrink-0">100%</span>
                 </div>
                 <div className="progress-bar">
                   <div className="progress-fill" data-width="100" />
@@ -314,13 +314,13 @@ export default function HomeContent() {
           </div>
         </div>
 
-        <div className="section-header mx-auto mt-24 max-w-[800px]">
+        <div className="section-header mx-auto mt-24 max-w-[800px] flex flex-col items-center text-center">
           <h2 className="section-title text-5xl font-black uppercase tracking-wide mb-6">Become a Tutor</h2>
           <p className="section-subtitle mb-10 text-xl leading-relaxed text-[var(--beige-light)]">
             Share your knowledge, experience, and passion. Help shape the next generation of indigenous leaders
             and scholars. Apply today to join our community of dedicated educators.
           </p>
-          <a href="/login" className="btn btn-primary">
+          <a href="/login" className="btn btn-primary mx-auto">
             Apply to Tutor →
           </a>
         </div>
@@ -330,25 +330,29 @@ export default function HomeContent() {
         ↑
       </button>
 
-      <div className="music-control" id="musicControl">
+      <div className="music-control glass-card !p-6 !opacity-100" id="musicControl" style={{ transform: 'none' }}>
         <div className="music-header">
-          <div className="music-icon">🎵</div>
-          <div className="music-title">Music</div>
+          <div className="flex items-center gap-3">
+            <div className="music-icon">🎵</div>
+            <div className="music-title text-sm font-bold tracking-widest text-[var(--beige)] uppercase">Music</div>
+          </div>
           <button type="button" className="collapse-btn" id="collapseBtn">
             →
           </button>
         </div>
 
-        <div className="music-panel">
-          <input type="range" id="volumeSlider" className="volume-slider" min="0" max="100" defaultValue="30" />
+        <div className="music-panel mt-6">
+          <div className="flex items-center gap-4 mb-2">
+            <input type="range" id="volumeSlider" className="volume-slider flex-1" min="0" max="100" defaultValue="30" />
+            <span id="volumeValue" className="text-xs font-bold text-[var(--beige)] min-w-[30px]">30%</span>
+          </div>
 
-          <div className="volume-label">
+          <div className="volume-label flex justify-between text-[10px] uppercase tracking-tighter opacity-60 mb-6">
             <span>Soft</span>
-            <span id="volumeValue">30%</span>
             <span>Intense</span>
           </div>
 
-          <button type="button" className="music-toggle" id="musicToggle">
+          <button type="button" className="btn btn-secondary w-full !py-3 !text-xs !rounded-lg" id="musicToggle">
             ▶ Play Music
           </button>
         </div>
