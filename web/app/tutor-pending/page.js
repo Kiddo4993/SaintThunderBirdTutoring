@@ -63,29 +63,31 @@ export default function TutorPendingPage() {
   return (
     <>
       <div className="dash-mesh-gradient"></div>
-      <div className="pending-container">
-        <div className="pending-logo">⚡</div>
-        <h1>Application Submitted</h1>
-        <p className="pending-status">Your tutor application is under review</p>
-        <div className="pending-badge">⏳ PENDING APPROVAL</div>
-        <div className="pending-spinner"></div>
-        <div className="pending-email-sent">
-          <strong>✉️ Confirmation email sent</strong>
-          <p id="emailDisplay">Check your email for updates</p>
+      <div className="auth-page-wrapper">
+        <div className="pending-container">
+          <div className="pending-logo">⚡</div>
+          <h1>Application Submitted</h1>
+          <p className="pending-status">Your tutor application is under review</p>
+          <div className="pending-badge">⏳ PENDING APPROVAL</div>
+          <div className="pending-spinner"></div>
+          <div className="pending-email-sent">
+            <strong>✉️ Confirmation email sent</strong>
+            <p id="emailDisplay">Check your email for updates</p>
+          </div>
+          <div className="pending-info-box">
+            <h3>📋 What happens next?</h3>
+            <p>✓ Our team will review your application</p>
+            <p>✓ We&apos;ll verify your information</p>
+            <p>✓ You&apos;ll receive an email with our decision</p>
+            <p>✓ Approved tutors can start teaching immediately</p>
+          </div>
+          <div className="pending-info-box">
+            <h3>⏱️ Typical Review Time</h3>
+            <p>Most applications are reviewed within 24-48 hours</p>
+            <p>You&apos;ll be notified by email as soon as we make a decision</p>
+          </div>
+          <button type="button" onClick={() => (window.location.href = "/")}>← Back to Home</button>
         </div>
-        <div className="pending-info-box">
-          <h3>📋 What happens next?</h3>
-          <p>✓ Our team will review your application</p>
-          <p>✓ We&apos;ll verify your information</p>
-          <p>✓ You&apos;ll receive an email with our decision</p>
-          <p>✓ Approved tutors can start teaching immediately</p>
-        </div>
-        <div className="pending-info-box">
-          <h3>⏱️ Typical Review Time</h3>
-          <p>Most applications are reviewed within 24-48 hours</p>
-          <p>You&apos;ll be notified by email as soon as we make a decision</p>
-        </div>
-        <button type="button" onClick={() => (window.location.href = "/")}>← Back to Home</button>
       </div>
     </>
   );
