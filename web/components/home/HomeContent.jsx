@@ -27,12 +27,12 @@ export default function HomeContent() {
       </div>
 
       <div className="section">
-        <div className="section-header">
+        <div className="section-header mx-auto flex flex-col items-center text-center">
           <div className="section-tag">OVERVIEW</div>
-          <h2 className="section-title">
+          <h2 className="section-title text-center">
             <span className="gradient-text">Welcome</span> To Saint Thunderbird
           </h2>
-          <p className="section-subtitle">Data-driven excellence in indigenous education</p>
+          <p className="section-subtitle text-center">Data-driven excellence in indigenous education</p>
         </div>
 
         <div className="stats-grid subjects-grid !grid-cols-1 md:!grid-cols-2 lg:!grid-cols-4 mb-24">
@@ -81,9 +81,10 @@ export default function HomeContent() {
           </div>
         </div>
 
-        <div className="section-header mx-auto max-w-[1000px] my-16">
-          <h3 className="section-title text-3xl font-black uppercase mb-12">Subject Excellence</h3>
-          <div className="subjects-grid gap-8 !grid-cols-1 md:!grid-cols-2 lg:!grid-cols-4">
+        <div className="section-header mx-auto max-w-[1000px] my-16 flex flex-col items-center text-center">
+          <h3 className="section-title text-3xl font-black uppercase mb-12 text-center">Subject Excellence</h3>
+        </div>
+        <div className="subjects-grid gap-8 !grid-cols-1 md:!grid-cols-2 lg:!grid-cols-4 mx-auto">
             {["Mathematics", "Sciences", "Languages", "Technology"].map((label) => (
               <div key={label} className="glass-card p-8">
                 <div className="mb-4 flex items-center justify-between gap-4">
@@ -96,9 +97,8 @@ export default function HomeContent() {
               </div>
             ))}
           </div>
-        </div>
 
-        <div className="subjects-grid mt-24 grid">
+        <div className="subjects-grid mt-24 grid mx-auto">
           <div className="glass-card">
             <span className="card-icon">🌟</span>
             <h3>About Us</h3>
@@ -145,14 +145,14 @@ export default function HomeContent() {
       </div>
 
       <div id="students" className="section">
-        <div className="section-header">
+        <div className="section-header mx-auto flex flex-col items-center text-center">
           <div className="section-tag">FOR STUDENTS</div>
-          <h2 className="section-title">
+          <h2 className="section-title text-center">
             Your <span className="gradient-text">Journey</span>
           </h2>
-          <p className="section-subtitle">Personalized support for every indigenous student</p>
+          <p className="section-subtitle text-center">Personalized support for every indigenous student</p>
         </div>
-        <div className="subjects-grid grid">
+        <div className="subjects-grid grid mx-auto">
           <div className="glass-card">
             <span className="card-icon">🎯</span>
             <h3>Personalized Learning</h3>
@@ -181,16 +181,16 @@ export default function HomeContent() {
       </div>
 
       <div id="about" className="section">
-        <div className="section-header">
+        <div className="section-header mx-auto flex flex-col items-center text-center">
           <div className="section-tag">WHO WE ARE</div>
-          <h2 className="section-title">
+          <h2 className="section-title text-center">
             <span className="gradient-text">About</span> Us
           </h2>
-          <p className="section-subtitle">
+          <p className="section-subtitle text-center">
             Building bridges between heritage and innovation through transformative learning
           </p>
         </div>
-        <div className="subjects-grid grid">
+        <div className="subjects-grid grid mx-auto">
           <div className="glass-card">
             <span className="card-icon">🌟</span>
             <h3>Our Mission</h3>
@@ -219,18 +219,18 @@ export default function HomeContent() {
       </div>
 
       <section id="subjects" className="section">
-        <div className="section-header">
+        <div className="section-header mx-auto flex flex-col items-center text-center">
           <div className="section-tag">Subjects We Teach</div>
-          <h2 className="section-title">
+          <h2 className="section-title text-center">
             Explore Our <span className="gradient-text">Tutoring Areas</span>
           </h2>
-          <p className="section-subtitle">
+          <p className="section-subtitle text-center">
             We support Indigenous students across a wide range of academic disciplines, empowering excellence
             through culturally grounded education.
           </p>
         </div>
 
-        <div className="subjects-grid grid">
+        <div className="subjects-grid grid mx-auto">
           {[
             ["📘", "English & Literature", "Strengthen communication, essay writing, and analytical reading through Indigenous perspectives and contemporary voices."],
             ["🧮", "Mathematics", "Master foundational to advanced math concepts with culturally relevant examples and step-by-step mentorship."],
@@ -249,9 +249,9 @@ export default function HomeContent() {
       </section>
 
       <div id="mentors" className="section">
-        <div className="section-header">
+        <div className="section-header mx-auto flex flex-col items-center text-center">
           <div className="section-tag">OUR TEAM</div>
-          <h2 className="section-title">
+          <h2 className="section-title text-center">
             Our <span className="gradient-text">Mentors</span>
           </h2>
         </div>
@@ -287,7 +287,7 @@ export default function HomeContent() {
           </div>
         </div>
 
-        <div className="subjects-grid mt-16 grid">
+        <div className="subjects-grid mt-16 grid mx-auto">
           <div className="glass-card">
             <span className="card-icon">👨‍🏫</span>
             <h3>Expert Educators</h3>
