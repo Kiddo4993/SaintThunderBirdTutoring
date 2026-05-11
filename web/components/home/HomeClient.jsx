@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Zap } from "lucide-react";
 import HomeEffects from "./HomeEffects";
 import SiteNav from "./SiteNav";
 
@@ -62,7 +63,9 @@ export default function HomeClient({ children }) {
           <div className="scan-line"></div>
           <div className="loading-content">
             <div className="hologram-container">
-              <div className="thunderbird-hologram">⚡</div>
+              <div className="thunderbird-hologram" aria-hidden="true">
+                <Zap size={64} strokeWidth={1.5} />
+              </div>
             </div>
             <h1 className="intro-title">Saint Thunderbird</h1>
             <p className="intro-subtitle">Tutoring</p>

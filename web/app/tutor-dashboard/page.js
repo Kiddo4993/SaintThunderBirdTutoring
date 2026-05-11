@@ -12,7 +12,8 @@ export default function TutorDashboardPage() {
   const [stats, setStats] = useState({ sessionsCompleted: 0, hoursTaught: 0 });
   const [requests, setRequests] = useState([]);
   const [sessions, setSessions] = useState([]);
-  const [hoursInputs, setHoursInputs] = useState({});
+  const [tick, setTick] = useState(0);
+  const [activeTab, setActiveTab] = useState("dashboard");
 
   const token = () => localStorage.getItem("authToken");
 
@@ -39,7 +40,7 @@ export default function TutorDashboardPage() {
       const res = await fetch("/api/tutor/sessions", { headers: { Authorization: `Bearer ${token()}` } });
       const data = await res.json();
       if (data.success) {
-        const rendered = (data.sessions || []).filter((s) => s.status === "completed" || s.status === "scheduled");
+        const rendered = (data.sessions || []).filter((s) => ["completed", "scheduled", "in-progress"].includes(s.status));
         setSessions(rendered);
       } else console.error("Sessions fetch error:", data.error || res.status);
     } catch (e) { console.error("Sessions fetch exception:", e.message); }
@@ -48,6 +49,23 @@ export default function TutorDashboardPage() {
   const loadDashboard = useCallback(() => {
     loadStats(); loadRequests(); loadSessions();
   }, [loadStats, loadRequests, loadSessions]);
+
+  useEffect(() => {
+    const hasInProgress = sessions.some((s) => s.status === "in-progress");
+    if (!hasInProgress) return;
+    const id = setInterval(() => setTick((t) => t + 1), 1000);
+    return () => clearInterval(id);
+  }, [sessions]);
+
+  function formatElapsed(startedAt) {
+    const total = Math.floor((Date.now() - new Date(startedAt).getTime()) / 1000);
+    const h = Math.floor(total / 3600);
+    const m = Math.floor((total % 3600) / 60);
+    const s = total % 60;
+    return h > 0
+      ? `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`
+      : `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  }
 
   useEffect(() => {
     const raw = localStorage.getItem("user");
@@ -103,18 +121,29 @@ export default function TutorDashboardPage() {
     } catch (e) { alert("❌ Error: " + e.message); }
   }
 
+  async function startSession(sessionId) {
+    try {
+      const res = await fetch("/api/tutor/start-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token()}` },
+        body: JSON.stringify({ sessionId }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) { loadSessions(); }
+      else { alert("❌ Error: " + (data.error || "Failed to start session")); }
+    } catch (e) { alert("❌ Error: " + e.message); }
+  }
+
   async function completeSession(sessionId) {
-    const hours = parseFloat(hoursInputs[sessionId]) || 0;
-    if (hours <= 0) { alert("❌ Please enter a valid number of hours"); return; }
     try {
       const res = await fetch("/api/tutor/complete-session", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token()}` },
-        body: JSON.stringify({ sessionId, hoursSpent: hours }),
+        body: JSON.stringify({ sessionId }),
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        alert(`✅ Session completed! ${hours} hour(s) logged.`);
+        alert("✅ Session completed! Hours have been logged automatically.");
         loadDashboard();
       } else {
         alert("❌ Error: " + (data.error || "Failed to complete session"));
@@ -148,6 +177,89 @@ export default function TutorDashboardPage() {
           </div>
         </div>
 
+        {/* Tab Bar */}
+        <div style={{ display: "flex", gap: "0.5rem", marginBottom: "2rem", borderBottom: "2px solid rgba(255,255,255,0.1)", paddingBottom: "0" }}>
+          {[{ id: "dashboard", label: "📊 Dashboard" }, { id: "guide", label: "📖 How to Use" }].map((tab) => (
+            <button key={tab.id} type="button" onClick={() => setActiveTab(tab.id)}
+              style={{ padding: "0.75rem 1.5rem", background: "none", border: "none", borderBottom: activeTab === tab.id ? "3px solid #c8932a" : "3px solid transparent", color: activeTab === tab.id ? "#c8932a" : "#9ca3af", fontWeight: activeTab === tab.id ? 700 : 500, fontSize: "1rem", cursor: "pointer", fontFamily: "inherit", marginBottom: "-2px", transition: "all 0.2s" }}>
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {activeTab === "guide" && (
+          <div style={{ maxWidth: "760px" }}>
+            <h2 style={{ color: "#c8932a", marginBottom: "0.5rem", fontSize: "1.75rem" }}>Tutor Guide</h2>
+            <p style={{ color: "#9ca3af", marginBottom: "2rem" }}>Everything you need to know about tutoring on Saint Thunderbird.</p>
+
+            {[
+              {
+                icon: "✅", title: "Step 1 — Get Approved",
+                items: [
+                  "Submit a tutor application from the home page.",
+                  "An admin reviews your application and approves or denies it.",
+                  "Once approved, you gain access to this dashboard and will start receiving student requests.",
+                ]
+              },
+              {
+                icon: "📝", title: "Step 2 — Accepting Student Requests",
+                items: [
+                  "Students post requests for help in specific subjects.",
+                  "You'll receive an email notification when a new matching request comes in.",
+                  "In the Dashboard tab, scroll to Student Requests and click ✅ Accept Request & Generate Zoom Meeting.",
+                  "Accepting instantly creates a unique Zoom meeting — both you and the student are emailed the link automatically.",
+                  "Each session gets its own distinct Zoom link, so there's never any overlap between students.",
+                ]
+              },
+              {
+                icon: "▶", title: "Step 3 — Running the Session",
+                items: [
+                  "Join the Zoom meeting using the link emailed to you or shown on your dashboard.",
+                  "When you're ready to begin, click the green ▶ Start Session button on the session card — this starts the timer.",
+                  "Tutor your student as normal over Zoom.",
+                  "When the session ends, click ⏹ End Session — hours are calculated automatically from start to finish, rounded to the nearest 15 minutes.",
+                  "No manual hour entry needed.",
+                ]
+              },
+              {
+                icon: "⏱️", title: "Step 4 — Volunteer Hours",
+                items: [
+                  "Every hour you tutor counts as a volunteer hour.",
+                  "Your total hours are tracked automatically and shown in your stats.",
+                  "To get your hours officially confirmed for external records, email dylanduancanada@gmail.com.",
+                  "You receive a summary of your hours in the weekly report every Monday.",
+                ]
+              },
+              {
+                icon: "📊", title: "Weekly Reports",
+                items: [
+                  "Every Monday morning, the admin receives a report showing every tutor's hours for the past week.",
+                  "Your name, email, sessions completed this week, and total all-time hours are included.",
+                  "This is how your volunteer hours are tracked over time.",
+                ]
+              },
+              {
+                icon: "❓", title: "Need Help?",
+                items: [
+                  "For any issues with the platform, email dylanduancanada@gmail.com.",
+                  "If a student doesn't show up or there's a Zoom issue, end the session normally and note it in your email.",
+                  "Sessions auto-refresh every 30 seconds, so new requests appear without needing to reload the page.",
+                ]
+              },
+            ].map((section) => (
+              <div key={section.title} style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "12px", padding: "1.5rem", marginBottom: "1.25rem" }}>
+                <div style={{ fontSize: "1.15rem", fontWeight: 700, color: "#e5e7eb", marginBottom: "1rem" }}>{section.icon} {section.title}</div>
+                <ul style={{ margin: 0, paddingLeft: "1.25rem", display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+                  {section.items.map((item, i) => (
+                    <li key={i} style={{ color: "#d1d5db", lineHeight: 1.6 }}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {activeTab === "dashboard" && <>
         <div className="stats-grid">
           <div className="stat-card">
             <div className="stat-icon">🎓</div>
@@ -170,7 +282,7 @@ export default function TutorDashboardPage() {
         </div>
 
         <div className="zoom-info">
-          🎥 When you accept a request, both you and the student will receive an email. Create a Zoom or Google Meet link and share it with the student to start your session.
+          🎥 When you accept a request, a unique Zoom meeting is automatically created and emailed to both you and the student. Click <strong>▶ Start Session</strong> when you begin, and <strong>⏹ End Session</strong> when you finish — hours are logged automatically.
         </div>
 
         <div className="card">
@@ -245,23 +357,31 @@ export default function TutorDashboardPage() {
                   {isCompleted ? (
                     <div style={{ background: "rgba(34,197,94,0.2)", border: "2px solid rgba(34,197,94,0.5)", padding: "1rem", borderRadius: "8px", textAlign: "center", color: "#22c55e", fontWeight: 600 }}>
                       ✅ Session Completed{session.completedAt ? ` on ${new Date(session.completedAt).toLocaleString()}` : ""}
+                      {session.hoursSpent ? ` — ${session.hoursSpent} hr(s) logged` : ""}
                     </div>
-                  ) : (
-                    <div style={{ marginTop: "1rem", display: "flex", gap: "1rem", alignItems: "center" }}>
-                      <input type="number" placeholder="Hours spent (e.g. 1)" min="0.5" step="0.5"
-                        value={hoursInputs[session._id] || ""}
-                        onChange={(e) => setHoursInputs((prev) => ({ ...prev, [session._id]: e.target.value }))}
-                        style={{ padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border)", background: "rgba(255,255,255,0.1)", color: "white", width: "180px", fontFamily: "inherit" }} />
-                      <button type="button" className="accept-btn" style={{ marginTop: 0, width: "auto", flexGrow: 1 }} onClick={() => completeSession(session._id)}>
-                        Mark as Completed
+                  ) : session.status === "in-progress" ? (
+                    <div style={{ marginTop: "1rem" }}>
+                      <div style={{ background: "rgba(234,179,8,0.15)", border: "2px solid rgba(234,179,8,0.5)", padding: "1rem", borderRadius: "8px", marginBottom: "1rem", textAlign: "center" }}>
+                        <div style={{ fontSize: "0.8rem", color: "#eab308", marginBottom: "0.25rem", letterSpacing: "0.05em", textTransform: "uppercase" }}>⏱ Session in progress</div>
+                        <div style={{ fontSize: "2.25rem", fontWeight: 700, color: "#fbbf24", fontVariantNumeric: "tabular-nums", letterSpacing: "0.05em" }}>
+                          {session.startedAt ? formatElapsed(session.startedAt) : "—"}
+                        </div>
+                      </div>
+                      <button type="button" className="accept-btn" style={{ marginTop: 0, background: "linear-gradient(135deg,#ef4444,#dc2626)" }} onClick={() => completeSession(session._id)}>
+                        ⏹ End Session
                       </button>
                     </div>
+                  ) : (
+                    <button type="button" className="accept-btn" style={{ marginTop: "1rem", background: "linear-gradient(135deg,#22c55e,#16a34a)" }} onClick={() => startSession(session._id)}>
+                      ▶ Start Session
+                    </button>
                   )}
                 </div>
               );
             })
           )}
         </div>
+        </>}
       </div>
     </>
   );

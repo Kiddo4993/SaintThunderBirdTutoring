@@ -59,6 +59,7 @@ const userSchema = new mongoose.Schema({
         plannedHours: Number,
         hoursSpent: Number,
         createdAt: { type: Date, default: Date.now },
+        startedAt: Date,
         completedAt: Date
     }],
 
@@ -75,6 +76,7 @@ const userSchema = new mongoose.Schema({
         plannedHours: Number,
         hoursSpent: Number,
         createdAt: { type: Date, default: Date.now },
+        startedAt: Date,
         completedAt: Date
     }]
 }, { timestamps: true });

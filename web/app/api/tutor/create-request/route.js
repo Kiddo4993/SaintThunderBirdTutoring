@@ -47,13 +47,6 @@ export async function POST(request) {
         student.tutorRequests.push(newRequest);
         await student.save();
 
-        // Notify admin
-        sendEmailSafe({
-            to: ADMIN_EMAIL,
-            subject: `📝 New Tutoring Request - ${student.firstName} ${student.lastName}`,
-            html: `<h2>New Tutoring Request</h2><p><strong>Student:</strong> ${student.firstName} ${student.lastName} (${student.email})</p><p><strong>Subject:</strong> ${subject}</p><p><strong>Duration:</strong> ${toDurationLabel(requestedTime)}</p><p><strong>Description:</strong> ${description || 'None'}</p>`
-        });
-
         // Notify matching tutors
         let selectedTutor = null;
         if (selectedTutorId) {
@@ -72,13 +65,18 @@ export async function POST(request) {
             }).map((t) => t.email);
         }
 
-        if (targetEmails.length > 0) {
+        await Promise.all([
             sendEmailSafe({
+                to: ADMIN_EMAIL,
+                subject: `📝 New Tutoring Request - ${student.firstName} ${student.lastName}`,
+                html: `<h2>New Tutoring Request</h2><p><strong>Student:</strong> ${student.firstName} ${student.lastName} (${student.email})</p><p><strong>Subject:</strong> ${subject}</p><p><strong>Duration:</strong> ${toDurationLabel(requestedTime)}</p><p><strong>Description:</strong> ${description || 'None'}</p>`
+            }),
+            targetEmails.length > 0 ? sendEmailSafe({
                 to: targetEmails.join(','),
                 subject: `📢 ${selectedTutor ? 'New Tutoring Request for You!' : 'Open Tutoring Request Available'} - ${subject}`,
                 html: `<h2>New Tutoring Request</h2><p><strong>${student.firstName} ${student.lastName}</strong> needs help with <strong>${subject}</strong>.</p><p><strong>Duration:</strong> ${toDurationLabel(requestedTime)}</p><p><strong>Description:</strong> ${description || 'None'}</p><p>Log in to your tutor dashboard to accept the request.</p>`
-            });
-        }
+            }) : Promise.resolve()
+        ]);
 
         return NextResponse.json({ success: true, message: 'Request created successfully', request: newRequest });
     } catch (error) {

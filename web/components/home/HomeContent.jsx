@@ -1,8 +1,66 @@
+import {
+  Star,
+  BookOpen,
+  GraduationCap,
+  Target,
+  Users,
+  Trophy,
+  Sprout,
+  Briefcase,
+  BookMarked,
+  Calculator,
+  FlaskConical,
+  Globe,
+  Monitor,
+  Palette,
+  Eye,
+  Gem,
+  Music,
+} from "lucide-react";
+
+const ICON = { size: 48, strokeWidth: 1.5, "aria-hidden": "true" };
+
+const subjects = [
+  {
+    Icon: BookMarked,
+    title: "English & Literature",
+    text: "Strengthen communication, essay writing, and analytical reading through Indigenous perspectives and contemporary voices.",
+  },
+  {
+    Icon: Calculator,
+    title: "Mathematics",
+    text: "Master foundational to advanced math concepts with culturally relevant examples and step-by-step mentorship.",
+  },
+  {
+    Icon: FlaskConical,
+    title: "Science",
+    text: "Explore biology, chemistry, and physics while connecting traditional Indigenous knowledge with modern discoveries.",
+  },
+  {
+    Icon: Globe,
+    title: "Social Studies",
+    text: "Understand history, geography, and social justice through inclusive and Indigenous-centered perspectives.",
+  },
+  {
+    Icon: Monitor,
+    title: "Computer Science",
+    text: "Build digital skills, learn to code, and explore technology as a tool for creativity and community empowerment.",
+  },
+  {
+    Icon: Palette,
+    title: "Arts & Culture",
+    text: "Express yourself through visual arts, music, and storytelling — celebrating Indigenous creativity and identity.",
+  },
+];
+
 export default function HomeContent() {
   return (
     <>
-      <div className="hero">
+      <div className="hero" id="main-content">
         <div className="stars" id="stars" />
+        <div className="hero-blob hero-blob-1" aria-hidden="true" />
+        <div className="hero-blob hero-blob-2" aria-hidden="true" />
+        <div className="hero-blob hero-blob-3" aria-hidden="true" />
         <div className="mesh-gradient" />
         <div className="hero-content">
           <div className="hero-badge">Empowering Indigenous Students</div>
@@ -82,8 +140,19 @@ export default function HomeContent() {
             </div>
           </div>
 
-          <div className="section-header" style={{ textAlign: 'center' }}>
-            <h3 className="section-title" style={{ fontSize: '2.2rem', fontWeight: 900, textTransform: 'uppercase', marginBottom: '3rem', textAlign: 'center' }}>Subject Excellence</h3>
+          <div className="section-header" style={{ textAlign: "center" }}>
+            <h3
+              className="section-title"
+              style={{
+                fontSize: "2.2rem",
+                fontWeight: 900,
+                textTransform: "uppercase",
+                marginBottom: "3rem",
+                textAlign: "center",
+              }}
+            >
+              Subject Excellence
+            </h3>
           </div>
           <div className="subjects-grid gap-8 !grid-cols-1 md:!grid-cols-2 lg:!grid-cols-4">
             {["Mathematics", "Sciences", "Languages", "Technology"].map((label) => (
@@ -101,7 +170,7 @@ export default function HomeContent() {
 
           <div className="subjects-grid mt-24 grid">
             <div className="glass-card">
-              <span className="card-icon">🌟</span>
+              <Star className="card-icon" {...ICON} />
               <h3>About Us</h3>
               <p>
                 We provide culturally responsive education that honors indigenous traditions while preparing
@@ -115,7 +184,7 @@ export default function HomeContent() {
               </a>
             </div>
             <div className="glass-card">
-              <span className="card-icon">📚</span>
+              <BookOpen className="card-icon" {...ICON} />
               <h3>Our Subjects</h3>
               <p>
                 From mathematics and sciences to languages and arts, we offer comprehensive tutoring across all
@@ -129,7 +198,7 @@ export default function HomeContent() {
               </a>
             </div>
             <div className="glass-card">
-              <span className="card-icon">👨‍🏫</span>
+              <GraduationCap className="card-icon" {...ICON} />
               <h3>Expert Mentors</h3>
               <p>
                 Our team includes certified educators, indigenous community leaders, and career professionals
@@ -157,7 +226,7 @@ export default function HomeContent() {
           </div>
           <div className="subjects-grid grid">
             <div className="glass-card">
-              <span className="card-icon">🎯</span>
+              <Target className="card-icon" {...ICON} />
               <h3>Personalized Learning</h3>
               <p>
                 Each student receives a customized learning plan that adapts to their pace, learning style, and
@@ -165,7 +234,7 @@ export default function HomeContent() {
               </p>
             </div>
             <div className="glass-card">
-              <span className="card-icon">🤝</span>
+              <Users className="card-icon" {...ICON} />
               <h3>Peer Support</h3>
               <p>
                 Join study groups and connect with fellow indigenous students for collaborative learning, mutual
@@ -173,7 +242,7 @@ export default function HomeContent() {
               </p>
             </div>
             <div className="glass-card">
-              <span className="card-icon">🏆</span>
+              <Trophy className="card-icon" {...ICON} />
               <h3>Achievement Recognition</h3>
               <p>
                 Celebrate your successes! We recognize academic achievements, cultural contributions, and personal
@@ -197,7 +266,7 @@ export default function HomeContent() {
           </div>
           <div className="subjects-grid grid">
             <div className="glass-card">
-              <span className="card-icon">🌟</span>
+              <Star className="card-icon" {...ICON} />
               <h3>Our Mission</h3>
               <p>
                 To provide culturally responsive education that honors indigenous traditions while preparing
@@ -205,7 +274,7 @@ export default function HomeContent() {
               </p>
             </div>
             <div className="glass-card">
-              <span className="card-icon">👁️</span>
+              <Eye className="card-icon" {...ICON} />
               <h3>Our Vision</h3>
               <p>
                 A world where indigenous students thrive academically while maintaining strong connections to their
@@ -213,7 +282,7 @@ export default function HomeContent() {
               </p>
             </div>
             <div className="glass-card">
-              <span className="card-icon">💎</span>
+              <Gem className="card-icon" {...ICON} />
               <h3>Our Values</h3>
               <p>
                 Cultural respect, educational excellence, community empowerment, inclusivity, and sustainable
@@ -238,16 +307,9 @@ export default function HomeContent() {
           </div>
 
           <div className="subjects-grid grid">
-            {[
-              ["📘", "English & Literature", "Strengthen communication, essay writing, and analytical reading through Indigenous perspectives and contemporary voices."],
-              ["🧮", "Mathematics", "Master foundational to advanced math concepts with culturally relevant examples and step-by-step mentorship."],
-              ["🧬", "Science", "Explore biology, chemistry, and physics while connecting traditional Indigenous knowledge with modern discoveries."],
-              ["🌍", "Social Studies", "Understand history, geography, and social justice through inclusive and Indigenous-centered perspectives."],
-              ["💻", "Computer Science", "Build digital skills, learn to code, and explore technology as a tool for creativity and community empowerment."],
-              ["🎨", "Arts & Culture", "Express yourself through visual arts, music, and storytelling — celebrating Indigenous creativity and identity."],
-            ].map(([icon, title, text]) => (
+            {subjects.map(({ Icon, title, text }) => (
               <div key={title} className="glass-card">
-                <span className="card-icon">{icon}</span>
+                <Icon className="card-icon" {...ICON} />
                 <h3>{title}</h3>
                 <p>{text}</p>
               </div>
@@ -298,7 +360,7 @@ export default function HomeContent() {
 
           <div className="subjects-grid mt-16 grid">
             <div className="glass-card">
-              <span className="card-icon">👨‍🏫</span>
+              <GraduationCap className="card-icon" {...ICON} />
               <h3>Expert Educators</h3>
               <p>
                 Certified teachers, university professors, and subject matter experts committed to culturally
@@ -306,7 +368,7 @@ export default function HomeContent() {
               </p>
             </div>
             <div className="glass-card">
-              <span className="card-icon">🌱</span>
+              <Sprout className="card-icon" {...ICON} />
               <h3>Community Leaders</h3>
               <p>
                 Indigenous community members, elders, and cultural practitioners who share traditional knowledge
@@ -314,7 +376,7 @@ export default function HomeContent() {
               </p>
             </div>
             <div className="glass-card">
-              <span className="card-icon">💼</span>
+              <Briefcase className="card-icon" {...ICON} />
               <h3>Career Professionals</h3>
               <p>
                 Successful indigenous professionals from various fields who inspire students and share real-world
@@ -323,9 +385,23 @@ export default function HomeContent() {
             </div>
           </div>
 
-          <div className="section-header mt-24" style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '4rem 2rem' }}>
-            <h2 className="section-title" style={{ textAlign: 'center', width: '100%' }}>Become a Tutor</h2>
-            <p className="section-subtitle" style={{ marginBottom: '2.5rem', textAlign: 'center', maxWidth: '600px' }}>
+          <div
+            className="section-header mt-24"
+            style={{
+              textAlign: "center",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              padding: "4rem 2rem",
+            }}
+          >
+            <h2 className="section-title" style={{ textAlign: "center", width: "100%" }}>
+              Become a Tutor
+            </h2>
+            <p
+              className="section-subtitle"
+              style={{ marginBottom: "2.5rem", textAlign: "center", maxWidth: "600px" }}
+            >
               Share your knowledge, experience, and passion. Help shape the next generation of indigenous leaders
               and scholars. Apply today to join our community of dedicated educators.
             </p>
@@ -336,21 +412,37 @@ export default function HomeContent() {
         </div>
       </div>
 
-      <button id="scrollTopBtn" type="button" title="Back to Top">
+      <button id="scrollTopBtn" type="button" title="Back to Top" aria-label="Back to top">
         ↑
       </button>
 
       <div className="music-control" id="musicControl">
         <div className="music-header">
-          <div className="music-icon">🎵</div>
+          <Music className="music-icon" size={22} strokeWidth={1.5} aria-hidden="true" />
           <div className="music-title">Music</div>
-          <button type="button" className="collapse-btn" id="collapseBtn">
+          <button
+            type="button"
+            className="collapse-btn"
+            id="collapseBtn"
+            aria-label="Collapse music player"
+          >
             →
           </button>
         </div>
 
         <div className="music-panel">
-          <input type="range" id="volumeSlider" className="volume-slider" min="0" max="100" defaultValue="30" />
+          <label htmlFor="volumeSlider" className="sr-only">
+            Volume
+          </label>
+          <input
+            type="range"
+            id="volumeSlider"
+            className="volume-slider"
+            min="0"
+            max="100"
+            defaultValue="30"
+            aria-label="Volume"
+          />
 
           <div className="volume-label">
             <span>Soft</span>
@@ -358,7 +450,7 @@ export default function HomeContent() {
             <span>Intense</span>
           </div>
 
-          <button type="button" className="music-toggle" id="musicToggle">
+          <button type="button" className="music-toggle" id="musicToggle" aria-label="Play music">
             ▶ Play Music
           </button>
         </div>

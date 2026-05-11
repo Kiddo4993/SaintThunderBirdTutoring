@@ -1,10 +1,18 @@
-import { Orbitron } from "next/font/google";
+import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
-const orbitron = Orbitron({
+const fraunces = Fraunces({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
-  variable: "--font-orbitron",
+  axes: ["opsz", "SOFT", "WONK"],
+  variable: "--font-fraunces",
+  display: "swap",
+});
+
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-jakarta",
+  display: "swap",
 });
 
 export const metadata = {
@@ -17,7 +25,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${orbitron.variable} ${orbitron.className} antialiased`}>
+      <body className={`${fraunces.variable} ${plusJakarta.variable} antialiased`}>
         {children}
       </body>
     </html>

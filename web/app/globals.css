@@ -3,7 +3,50 @@
 
 /* Tailwind layout utilities used alongside legacy class-based theme (incremental migration). */
 @theme inline {
-  --font-sans: var(--font-orbitron), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-jakarta), 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+/* ============================================================
+   ACCESSIBILITY
+   ============================================================ */
+
+/* Skip to main content link — visible only on keyboard focus */
+.skip-link {
+    position: absolute;
+    top: -60px;
+    left: 1rem;
+    z-index: 9999;
+    padding: 0.6rem 1.2rem;
+    background: var(--beige);
+    color: #000;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: none;
+    border-radius: 0 0 8px 8px;
+    transition: top 0.2s ease;
+}
+.skip-link:focus {
+    top: 0;
+}
+
+/* Visible focus ring for keyboard navigation */
+:focus-visible {
+    outline: 2px solid var(--beige);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+/* Screen-reader-only utility */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
 }
 
 /* ============================================================
@@ -372,7 +415,7 @@ body.light-mode .form-group label, body.light-mode label.form-label {
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
     color: #ffffff;
-    font-family: 'Orbitron', sans-serif;
+    font-family: inherit;
     font-size: 0.95rem;
     transition: all 0.3s;
 }
@@ -429,7 +472,7 @@ body.light-mode .checkbox-group label {
     color: #fff;
     border: none;
     border-radius: 12px;
-    font-family: 'Orbitron', sans-serif;
+    font-family: inherit;
     font-size: 1rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -745,7 +788,7 @@ body.light-mode .checkbox-group label {
     padding: 1rem 2rem;
     border: none;
     border-radius: 8px;
-    font-family: 'Orbitron', sans-serif;
+    font-family: inherit;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s;
@@ -791,7 +834,7 @@ body.light-mode .checkbox-group label {
     left: 2rem;
     padding: 1rem 1.5rem;
     border-radius: 12px;
-    font-family: 'Orbitron', sans-serif;
+    font-family: inherit;
     font-weight: 700;
     font-size: 0.9rem;
     z-index: 10000;
@@ -912,7 +955,7 @@ body.light-mode .checkbox-group label {
     padding: 0.75rem 1.5rem;
     border: none;
     border-radius: 8px;
-    font-family: 'Orbitron', sans-serif;
+    font-family: inherit;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s;
@@ -1014,7 +1057,7 @@ body.light-mode .checkbox-group label {
     padding: 1rem 2rem;
     border: none;
     border-radius: 8px;
-    font-family: 'Orbitron', sans-serif;
+    font-family: inherit;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s;
@@ -1089,7 +1132,7 @@ body.light-mode .checkbox-group label {
     cursor: pointer;
     font-weight: 700;
     text-transform: uppercase;
-    font-family: 'Orbitron', monospace;
+    font-family: inherit;
     font-size: 0.85rem;
 }
 
@@ -1234,7 +1277,7 @@ body.light-mode .checkbox-group label {
     padding: 1rem;
     border: none;
     border-radius: 8px;
-    font-family: 'Orbitron', monospace;
+    font-family: inherit;
     font-size: 0.9rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -1254,7 +1297,7 @@ body.light-mode .checkbox-group label {
     padding: 1rem;
     border: none;
     border-radius: 8px;
-    font-family: 'Orbitron', monospace;
+    font-family: inherit;
     font-size: 0.9rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -1498,7 +1541,7 @@ body.light-mode .checkbox-group label {
     border: 1px solid rgba(212, 165, 116, 0.2);
     border-radius: 8px;
     color: var(--text-primary, #ffffff);
-    font-family: 'Orbitron', sans-serif;
+    font-family: inherit;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s;
@@ -1666,7 +1709,7 @@ body.light-mode .checkbox-group label {
     transition: all 0.3s;
     margin-top: 1.5rem;
     width: 100%;
-    font-family: 'Orbitron', sans-serif;
+    font-family: inherit;
 }
 
 .save-btn:hover {
@@ -2376,7 +2419,7 @@ body.light-mode .terms-p, body.light-mode .terms-li {
     transition: all 0.3s;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    font-family: 'Orbitron', sans-serif;
+    font-family: inherit;
 }
 
 .pending-btn:hover {

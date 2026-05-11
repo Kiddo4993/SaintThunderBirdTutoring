@@ -121,23 +121,23 @@ export async function POST(request) {
             ? `<p><strong>Join Link:</strong> <a href="${zoomLink}">${zoomLink}</a></p><p><strong>Meeting ID:</strong> ${sessionRefId}</p>`
             : `<p>Please create a Zoom or Google Meet link and share it with the student: <a href="mailto:${student.email}">${student.email}</a></p>`;
 
-        sendEmailSafe({
-            to: tutor.email,
-            subject: '🎓 New Student Session - Action Required',
-            html: `<h2>You Have a New Tutoring Session!</h2><p><strong>Student:</strong> ${student.firstName} ${student.lastName} (${student.email})</p><p><strong>Subject:</strong> ${requestSubject}</p><p><strong>Duration:</strong> ${toDurationLabel(requestedTime)}</p>${zoomSection}`
-        });
-
-        sendEmailSafe({
-            to: student.email,
-            subject: `✅ Tutor ${tutor.firstName} Accepted Your Request!`,
-            html: `<h2>Great News!</h2><p><strong>${tutor.firstName} ${tutor.lastName}</strong> accepted your tutoring request!</p><p><strong>Subject:</strong> ${requestSubject}</p><p><strong>Tutor Email:</strong> <a href="mailto:${tutor.email}">${tutor.email}</a></p>${zoomLink ? `<p><strong>Zoom Link:</strong> <a href="${zoomLink}">${zoomLink}</a></p>` : '<p>Your tutor will email you a meeting link.</p>'}`
-        });
-
-        sendEmailSafe({
-            to: ADMIN_EMAIL,
-            subject: `🔔 New Session - ${tutor.firstName} ${tutor.lastName} & ${student.firstName} ${student.lastName}`,
-            html: `<h2>New Tutoring Session Created</h2><p><strong>Tutor:</strong> ${tutor.firstName} ${tutor.lastName} (${tutor.email})</p><p><strong>Student:</strong> ${student.firstName} ${student.lastName} (${student.email})</p><p><strong>Subject:</strong> ${requestSubject}</p><p><strong>Reference:</strong> #${sessionRefId}</p>`
-        });
+        await Promise.all([
+            sendEmailSafe({
+                to: tutor.email,
+                subject: '🎓 New Student Session - Action Required',
+                html: `<h2>You Have a New Tutoring Session!</h2><p><strong>Student:</strong> ${student.firstName} ${student.lastName} (${student.email})</p><p><strong>Subject:</strong> ${requestSubject}</p><p><strong>Duration:</strong> ${toDurationLabel(requestedTime)}</p>${zoomSection}`
+            }),
+            sendEmailSafe({
+                to: student.email,
+                subject: `✅ Tutor ${tutor.firstName} Accepted Your Request!`,
+                html: `<h2>Great News!</h2><p><strong>${tutor.firstName} ${tutor.lastName}</strong> accepted your tutoring request!</p><p><strong>Subject:</strong> ${requestSubject}</p><p><strong>Tutor Email:</strong> <a href="mailto:${tutor.email}">${tutor.email}</a></p>${zoomLink ? `<p><strong>Zoom Link:</strong> <a href="${zoomLink}">${zoomLink}</a></p>` : '<p>Your tutor will email you a meeting link.</p>'}`
+            }),
+            sendEmailSafe({
+                to: ADMIN_EMAIL,
+                subject: `🔔 New Session - ${tutor.firstName} ${tutor.lastName} & ${student.firstName} ${student.lastName}`,
+                html: `<h2>New Tutoring Session Created</h2><p><strong>Tutor:</strong> ${tutor.firstName} ${tutor.lastName} (${tutor.email})</p><p><strong>Student:</strong> ${student.firstName} ${student.lastName} (${student.email})</p><p><strong>Subject:</strong> ${requestSubject}</p><p><strong>Reference:</strong> #${sessionRefId}</p>`
+            })
+        ]);
 
         return NextResponse.json({ success: true, message: 'Request accepted!', sessionRefId, tutorEmail: tutor.email, zoomLink });
     } catch (error) {

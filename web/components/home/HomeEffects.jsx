@@ -369,7 +369,7 @@ export default function HomeEffects({ infoMenuOpen, setInfoMenuOpen }) {
       <div className="premium-info-card active">
         <div className="premium-info-backdrop" onClick={hidePremium} aria-hidden />
         <div className="premium-info-content">
-          <button type="button" className="premium-info-close" onClick={hidePremium}>
+          <button type="button" className="premium-info-close" aria-label="Close" onClick={hidePremium}>
             ×
           </button>
           <div className="premium-info-icon">{card.icon}</div>
@@ -390,16 +390,18 @@ export default function HomeEffects({ infoMenuOpen, setInfoMenuOpen }) {
             <button
               type="button"
               className="premium-info-prev"
+              aria-label="Previous card"
               onClick={() => setCardIndex((i) => (i - 1 + infoCards.length) % infoCards.length)}
             >
               ←
             </button>
-            <span className="premium-info-counter">
+            <span className="premium-info-counter" aria-live="polite" aria-atomic="true">
               {cardIndex + 1}/{infoCards.length}
             </span>
             <button
               type="button"
               className="premium-info-next"
+              aria-label="Next card"
               onClick={() => setCardIndex((i) => (i + 1) % infoCards.length)}
             >
               →

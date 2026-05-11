@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saint Thunderbird Tutoring</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d0a06;--bg2:#1a1208;--text:#f0e8d8;--dim:#c8b99a;--gold:#d4a574;--brown:#8b4513;--dark:#6b4423}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',system-ui,sans-serif;line-height:1.7;overflow-x:hidden}
+h1,h2,h3,h4{font-family:'Fraunces',Georgia,serif}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--gold);border-radius:2px}
+
+/* ACCESSIBILITY */
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:4px}
+a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+a,button,[role="button"],.sdot,.psi,.mcard{cursor:pointer}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  html{scroll-behavior:auto}
+  .hero-bg,.hero-content{transform:none!important}
+  .mentor-strip{transform:none!important;display:flex;flex-wrap:wrap}
+}
+
+/* SCROLL PROGRESS */
+.spb{position:fixed;top:0;left:0;height:2px;width:0%;background:linear-gradient(90deg,var(--gold),var(--brown));z-index:1001;pointer-events:none}
+
+/* LOADING */
+.ls{position:fixed;inset:0;background:radial-gradient(circle,#0a0e27,#030712);z-index:9998;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.ls.exit{animation:lsExit 1s ease forwards}
+@keyframes lsExit{to{opacity:0;transform:scale(1.05);filter:blur(8px)}}
+.ls-stars{position:absolute;inset:0;overflow:hidden}
+.ls-star{position:absolute;border-radius:50%;background:#fff;animation:tk 3s infinite}
+@keyframes tk{0%,100%{opacity:.2}50%{opacity:.9}}
+.ls-orbs{position:absolute;inset:0}
+.lo{position:absolute;border-radius:50%;filter:blur(80px);opacity:.12;animation:of 15s ease-in-out infinite}
+.lo1{width:400px;height:400px;background:rgba(74,124,158,.4);top:-100px;right:-100px}
+.lo2{width:300px;height:300px;background:rgba(212,165,116,.3);bottom:-50px;left:-50px;animation-delay:3s}
+@keyframes of{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,40px)}}
+.ls-scan{position:absolute;width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(212,165,116,.5),transparent);animation:sc 2.5s linear infinite;pointer-events:none}
+@keyframes sc{0%{top:0}100%{top:100%}}
+.ls-content{position:relative;z-index:10;text-align:center}
+.ls-holo{display:block;background:linear-gradient(135deg,#4a7c9e,#d4a574,#8b4513);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;opacity:0;transform:rotateY(-90deg) scale(.3);animation:holoIn 2s cubic-bezier(.34,1.56,.64,1) .3s forwards}
+@keyframes holoIn{0%{opacity:0;transform:rotateY(-90deg) scale(.3)}100%{opacity:1;transform:rotateY(0) scale(1)}}
+.ls-title{font-family:'Orbitron',sans-serif;font-size:clamp(2rem,7vw,3.5rem);font-weight:900;letter-spacing:.08em;text-transform:uppercase;opacity:0;transform:translateY(40px);background:linear-gradient(90deg,#e8d5c4,#d4a574,#4a7c9e,#d4a574,#e8d5c4);background-size:200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:lsUp 1s cubic-bezier(.34,1.56,.64,1) 1.8s forwards,shim 3s linear 2.2s infinite;margin-top:1.5rem}
+.ls-sub{font-size:1rem;color:#d4a574;letter-spacing:.25em;text-transform:uppercase;font-weight:600;opacity:0;animation:lsUp .8s ease 2.4s forwards}
+@keyframes lsUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shim{0%,100%{background-position:200%}50%{background-position:-200%}}
+.ls-bar-wrap{width:260px;height:4px;background:rgba(74,124,158,.15);border-radius:10px;overflow:hidden;margin:4rem auto 0;opacity:0;animation:fi 1s ease 3s forwards}
+.ls-bar{height:100%;width:0%;background:linear-gradient(90deg,#4a7c9e,#d4a574,#8b4513);animation:fb 4s ease forwards}
+@keyframes fb{0%{width:0%}100%{width:100%}}
+@keyframes fi{to{opacity:1}}
+.ls-dots{display:flex;gap:.75rem;justify-content:center;margin-top:1.5rem;opacity:0;animation:fi .8s ease 3.4s forwards}
+.ls-dot{width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg,#d4a574,#8b4513);animation:db 1.6s ease-in-out infinite}
+.ls-dot:nth-child(2){animation-delay:.3s}.ls-dot:nth-child(3){animation-delay:.6s}
+@keyframes db{0%,100%{transform:scale(1);opacity:.5}50%{transform:scale(1.4) translateY(-6px);opacity:1}}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:2rem 0;transition:all .4s cubic-bezier(.4,0,.2,1)}
+nav.scrolled{background:rgba(13,10,6,.88);backdrop-filter:blur(24px) saturate(1.4);-webkit-backdrop-filter:blur(24px) saturate(1.4);padding:1rem 0;border-bottom:1px solid rgba(212,165,116,.12);box-shadow:0 1px 0 rgba(212,165,116,.06),0 8px 32px rgba(0,0,0,.3)}
+.nav-inner{max-width:1300px;margin:0 auto;padding:0 3rem;display:flex;justify-content:space-between;align-items:center}
+.logo{font-family:'Orbitron',sans-serif;font-size:1.1rem;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:.05em;text-decoration:none;display:flex;align-items:center;gap:.6rem}
+.logo svg{color:var(--gold)}
+.nav-links{list-style:none;display:flex;gap:2.5rem}
+.nav-links a{color:#b0a898;font-size:.85rem;font-weight:500;text-decoration:none;transition:color .3s;position:relative;padding-bottom:3px}
+.nav-links a::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1px;background:var(--gold);transition:width .3s}
+.nav-links a:hover{color:#fff}.nav-links a:hover::after{width:100%}
+.nav-cta{padding:.6rem 1.4rem;background:linear-gradient(135deg,var(--gold),var(--brown));color:#fff;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-weight:600;font-size:.85rem;cursor:pointer;transition:all .3s;text-decoration:none}
+.nav-cta:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(212,165,116,.4)}
+
+/* HERO */
+.hero{height:100vh;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(circle at center,#1a1208,#0d0a06);will-change:transform}
+.hero-mesh{position:absolute;inset:0;background:radial-gradient(at 20% 30%,rgba(107,68,35,.18) 0%,transparent 55%),radial-gradient(at 80% 70%,rgba(139,69,19,.14) 0%,transparent 55%),radial-gradient(at 50% 50%,rgba(212,165,116,.1) 0%,transparent 55%);filter:blur(60px);animation:md 25s ease-in-out infinite}
+@keyframes md{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,20px) scale(1.02)}66%{transform:translate(-20px,30px) scale(.98)}}
+/* ambient blobs */
+.blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:0;animation:blob-in .8s ease forwards, blob-drift var(--dur,20s) ease-in-out var(--delay,0s) infinite}
+@keyframes blob-in{to{opacity:var(--op,.1)}}
+@keyframes blob-drift{0%,100%{transform:translate(0,0)}33%{transform:translate(var(--dx1,30px),var(--dy1,20px))}66%{transform:translate(var(--dx2,-20px),var(--dy2,35px))}}
+.blob1{width:500px;height:500px;background:rgba(107,68,35,.35);top:-10%;left:-8%;--op:.09;--dur:22s;--delay:6.5s;--dx1:40px;--dy1:25px;--dx2:-15px;--dy2:40px}
+.blob2{width:380px;height:380px;background:rgba(212,165,116,.3);bottom:-5%;right:-5%;--op:.08;--dur:28s;--delay:7s;--dx1:-30px;--dy1:-20px;--dx2:20px;--dy2:-35px}
+.blob3{width:280px;height:280px;background:rgba(74,124,158,.25);top:30%;left:60%;--op:.06;--dur:18s;--delay:7.2s;--dx1:20px;--dy1:-30px;--dx2:-25px;--dy2:15px}
+.hero-stars{position:absolute;inset:0;overflow:hidden}
+.hstar{position:absolute;border-radius:50%;background:var(--gold);opacity:0;animation:tk 3s infinite}
+.hero-content{position:relative;z-index:2;text-align:center;max-width:920px;padding:0 2rem;will-change:transform,opacity}
+.hero-badge{display:inline-block;padding:.6rem 1.4rem;background:rgba(212,165,116,.08);border:1px solid rgba(212,165,116,.25);border-radius:50px;color:var(--gold);font-size:.7rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;margin-bottom:2rem;opacity:0;animation:fu .8s ease 5.2s forwards}
+.hero h1{font-size:clamp(3.2rem,9vw,6.5rem);font-weight:900;line-height:1.05;letter-spacing:.01em;margin-bottom:1.5rem;opacity:0;animation:fu .9s ease 5.4s forwards}
+.hero p{font-size:clamp(.95rem,1.8vw,1.1rem);color:var(--dim);max-width:560px;margin:0 auto 2.5rem;opacity:0;animation:fu .9s ease 5.6s forwards;line-height:1.8}
+.hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;opacity:0;animation:fu .9s ease 5.8s forwards}
+@keyframes fu{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.gt{background:linear-gradient(135deg,var(--gold),var(--dark),var(--brown));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.scroll-hint{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.5rem;color:var(--dim);font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;opacity:0;animation:fi 1s ease 6.2s forwards}
+.sarrow{width:20px;height:20px;border-right:1.5px solid var(--gold);border-bottom:1.5px solid var(--gold);transform:rotate(45deg);animation:bd 1.5s ease-in-out infinite}
+@keyframes bd{0%,100%{transform:rotate(45deg) translateY(0)}50%{transform:rotate(45deg) translateY(6px)}}
+
+/* BUTTONS */
+.btn{padding:.9rem 2.2rem;border-radius:10px;font-weight:600;font-size:.95rem;text-decoration:none;display:inline-flex;align-items:center;gap:.5rem;position:relative;overflow:hidden;transition:all .3s;border:none;cursor:pointer;font-family:'Inter',sans-serif}
+.btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);transition:left .5s}
+.btn:hover::before{left:100%}
+.btn-p{background:linear-gradient(135deg,var(--gold),var(--brown));color:#fff;box-shadow:0 8px 32px rgba(212,165,116,.3),0 0 0 0 rgba(212,165,116,0);transition:transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s cubic-bezier(.22,1,.36,1)}
+.btn-p:hover{transform:translateY(-3px);box-shadow:0 14px 44px rgba(212,165,116,.55),0 0 40px rgba(212,165,116,.18)}
+.btn-g{background:rgba(255,255,255,.04);color:#fff;border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(10px)}
+.btn-g:hover{background:rgba(255,255,255,.09);transform:translateY(-2px)}
+
+/* STATS */
+.stats-strip{padding:5rem 0;border-top:1px solid rgba(212,165,116,.1);border-bottom:1px solid rgba(212,165,116,.1)}
+.stats-inner{max-width:1100px;margin:0 auto;padding:0 2rem}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem}
+.si{text-align:center;opacity:0;transform:translateY(20px);transition:opacity .6s,transform .6s}
+.si.in{opacity:1;transform:translateY(0)}
+.si-num{font-family:'Orbitron',sans-serif;font-size:clamp(2.2rem,5vw,3.2rem);font-weight:900;color:var(--gold);line-height:1}
+.si-lbl{font-size:.8rem;color:var(--dim);font-weight:500;margin-top:.5rem;text-transform:uppercase;letter-spacing:.06em}
+
+/* ABOUT CARDS */
+.section{padding:8rem 0}
+.container{max-width:1200px;margin:0 auto;padding:0 2.5rem}
+.eyebrow{display:inline-block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.2em;color:var(--gold);margin-bottom:1rem}
+.sh2{font-size:clamp(2rem,5vw,3rem);font-weight:900;line-height:1.1;margin-bottom:1rem}
+.ssub{color:var(--dim);font-size:1rem;line-height:1.7;max-width:540px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin-top:4rem}
+.card{background:rgba(255,245,225,.04);border:1px solid rgba(212,165,116,.14);border-radius:20px;padding:2.5rem;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:border-color .5s cubic-bezier(.22,1,.36,1),transform .5s cubic-bezier(.22,1,.36,1),box-shadow .5s cubic-bezier(.22,1,.36,1),opacity .6s cubic-bezier(.22,1,.36,1);opacity:0;transform:translateY(30px);position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 20%,rgba(212,165,116,.08),transparent 60%);opacity:0;transition:opacity .5s}
+.card::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(212,165,116,.3),transparent);opacity:0;transition:opacity .5s}
+.card:hover::before,.card:hover::after{opacity:1}
+.card.in{opacity:1;transform:translateY(0)}
+.card:hover{border-color:rgba(212,165,116,.28);transform:translateY(-8px);box-shadow:0 20px 60px rgba(0,0,0,.35),0 0 0 1px rgba(212,165,116,.08)}
+.ci{color:var(--gold);margin-bottom:1.5rem;display:block;filter:drop-shadow(0 2px 8px rgba(212,165,116,.2))}
+.card h3{font-size:1.2rem;font-weight:700;color:#f0e8d8;margin-bottom:.75rem}
+.card p{color:var(--dim);font-size:.93rem;line-height:1.8}
+.cl{display:inline-block;margin-top:1rem;color:var(--gold);font-weight:600;text-decoration:none;font-size:.88rem}
+.cl:hover{text-decoration:underline}
+
+/* ── PINNED SUBJECT SHOWCASE ── */
+.pin-track{position:relative}
+.pin-sticky{position:sticky;top:0;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.pin-bg{position:absolute;inset:0;background:var(--bg);transition:background 1s ease}
+.subject-layout{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:0 3rem;display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:center;width:100%}
+.sub-ghost{font-family:'Orbitron',sans-serif;font-size:10rem;font-weight:900;color:rgba(212,165,116,.04);line-height:1;position:absolute;top:-4rem;left:-2rem;pointer-events:none;user-select:none;transition:opacity .6s}
+.sub-eyebrow{font-size:.65rem;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;opacity:.8}
+.sub-h2{font-size:clamp(2rem,4vw,3rem);font-weight:900;line-height:1.1;margin-bottom:1.5rem;transition:opacity .5s,transform .5s}
+.sub-p{color:var(--dim);line-height:1.8;font-size:1rem;max-width:420px;transition:opacity .5s,transform .5s}
+.sub-dots{display:flex;gap:.5rem;margin-top:2.5rem}
+.sdot{width:8px;height:8px;border-radius:50%;background:rgba(212,165,116,.2);transition:all .4s;cursor:pointer}
+.sdot.on{background:var(--gold);width:28px;border-radius:4px}
+.sub-panel{opacity:0;transform:translateY(22px);transition:opacity .6s cubic-bezier(.22,1,.36,1),transform .6s cubic-bezier(.22,1,.36,1);position:absolute;inset:0;pointer-events:none}
+.sub-panel.on{opacity:1;transform:translateY(0);pointer-events:all;position:relative}
+.sub-left{position:relative;min-height:260px}
+.sub-right{display:flex;align-items:center;justify-content:center}
+.sub-icon-box{width:260px;height:260px;border-radius:40px;background:rgba(255,245,225,.04);border:1px solid rgba(212,165,116,.15);display:flex;align-items:center;justify-content:center;box-shadow:0 20px 60px rgba(0,0,0,.35),inset 0 1px 0 rgba(212,165,116,.12);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);position:relative;transition:transform .6s cubic-bezier(.22,1,.36,1),box-shadow .6s cubic-bezier(.22,1,.36,1)}
+.sub-icon-box::before{content:'';position:absolute;inset:-1px;border-radius:40px;background:linear-gradient(135deg,rgba(212,165,116,.25),transparent,rgba(139,69,19,.2));z-index:-1}
+.sub-icon{color:var(--gold);filter:drop-shadow(0 4px 24px rgba(212,165,116,.35));transition:opacity .3s ease,transform .4s cubic-bezier(.22,1,.36,1)}
+.pin-side{position:absolute;left:2rem;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:.75rem;z-index:3}
+.psi{width:2px;height:28px;background:rgba(212,165,116,.15);border-radius:1px;cursor:pointer;transition:all .4s}
+.psi.on{height:48px;background:var(--gold)}
+.pin-label{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);font-size:.65rem;color:var(--dim);text-transform:uppercase;letter-spacing:.15em;opacity:.4}
+
+/* ── MISSION TEXT REVEAL ── */
+.mission-sec{padding:10rem 0;background:linear-gradient(180deg,var(--bg),#1a1208,var(--bg))}
+.mission-inner{max-width:860px;margin:0 auto;padding:0 2.5rem}
+.mission-text{font-family:'Orbitron',sans-serif;font-size:clamp(1.8rem,4vw,3rem);font-weight:700;line-height:1.4}
+.mw{display:inline;color:rgba(240,232,216,.15);transition:color .65s cubic-bezier(.22,1,.36,1)}
+.mw.lit{color:var(--text)}
+.mw.hl{color:var(--gold)}
+
+/* ── HORIZONTAL MENTOR SCROLL ── */
+.mentor-track{position:relative}
+.mentor-sticky{position:sticky;top:0;height:100vh;overflow:hidden}
+.mentor-header-abs{position:absolute;left:0;top:0;bottom:0;width:360px;display:flex;flex-direction:column;justify-content:center;padding:0 3rem;z-index:3;background:linear-gradient(90deg,var(--bg) 70%,transparent)}
+.mentor-cards-area{position:absolute;left:340px;right:0;top:0;bottom:0;display:flex;align-items:center;overflow:visible}
+.mentor-strip{display:flex;gap:2rem;padding-right:3rem;will-change:transform}
+.mcard{flex-shrink:0;width:300px;height:360px;background:rgba(255,245,225,.04);border:1px solid rgba(212,165,116,.12);border-radius:24px;padding:2.5rem;display:flex;flex-direction:column;justify-content:space-between;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:border-color .4s cubic-bezier(.22,1,.36,1),box-shadow .4s cubic-bezier(.22,1,.36,1),transform .4s cubic-bezier(.22,1,.36,1)}
+.mcard:hover{border-color:rgba(212,165,116,.28);box-shadow:0 16px 52px rgba(0,0,0,.35),0 0 0 1px rgba(212,165,116,.07);transform:translateY(-8px)}
+.mcard-icon{color:var(--gold);margin-bottom:auto;filter:drop-shadow(0 2px 8px rgba(212,165,116,.2))}
+.mcard h3{font-size:1.2rem;font-weight:700;color:#f0e8d8;margin-bottom:.6rem}
+.mcard p{color:var(--dim);font-size:.9rem;line-height:1.7}
+.mentor-prog{position:absolute;bottom:3rem;left:360px;display:flex;gap:.5rem}
+.mp-dot{width:6px;height:6px;border-radius:50%;background:rgba(212,165,116,.2);transition:all .4s}
+.mp-dot.on{background:var(--gold);width:20px;border-radius:3px}
+
+/* CTA */
+.cta-sec{padding:10rem 0;text-align:center;background:linear-gradient(180deg,var(--bg),#1a1208 50%,var(--bg))}
+.cta-sec h2{font-size:clamp(2.2rem,6vw,4rem);font-weight:900;margin-bottom:1.5rem}
+.cta-sec p{color:var(--dim);font-size:1.05rem;max-width:500px;margin:0 auto 3rem;line-height:1.8}
+
+/* FOOTER */
+footer{padding:4rem 2rem;text-align:center;border-top:1px solid rgba(255,255,255,.05)}
+footer p{color:var(--dim);font-size:.85rem;margin-bottom:.4rem}
+
+/* MUSIC */
+.mw-widget{position:fixed;bottom:2rem;left:2rem;z-index:200;animation:sil .6s cubic-bezier(.34,1.56,.64,1) 6s both}
+@keyframes sil{from{opacity:0;transform:translateX(-50px)}to{opacity:1;transform:translateX(0)}}
+.mw-bubble{width:52px;height:52px;border-radius:50%;background:rgba(10,10,15,.95);border:1px solid rgba(212,165,116,.25);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gold);transition:all .3s;box-shadow:0 4px 20px rgba(0,0,0,.4)}
+.mw-bubble:hover{transform:scale(1.1);box-shadow:0 6px 28px rgba(212,165,116,.25)}
+.mw-panel{position:absolute;bottom:64px;left:0;width:240px;background:rgba(10,10,15,.97);border:1px solid rgba(212,165,116,.2);border-radius:14px;padding:1.2rem;opacity:0;visibility:hidden;transform:translateY(10px) scale(.95);transition:all .3s cubic-bezier(.16,1,.3,1);backdrop-filter:blur(20px)}
+.mw-panel.open{opacity:1;visibility:visible;transform:translateY(0) scale(1)}
+.mw-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.mw-title{color:var(--gold);font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em}
+.mw-close{background:none;border:none;color:var(--dim);cursor:pointer;font-size:1.1rem;padding:0;line-height:1}
+.mw-slider{width:100%;height:4px;border-radius:2px;background:rgba(212,165,116,.2);appearance:none;cursor:pointer;margin-bottom:.5rem}
+.mw-slider::-webkit-slider-thumb{appearance:none;width:12px;height:12px;border-radius:50%;background:var(--gold)}
+.mw-vol-row{display:flex;justify-content:space-between;font-size:.7rem;color:var(--dim);margin-bottom:.8rem}
+.mw-play{width:100%;padding:.6rem;background:rgba(212,165,116,.08);border:1px solid rgba(212,165,116,.2);border-radius:8px;color:var(--gold);font-family:'Inter',sans-serif;font-weight:700;font-size:.78rem;cursor:pointer;transition:all .3s;text-transform:uppercase;letter-spacing:.05em}
+.mw-play:hover{background:rgba(212,165,116,.15)}
+
+/* SCROLL TOP */
+#stb{position:fixed;bottom:2rem;right:2rem;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--brown));border:none;color:#fff;font-size:1.2rem;cursor:pointer;z-index:200;opacity:0;visibility:hidden;transform:translateY(20px);transition:all .4s cubic-bezier(.68,-.55,.265,1.55);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 24px rgba(212,165,116,.4)}
+#stb.on{opacity:1;visibility:visible;transform:translateY(0)}
+#stb:hover{transform:translateY(-3px) scale(1.1)}
+
+/* RESPONSIVE */
+@media(max-width:960px){.subject-layout{grid-template-columns:1fr}.sub-right{display:none}.cards{grid-template-columns:1fr 1fr}.stats-row{grid-template-columns:repeat(2,1fr)}.nav-links{display:none}}
+@media(max-width:600px){.cards{grid-template-columns:1fr}.stats-row{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<div class="spb" id="spb"></div>
+
+<!-- LOADING -->
+<div class="ls" id="ls">
+  <div class="ls-scan"></div>
+  <div class="ls-stars" id="lss"></div>
+  <div class="ls-orbs"><div class="lo lo1"></div><div class="lo lo2"></div></div>
+  <div class="ls-content">
+    <svg class="ls-holo" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+    <div class="ls-title">Saint Thunderbird</div>
+    <div class="ls-sub">Tutoring</div>
+    <div class="ls-bar-wrap"><div class="ls-bar"></div></div>
+    <div class="ls-dots"><div class="ls-dot"></div><div class="ls-dot"></div><div class="ls-dot"></div></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-inner">
+    <a href="#" class="logo">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      Saint Thunderbird
+    </a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#subjects">Subjects</a></li>
+      <li><a href="#mentors">Mentors</a></li>
+    </ul>
+    <a href="#" class="nav-cta">Apply Now</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg" id="heroBg"></div>
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+  <div class="hero-mesh"></div>
+  <div class="hero-stars" id="hs"></div>
+  <div class="hero-content" id="hc">
+    <div class="hero-badge">Empowering Indigenous Students Since 2024</div>
+    <h1><span class="gt">Excellence</span><br>In Indigenous<br>Education</h1>
+    <p>Connecting indigenous and rural community students with expert volunteer tutors for academic success and cultural pride.</p>
+    <div class="hero-btns">
+      <a href="#subjects" class="btn btn-p">Explore Courses →</a>
+      <a href="#mentors" class="btn btn-g">Become a Tutor</a>
+    </div>
+  </div>
+  <div class="scroll-hint"><span>Scroll</span><div class="sarrow"></div></div>
+</section>
+
+<!-- STATS -->
+<div class="stats-strip">
+  <div class="stats-inner">
+    <div class="stats-row">
+      <div class="si"><div class="si-num"><span class="ctr" data-t="500">0</span></div><div class="si-lbl">Students Enrolled</div></div>
+      <div class="si"><div class="si-num"><span class="ctr" data-t="15">0</span></div><div class="si-lbl">Communities Served</div></div>
+      <div class="si"><div class="si-num"><span class="ctr" data-t="100">0</span>%</div><div class="si-lbl">Success Rate</div></div>
+      <div class="si"><div class="si-num"><span class="ctr" data-t="45">0</span></div><div class="si-lbl">Expert Tutors</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT CARDS -->
+<section class="section" id="about">
+  <div class="container">
+    <div class="eyebrow">Who We Are</div>
+    <h2 class="sh2"><span class="gt">Built for</span> the community</h2>
+    <p class="ssub">Our mission, vision, and values are rooted in respect for Indigenous culture and a commitment to educational excellence.</p>
+    <div class="cards">
+      <div class="card">
+        <svg class="ci" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <h3>Our Mission</h3>
+        <p>Providing culturally responsive education that honors indigenous traditions while preparing students for future success through accessible, high-quality tutoring.</p>
+        <a href="#" class="cl">Learn more →</a>
+      </div>
+      <div class="card">
+        <svg class="ci" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        <h3>Our Vision</h3>
+        <p>A world where indigenous students thrive academically while maintaining strong connections to their cultural heritage, languages, and community values.</p>
+        <a href="#" class="cl">Learn more →</a>
+      </div>
+      <div class="card">
+        <svg class="ci" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l4 6-10 13L2 9z"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/></svg>
+        <h3>Our Values</h3>
+        <p>Cultural respect, educational excellence, community empowerment, inclusivity, and sustainable growth through collaborative learning and mutual support.</p>
+        <a href="#" class="cl">Learn more →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PINNED SUBJECT SHOWCASE -->
+<div class="pin-track" id="subTrack">
+  <div class="pin-sticky" id="subPin">
+    <div class="pin-bg" id="subBg"></div>
+    <div class="pin-side" id="pinSide"></div>
+    <div class="subject-layout">
+      <div class="sub-left">
+        <div style="position:relative;min-height:300px" id="subPanels"></div>
+      </div>
+      <div class="sub-right">
+        <div class="sub-icon-box">
+          <svg class="sub-icon" id="subIcon" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"></svg>
+        </div>
+      </div>
+    </div>
+    <div class="pin-label" id="subjects">Keep scrolling</div>
+  </div>
+</div>
+
+<!-- MISSION REVEAL -->
+<section class="mission-sec" id="missionSec">
+  <div class="mission-inner">
+    <div class="eyebrow" style="display:block;margin-bottom:2rem">Our Purpose</div>
+    <div class="mission-text" id="missionText"></div>
+  </div>
+</section>
+
+<!-- HORIZONTAL MENTOR SCROLL -->
+<div class="mentor-track" id="mentorTrack">
+  <div class="mentor-sticky" id="mentorSticky">
+    <div class="mentor-header-abs">
+      <div class="eyebrow">Our Team</div>
+      <h2 class="sh2" style="font-size:2rem">The people<br><span class="gt">behind the mission</span></h2>
+      <p style="color:var(--dim);font-size:.9rem;line-height:1.7;margin-top:1rem">Certified educators, indigenous leaders, and career professionals dedicated to student success.</p>
+    </div>
+    <div class="mentor-cards-area">
+      <div class="mentor-strip" id="mentorStrip">
+        <div class="mcard">
+          <svg class="mcard-icon" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          <div><h3>Expert Educators</h3><p>Certified teachers and university professors committed to culturally responsive education and student success.</p></div>
+        </div>
+        <div class="mcard">
+          <svg class="mcard-icon" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/></svg>
+          <div><h3>Community Leaders</h3><p>Indigenous elders and cultural practitioners who share traditional knowledge and provide cultural guidance.</p></div>
+        </div>
+        <div class="mcard">
+          <svg class="mcard-icon" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          <div><h3>Career Professionals</h3><p>Successful indigenous professionals who inspire students and share real-world experience and career insights.</p></div>
+        </div>
+        <div class="mcard">
+          <svg class="mcard-icon" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <div><h3>Peer Mentors</h3><p>University students from indigenous backgrounds providing relatable support and guidance to younger learners.</p></div>
+        </div>
+        <div class="mcard">
+          <svg class="mcard-icon" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <div><h3>Youth Advocates</h3><p>Young indigenous voices who champion student rights, celebrate cultural identity, and build bridges across communities.</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="mentor-prog" id="mentorProg"></div>
+  </div>
+</div>
+
+<!-- CTA -->
+<section class="cta-sec" id="mentors">
+  <div class="container">
+    <div class="eyebrow" style="display:block;margin-bottom:1.5rem">Join Our Community</div>
+    <h2><span class="gt">Become a Tutor</span></h2>
+    <p>Share your knowledge, experience, and passion. Help shape the next generation of indigenous leaders and scholars.</p>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+      <a href="#" class="btn btn-p">Apply to Tutor →</a>
+      <a href="#" class="btn btn-g">Learn More</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Saint Thunderbird Tutoring</p>
+  <p style="opacity:.6">All coded, no website builder · Empowering communities through education</p>
+</footer>
+
+<!-- MUSIC -->
+<div class="mw-widget">
+  <div class="mw-bubble" id="mwBubble">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+  </div>
+  <div class="mw-panel" id="mwPanel">
+    <div class="mw-top"><span class="mw-title">♪ Ambient</span><button class="mw-close" id="mwClose">×</button></div>
+    <input type="range" class="mw-slider" id="mwVol" min="0" max="100" value="30">
+    <div class="mw-vol-row"><span>Soft</span><span id="mwLbl">30%</span><span>Loud</span></div>
+    <button class="mw-play" id="mwPlay">▶ Play</button>
+  </div>
+</div>
+
+<button id="stb" aria-label="Back to top">↑</button>
+
+<script>
+(function(){
+
+// ── DATA ──
+const SUBJECTS = [
+  { num:'01', label:'English & Literature', desc:'Strengthen communication, essay writing, and analytical reading through Indigenous perspectives and contemporary voices.',
+    icon:'M4 19.5A2.5 2.5 0 0 1 6.5 17H20 M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z' },
+  { num:'02', label:'Mathematics', desc:'Master foundational to advanced math concepts with culturally relevant examples and patient, step-by-step mentorship.',
+    icon:'M9 7h6 M9 12h6 M9 17h4 M4 2h16v20H4z' },
+  { num:'03', label:'Science', desc:'Explore biology, chemistry, and physics while connecting traditional Indigenous ecological knowledge with modern scientific discovery.',
+    icon:'M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v11m0 0H5m4 0h10m0-11v11m0 0h4' },
+  { num:'04', label:'Social Studies', desc:'Understand history, geography, and social justice through inclusive and Indigenous-centered perspectives honoring lived experience.',
+    icon:'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z M2 12h20 M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z' },
+  { num:'05', label:'Computer Science', desc:'Build digital skills, learn to code, and explore technology as a tool for creativity, sovereignty, and community empowerment.',
+    icon:'M2 4h20v16H2z M8 20h8 M12 16v4' },
+  { num:'06', label:'Arts & Culture', desc:'Express yourself through visual arts, music, and storytelling — celebrating Indigenous creativity, identity, and cultural pride.',
+    icon:'M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z' },
+];
+
+// ── LOADING ──
+const ls = document.getElementById('ls');
+const lss = document.getElementById('lss');
+for(let i=0;i<150;i++){
+  const s=document.createElement('div'); s.className='ls-star';
+  s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${1+Math.random()*2}px;height:${1+Math.random()*2}px;animation-delay:${Math.random()*3}s`;
+  lss.appendChild(s);
+}
+function dismissLoad(){
+  ls.classList.add('exit');
+  setTimeout(()=>{ ls.style.display='none'; initPage(); },900);
+}
+ls.addEventListener('click', dismissLoad);
+setTimeout(dismissLoad, 4300);
+
+// ── HERO STARS ──
+const hs = document.getElementById('hs');
+for(let i=0;i<80;i++){
+  const s=document.createElement('div'); s.className='hstar';
+  const sz=1+Math.random()*2;
+  s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${sz}px;height:${sz}px;animation-delay:${Math.random()*4}s;animation-duration:${2+Math.random()*3}s`;
+  hs.appendChild(s);
+}
+
+// ── SUBJECT PANELS ──
+const subPanels = document.getElementById('subPanels');
+const pinSide = document.getElementById('pinSide');
+const subIcon = document.getElementById('subIcon');
+const subTrack = document.getElementById('subTrack');
+let curSub = 0;
+
+SUBJECTS.forEach((s,i)=>{
+  const p = document.createElement('div');
+  p.className = 'sub-panel' + (i===0?' on':'');
+  p.style.position = i===0 ? 'relative' : 'absolute';
+  p.style.inset = '0';
+  p.innerHTML = `
+    <div class="sub-ghost">${s.num}</div>
+    <div class="sub-eyebrow">Subject ${s.num} of 06</div>
+    <h2 class="sub-h2">${s.label}</h2>
+    <p class="sub-p">${s.desc}</p>
+    <div class="sub-dots" id="sdots${i}"></div>`;
+  subPanels.appendChild(p);
+
+  const pi = document.createElement('div');
+  pi.className = 'psi' + (i===0?' on':'');
+  pi.dataset.i = i;
+  pinSide.appendChild(pi);
+});
+
+function buildDots(active){
+  SUBJECTS.forEach((_,j)=>{
+    const el = document.getElementById('sdots'+j);
+    if(!el) return;
+    el.innerHTML = '';
+    SUBJECTS.forEach((_,k)=>{
+      const d=document.createElement('div'); d.className='sdot'+(k===active?' on':'');
+      el.appendChild(d);
+    });
+  });
+}
+buildDots(0);
+
+function setSubject(idx){
+  if(idx===curSub) return;
+  const panels = subPanels.querySelectorAll('.sub-panel');
+  panels[curSub].classList.remove('on');
+  panels[curSub].style.position='absolute';
+  panels[idx].classList.add('on');
+  panels[idx].style.position='relative';
+  document.querySelectorAll('.psi').forEach((el,i)=>el.classList.toggle('on',i===idx));
+  buildDots(idx);
+  // fade icon out → swap → fade in
+  subIcon.style.opacity='0';
+  subIcon.style.transform='scale(0.85)';
+  setTimeout(()=>{
+    subIcon.innerHTML = SUBJECTS[idx].icon.split('M').filter(Boolean).map(seg=>`<path d="M${seg.trim()}"/>`).join('');
+    subIcon.style.opacity='1';
+    subIcon.style.transform='scale(1)';
+  }, 220);
+  curSub=idx;
+}
+
+// Set track height (100vh per subject + buffer)
+subTrack.style.height = (SUBJECTS.length * 120 + 50) + 'vh';
+
+// ── MISSION TEXT ──
+const missionEl = document.getElementById('missionText');
+const MISSION = 'To provide culturally responsive education that honors indigenous traditions while preparing students for future success through accessible high-quality tutoring and mentorship connecting communities across generations';
+const HLW = new Set(['indigenous','traditions','future','success','communities','generations','mentorship']);
+MISSION.split(' ').forEach(w=>{
+  const sp = document.createElement('span');
+  sp.className = 'mw' + (HLW.has(w.toLowerCase()) ? ' hl' : '');
+  sp.textContent = w + ' ';
+  missionEl.appendChild(sp);
+});
+
+// ── MENTOR TRACK ──
+const mentorTrack = document.getElementById('mentorTrack');
+const mentorStrip = document.getElementById('mentorStrip');
+const mentorProg = document.getElementById('mentorProg');
+const MCARDS = 5;
+for(let i=0;i<MCARDS;i++){
+  const d=document.createElement('div'); d.className='mp-dot'+(i===0?' on':'');
+  mentorProg.appendChild(d);
+}
+mentorTrack.style.height = (MCARDS * 280 + window.innerHeight) + 'px';
+
+function initPage(){
+
+  // Smooth anchors
+  document.querySelectorAll('a[href^="#"]').forEach(a=>{
+    a.addEventListener('click',e=>{
+      const h=a.getAttribute('href'); if(!h||h==='#') return;
+      e.preventDefault(); const t=document.querySelector(h); if(t) t.scrollIntoView({behavior:'smooth'});
+    });
+  });
+
+  // Intersection observers
+  const rio = new IntersectionObserver(entries=>{
+    entries.forEach((e,i)=>{
+      if(!e.isIntersecting) return;
+      setTimeout(()=>e.target.classList.add('in'), i*90);
+      rio.unobserve(e.target);
+    });
+  },{threshold:.15});
+  document.querySelectorAll('.si,.card').forEach(el=>rio.observe(el));
+
+  const cio = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(!e.isIntersecting||e.target._done) return;
+      e.target._done=true;
+      const t=parseInt(e.target.dataset.t);
+      let f=0,total=110;
+      const go=()=>{ f++; const ease=1-Math.pow(1-f/total,3); e.target.textContent=Math.round(t*ease).toLocaleString(); if(f<total) requestAnimationFrame(go); else e.target.textContent=t.toLocaleString(); };
+      go(); cio.unobserve(e.target);
+    });
+  },{threshold:.3});
+  document.querySelectorAll('.ctr').forEach(el=>cio.observe(el));
+
+  // ── SMOOTH SCROLL DRIVER ──
+  // All continuously-animated values are lerped in a RAF loop so motion is
+  // frame-rate independent and never jitters on fast scrolls.
+  const heroBg = document.getElementById('heroBg');
+  const hc = document.getElementById('hc');
+  const nav = document.getElementById('nav');
+  const stb = document.getElementById('stb');
+  const spb = document.getElementById('spb');
+  const missionSec = document.getElementById('missionSec');
+  const missionWords = document.querySelectorAll('.mw');
+
+  // Lerp targets vs current values
+  let tHP=0, cHP=0;   // hero parallax Y
+  let tHO=1, cHO=1;   // hero content opacity
+  let tHT=0, cHT=0;   // hero content translateY
+  let tMX=0, cMX=0;   // mentor strip translateX
+
+  const EASE = 0.09;
+
+  function onScroll(){
+    const y = window.scrollY;
+    const maxY = document.documentElement.scrollHeight - window.innerHeight;
+
+    // Instant UI state
+    spb.style.width = (y/maxY*100)+'%';
+    nav.classList.toggle('scrolled', y>80);
+    stb.classList.toggle('on', y>500);
+
+    // Hero lerp targets
+    const hf = Math.min(y/window.innerHeight, 1);
+    tHP = y * 0.35;
+    tHO = Math.max(0, 1 - hf * 1.9);
+    tHT = hf * 90;
+
+    // Subject pinned (discrete — snap is intentional, transitions handle smoothing)
+    const stt = subTrack.offsetTop;
+    const ssh = subTrack.offsetHeight - window.innerHeight;
+    const sp = Math.min(Math.max((y-stt)/ssh,0),1);
+    setSubject(Math.min(Math.floor(sp*SUBJECTS.length), SUBJECTS.length-1));
+
+    // Mission word reveal
+    const mt = missionSec.getBoundingClientRect().top + y;
+    const mh = missionSec.offsetHeight;
+    const mp = Math.min(Math.max((y+window.innerHeight*0.7-mt)/mh,0),1);
+    const lit = Math.floor(mp * missionWords.length * 1.4);
+    missionWords.forEach((w,i)=>w.classList.toggle('lit',i<lit));
+
+    // Mentor strip lerp target
+    const mtt = mentorTrack.offsetTop;
+    const msh2 = mentorTrack.offsetHeight - window.innerHeight;
+    const msp = Math.min(Math.max((y-mtt)/msh2,0),1);
+    const stripW = Math.max(0, mentorStrip.scrollWidth - (window.innerWidth - 340));
+    tMX = -msp * stripW;
+    const mci = Math.min(Math.floor(msp*MCARDS), MCARDS-1);
+    document.querySelectorAll('.mp-dot').forEach((d,i)=>d.classList.toggle('on',i===mci));
+  }
+
+  // RAF loop — lerps all smooth values every frame
+  (function rafLoop(){
+    cHP += (tHP - cHP) * EASE;
+    cHO += (tHO - cHO) * EASE;
+    cHT += (tHT - cHT) * EASE;
+    cMX += (tMX - cMX) * EASE;
+
+    heroBg.style.transform = `translateY(${cHP}px)`;
+    hc.style.opacity = cHO;
+    hc.style.transform = `translateY(${cHT}px)`;
+    mentorStrip.style.transform = `translateX(${cMX}px)`;
+
+    requestAnimationFrame(rafLoop);
+  })();
+
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  stb.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+
+  // Music
+  const mwBubble = document.getElementById('mwBubble');
+  const mwPanel = document.getElementById('mwPanel');
+  const mwClose = document.getElementById('mwClose');
+  const mwVol = document.getElementById('mwVol');
+  const mwLbl = document.getElementById('mwLbl');
+  const mwPlay = document.getElementById('mwPlay');
+  let actx=null, playing=false;
+
+  mwBubble.addEventListener('click',()=>mwPanel.classList.toggle('open'));
+  mwClose.addEventListener('click',e=>{e.stopPropagation();mwPanel.classList.remove('open')});
+  mwVol.addEventListener('input',()=>mwLbl.textContent=mwVol.value+'%');
+
+  function note(f,d){
+    if(!actx) return;
+    const v=mwVol.value/100,o=actx.createOscillator(),g=actx.createGain();
+    o.type='sine';o.frequency.value=f;
+    g.gain.setValueAtTime(.05*v,actx.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001*v,actx.currentTime+d);
+    o.connect(g);g.connect(actx.destination);o.start();o.stop(actx.currentTime+d);
+  }
+  function loop(){
+    if(!playing) return;
+    const ns=[[329.63,.6],[349.23,.6],[392,.9],[349.23,.6],[329.63,.6],[293.66,.9],[261.63,.6],[293.66,.6],[329.63,.9]];
+    let dl=0; ns.forEach(([f,d])=>{setTimeout(()=>{if(playing)note(f,d)},dl*1000);dl+=d;});
+    setTimeout(loop,dl*1000);
+  }
+  mwPlay.addEventListener('click',()=>{
+    if(!playing){
+      if(!actx) actx=new(window.AudioContext||window.webkitAudioContext)();
+      actx.resume(); playing=true; mwPlay.textContent='⏸ Stop'; loop();
+    } else { playing=false; mwPlay.textContent='▶ Play'; }
+  });
+
+  // init first icon (no transition on first paint)
+  subIcon.style.transition='none';
+  subIcon.innerHTML = SUBJECTS[0].icon.split('M').filter(Boolean).map(seg=>`<path d="M${seg.trim()}"/>`).join('');
+  requestAnimationFrame(()=>{ subIcon.style.transition=''; });
+}
+
+})();
+</script>
+</body>
+</html>

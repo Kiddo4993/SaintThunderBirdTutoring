@@ -21,6 +21,7 @@ export default function StudentDashboardPage() {
   const [reqPriority, setReqPriority] = useState("medium");
   const [toast, setToast] = useState(null);
   const [requestSentVisible, setRequestSentVisible] = useState(false);
+  const [activeTab, setActiveTab] = useState("dashboard");
 
   function showToast(message, type = "success") {
     setToast({ message, type });
@@ -140,6 +141,89 @@ export default function StudentDashboardPage() {
           </div>
         </div>
 
+        {/* Tab Bar */}
+        <div style={{ display: "flex", gap: "0.5rem", marginBottom: "2rem", borderBottom: "2px solid rgba(255,255,255,0.1)", paddingBottom: "0" }}>
+          {[{ id: "dashboard", label: "📊 Dashboard" }, { id: "guide", label: "📖 How to Use" }].map((tab) => (
+            <button key={tab.id} type="button" onClick={() => setActiveTab(tab.id)}
+              style={{ padding: "0.75rem 1.5rem", background: "none", border: "none", borderBottom: activeTab === tab.id ? "3px solid #c8932a" : "3px solid transparent", color: activeTab === tab.id ? "#c8932a" : "#9ca3af", fontWeight: activeTab === tab.id ? 700 : 500, fontSize: "1rem", cursor: "pointer", fontFamily: "inherit", marginBottom: "-2px", transition: "all 0.2s" }}>
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {activeTab === "guide" && (
+          <div style={{ maxWidth: "760px" }}>
+            <h2 style={{ color: "#c8932a", marginBottom: "0.5rem", fontSize: "1.75rem" }}>Student Guide</h2>
+            <p style={{ color: "#9ca3af", marginBottom: "2rem" }}>Everything you need to know about getting tutoring help on Saint Thunderbird.</p>
+
+            {[
+              {
+                icon: "🔐", title: "Step 1 — Create Your Account",
+                items: [
+                  "Sign up at the home page with your name, email, and password.",
+                  "Select Student as your account type.",
+                  "Once logged in, you'll land on this dashboard — no approval needed for students.",
+                ]
+              },
+              {
+                icon: "📝", title: "Step 2 — Request a Tutor",
+                items: [
+                  "Click the gold ⚡ REQUEST TUTORING HELP button at the top of the dashboard.",
+                  "Select the subject you need help with and how long you'd like the session to be (30 min to 2 hours).",
+                  "Optionally add a description of what specific topics you need help with — this helps tutors prepare.",
+                  "Your request is sent to all available tutors who teach that subject.",
+                  "You'll receive a confirmation email that your request was submitted.",
+                ]
+              },
+              {
+                icon: "📧", title: "Step 3 — Tutor Accepts Your Request",
+                items: [
+                  "When a tutor accepts your request, you'll receive an email automatically.",
+                  "The email includes the tutor's name, contact email, and a unique Zoom meeting link for your session.",
+                  "Your session will also appear under Your Sessions on this dashboard with a Join Meeting button.",
+                  "Each session has its own separate Zoom link — you never share a room with other students.",
+                ]
+              },
+              {
+                icon: "🎥", title: "Step 4 — Attending Your Session",
+                items: [
+                  "Join the Zoom meeting using the link from your email or the Join Meeting button on your dashboard.",
+                  "Make sure you have a working microphone and camera before the session.",
+                  "The tutor will start the session timer on their end when you begin.",
+                  "When the session ends, the tutor ends it — your hours are logged automatically.",
+                ]
+              },
+              {
+                icon: "📊", title: "Tracking Your Progress",
+                items: [
+                  "Your stats at the top of the dashboard show total requests made, completed sessions, and hours learned.",
+                  "Under Your Sessions, you can see all past and upcoming sessions with your tutor's name and subject.",
+                  "Completed sessions show how many hours were logged for that session.",
+                ]
+              },
+              {
+                icon: "❓", title: "Need Help?",
+                items: [
+                  "If you're having trouble with the platform or a session, email dylanduancanada@gmail.com.",
+                  "If a tutor hasn't responded to your request within a day or two, you can submit a new request.",
+                  "For Zoom issues, make sure Zoom is installed on your device before the session.",
+                  "Your dashboard refreshes automatically every 30 seconds — no need to reload.",
+                ]
+              },
+            ].map((section) => (
+              <div key={section.title} style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "12px", padding: "1.5rem", marginBottom: "1.25rem" }}>
+                <div style={{ fontSize: "1.15rem", fontWeight: 700, color: "#e5e7eb", marginBottom: "1rem" }}>{section.icon} {section.title}</div>
+                <ul style={{ margin: 0, paddingLeft: "1.25rem", display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+                  {section.items.map((item, i) => (
+                    <li key={i} style={{ color: "#d1d5db", lineHeight: 1.6 }}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {activeTab === "dashboard" && <>
         <div className="stats-grid">
           <div className="stat-card">
             <div className="stat-icon">📝</div>
@@ -247,6 +331,7 @@ export default function StudentDashboardPage() {
             )}
           </div>
         </div>
+      </>}
       </div>
 
       {/* Quick Request Modal */}

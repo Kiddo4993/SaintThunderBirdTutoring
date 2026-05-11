@@ -27,9 +27,17 @@ export async function POST(request) {
         if (tutor.tutorSessions) {
             tutor.tutorSessions.forEach((session) => {
                 if (session._id.toString() === sessionId) {
+                    const now = new Date();
                     session.status = 'completed';
-                    session.hoursSpent = Number.isFinite(parsedHours) && parsedHours > 0 ? parsedHours : Number(session.plannedHours || 1);
-                    session.completedAt = new Date();
+                    session.completedAt = now;
+
+                    if (session.startedAt) {
+                        const elapsed = (now.getTime() - new Date(session.startedAt).getTime()) / (1000 * 60 * 60);
+                        session.hoursSpent = Math.round(elapsed * 4) / 4; // round to nearest 15 min
+                    } else {
+                        session.hoursSpent = Number.isFinite(parsedHours) && parsedHours > 0 ? parsedHours : Number(session.plannedHours || 1);
+                    }
+
                     completedSession = session;
                 }
             });
@@ -59,7 +67,7 @@ export async function POST(request) {
             const studentHours = (student.studentSessions?.filter((s) => s.status === 'completed').reduce((sum, s) => sum + Number(s.hoursSpent || 0), 0) || 0).toFixed(1);
             const studentCount = student.studentSessions?.filter((s) => s.status === 'completed').length || 0;
 
-            sendEmailSafe({
+            await sendEmailSafe({
                 to: ADMIN_EMAIL,
                 subject: `📊 Session Completed - ${tutor.firstName} & ${student.firstName}`,
                 html: `<h2>Session Completed</h2>

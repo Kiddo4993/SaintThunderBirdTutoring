@@ -21,15 +21,7 @@ function getTransporter() {
 
     transporter = nodemailer.createTransport({
         service: 'gmail',
-        auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASSWORD },
-        pool: true,
-        maxConnections: 1,
-        maxMessages: 5
-    });
-
-    transporter.verify((error) => {
-        if (error) console.error('❌ Nodemailer verify failed:', error.message);
-        else console.log('✅ Nodemailer transporter ready');
+        auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASSWORD }
     });
 
     return transporter;
