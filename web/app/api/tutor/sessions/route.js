@@ -28,7 +28,8 @@ export async function GET(request) {
                         zoomLink: session.zoomLink,
                         zoomMeetingId: session.zoomMeetingId,
                         hoursSpent: session.hoursSpent,
-                        completedAt: session.completedAt
+                        completedAt: session.completedAt,
+                        startedAt: session.startedAt
                     });
                 }
             }

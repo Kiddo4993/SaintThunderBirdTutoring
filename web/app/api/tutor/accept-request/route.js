@@ -17,7 +17,14 @@ function durationToMinutes(value) {
     return Math.round(durationToHours(value) * 60);
 }
 async function sendEmailSafe({ to, subject, html }) {
-    try { await sendEmail({ to, subject, html }); } catch (e) { console.error('❌ Email error:', e.message); }
+    try {
+        await sendEmail({ to, subject, html });
+        console.log(`✅ Email sent to ${to}`);
+        return null;
+    } catch (e) {
+        console.error(`❌ Email error to ${to}:`, e.message);
+        return e.message;
+    }
 }
 
 export async function POST(request) {
@@ -119,9 +126,9 @@ export async function POST(request) {
 
         const zoomSection = zoomLink
             ? `<p><strong>Join Link:</strong> <a href="${zoomLink}">${zoomLink}</a></p><p><strong>Meeting ID:</strong> ${sessionRefId}</p>`
-            : `<p>Please create a Zoom or Google Meet link and share it with the student: <a href="mailto:${student.email}">${student.email}</a></p>`;
+            : `<p>Please share a meeting link with the student: <a href="mailto:${student.email}">${student.email}</a></p>`;
 
-        await Promise.all([
+        const emailErrors = await Promise.all([
             sendEmailSafe({
                 to: tutor.email,
                 subject: '🎓 New Student Session - Action Required',
@@ -139,7 +146,15 @@ export async function POST(request) {
             })
         ]);
 
-        return NextResponse.json({ success: true, message: 'Request accepted!', sessionRefId, tutorEmail: tutor.email, zoomLink });
+        const failedEmails = emailErrors.filter(Boolean);
+        return NextResponse.json({
+            success: true,
+            message: 'Request accepted!',
+            sessionRefId,
+            tutorEmail: tutor.email,
+            zoomLink,
+            emailWarnings: failedEmails.length > 0 ? failedEmails : undefined
+        });
     } catch (error) {
         console.error('Error in accept-request:', error);
         return NextResponse.json({ error: error.message }, { status: 500 });

@@ -12,7 +12,6 @@ export default function TutorDashboardPage() {
   const [stats, setStats] = useState({ sessionsCompleted: 0, hoursTaught: 0 });
   const [requests, setRequests] = useState([]);
   const [sessions, setSessions] = useState([]);
-  const [tick, setTick] = useState(0);
   const [activeTab, setActiveTab] = useState("dashboard");
 
   const token = () => localStorage.getItem("authToken");
@@ -50,24 +49,7 @@ export default function TutorDashboardPage() {
     loadStats(); loadRequests(); loadSessions();
   }, [loadStats, loadRequests, loadSessions]);
 
-  useEffect(() => {
-    const hasInProgress = sessions.some((s) => s.status === "in-progress");
-    if (!hasInProgress) return;
-    const id = setInterval(() => setTick((t) => t + 1), 1000);
-    return () => clearInterval(id);
-  }, [sessions]);
-
-  function formatElapsed(startedAt) {
-    const total = Math.floor((Date.now() - new Date(startedAt).getTime()) / 1000);
-    const h = Math.floor(total / 3600);
-    const m = Math.floor((total % 3600) / 60);
-    const s = total % 60;
-    return h > 0
-      ? `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`
-      : `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
-  }
-
-  useEffect(() => {
+useEffect(() => {
     const raw = localStorage.getItem("user");
     let u = raw ? JSON.parse(raw) : null;
     if (!u) { router.push("/login"); return; }
@@ -113,24 +95,11 @@ export default function TutorDashboardPage() {
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        alert("✅ Request accepted! Check your email for the Zoom link details. The student received the same link.");
+        alert("✅ Request accepted! Check your email for the meeting link. The student received the same link.");
         loadDashboard();
       } else {
         alert("❌ Error: " + (data.error || data.message || "Failed to accept request"));
       }
-    } catch (e) { alert("❌ Error: " + e.message); }
-  }
-
-  async function startSession(sessionId) {
-    try {
-      const res = await fetch("/api/tutor/start-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token()}` },
-        body: JSON.stringify({ sessionId }),
-      });
-      const data = await res.json();
-      if (res.ok && data.success) { loadSessions(); }
-      else { alert("❌ Error: " + (data.error || "Failed to start session")); }
     } catch (e) { alert("❌ Error: " + e.message); }
   }
 
@@ -214,11 +183,10 @@ export default function TutorDashboardPage() {
               {
                 icon: "▶", title: "Step 3 — Running the Session",
                 items: [
-                  "Join the Zoom meeting using the link emailed to you or shown on your dashboard.",
-                  "When you're ready to begin, click the green ▶ Start Session button on the session card — this starts the timer.",
-                  "Tutor your student as normal over Zoom.",
-                  "When the session ends, click ⏹ End Session — hours are calculated automatically from start to finish, rounded to the nearest 15 minutes.",
-                  "No manual hour entry needed.",
+                  "Join the meeting using the link emailed to you or shown on your dashboard.",
+                  "Tutor your student as normal.",
+                  "When the session ends, click ✅ Mark Session Complete on the session card.",
+                  "Hours are automatically logged based on the duration the student originally requested.",
                 ]
               },
               {
@@ -282,7 +250,7 @@ export default function TutorDashboardPage() {
         </div>
 
         <div className="zoom-info">
-          🎥 When you accept a request, a unique Zoom meeting is automatically created and emailed to both you and the student. Click <strong>▶ Start Session</strong> when you begin, and <strong>⏹ End Session</strong> when you finish — hours are logged automatically.
+          🎥 When you accept a request, a unique meeting link is automatically created and emailed to both you and the student. When the session is done, click <strong>✅ Mark Session Complete</strong> — hours are logged based on the time the student originally requested.
         </div>
 
         <div className="card">
@@ -310,7 +278,7 @@ export default function TutorDashboardPage() {
                 </div>
                 <p style={{ color: "#ccc", fontSize: "0.9rem", margin: "0.75rem 0" }}>{req.description || ""}</p>
                 <button type="button" className="accept-btn" onClick={() => acceptRequest(req._id)}>
-                  ✅ Accept Request &amp; Generate Zoom Meeting
+                  ✅ Accept Request &amp; Generate Meeting Link
                 </button>
               </div>
             ))
@@ -350,7 +318,7 @@ export default function TutorDashboardPage() {
                     <div style={{ background: "rgba(59,130,246,0.2)", border: "2px solid rgba(59,130,246,0.5)", padding: "1rem", borderRadius: "8px", margin: "1rem 0", textAlign: "center" }}>
                       <p style={{ marginBottom: "0.5rem", fontSize: "0.9rem" }}><strong>Meeting ID:</strong> {session.zoomMeetingId || "N/A"}</p>
                       <a href={session.zoomLink} target="_blank" rel="noreferrer" style={{ display: "inline-block", background: "linear-gradient(135deg,#60a5fa,#3b82f6)", color: "white", padding: "0.75rem 1.5rem", borderRadius: "8px", textDecoration: "none", fontWeight: 700 }}>
-                        🎥 Join Zoom Meeting
+                        🎥 Join Meeting
                       </a>
                     </div>
                   )}
@@ -359,21 +327,9 @@ export default function TutorDashboardPage() {
                       ✅ Session Completed{session.completedAt ? ` on ${new Date(session.completedAt).toLocaleString()}` : ""}
                       {session.hoursSpent ? ` — ${session.hoursSpent} hr(s) logged` : ""}
                     </div>
-                  ) : session.status === "in-progress" ? (
-                    <div style={{ marginTop: "1rem" }}>
-                      <div style={{ background: "rgba(234,179,8,0.15)", border: "2px solid rgba(234,179,8,0.5)", padding: "1rem", borderRadius: "8px", marginBottom: "1rem", textAlign: "center" }}>
-                        <div style={{ fontSize: "0.8rem", color: "#eab308", marginBottom: "0.25rem", letterSpacing: "0.05em", textTransform: "uppercase" }}>⏱ Session in progress</div>
-                        <div style={{ fontSize: "2.25rem", fontWeight: 700, color: "#fbbf24", fontVariantNumeric: "tabular-nums", letterSpacing: "0.05em" }}>
-                          {session.startedAt ? formatElapsed(session.startedAt) : "—"}
-                        </div>
-                      </div>
-                      <button type="button" className="accept-btn" style={{ marginTop: 0, background: "linear-gradient(135deg,#ef4444,#dc2626)" }} onClick={() => completeSession(session._id)}>
-                        ⏹ End Session
-                      </button>
-                    </div>
                   ) : (
-                    <button type="button" className="accept-btn" style={{ marginTop: "1rem", background: "linear-gradient(135deg,#22c55e,#16a34a)" }} onClick={() => startSession(session._id)}>
-                      ▶ Start Session
+                    <button type="button" className="accept-btn" style={{ marginTop: "1rem", background: "linear-gradient(135deg,#22c55e,#16a34a)" }} onClick={() => completeSession(session._id)}>
+                      ✅ Mark Session Complete
                     </button>
                   )}
                 </div>

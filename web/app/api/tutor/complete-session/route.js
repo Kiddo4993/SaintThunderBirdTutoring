@@ -13,7 +13,7 @@ export async function POST(request) {
     if (!authUser) return unauthorized();
     try {
         await connectDB();
-        const { sessionId, hoursSpent } = await request.json();
+        const { sessionId } = await request.json();
         const tutor = await User.findById(authUser.userId);
 
         if (!tutor || tutor.userType !== 'tutor') {
@@ -22,22 +22,13 @@ export async function POST(request) {
 
         let completedSession = null;
         let student = null;
-        const parsedHours = Number(hoursSpent);
 
         if (tutor.tutorSessions) {
             tutor.tutorSessions.forEach((session) => {
                 if (session._id.toString() === sessionId) {
-                    const now = new Date();
                     session.status = 'completed';
-                    session.completedAt = now;
-
-                    if (session.startedAt) {
-                        const elapsed = (now.getTime() - new Date(session.startedAt).getTime()) / (1000 * 60 * 60);
-                        session.hoursSpent = Math.round(elapsed * 4) / 4; // round to nearest 15 min
-                    } else {
-                        session.hoursSpent = Number.isFinite(parsedHours) && parsedHours > 0 ? parsedHours : Number(session.plannedHours || 1);
-                    }
-
+                    session.completedAt = new Date();
+                    session.hoursSpent = Number(session.plannedHours || 1);
                     completedSession = session;
                 }
             });
