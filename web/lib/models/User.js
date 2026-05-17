@@ -63,6 +63,11 @@ const userSchema = new mongoose.Schema({
         completedAt: Date
     }],
 
+    lastVolunteerSubmission: {
+        hours: Number,
+        submittedAt: Date
+    },
+
     studentSessions: [{
         tutorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
         tutorName: String,

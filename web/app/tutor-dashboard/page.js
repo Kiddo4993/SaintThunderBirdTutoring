@@ -13,6 +13,7 @@ export default function TutorDashboardPage() {
   const [requests, setRequests] = useState([]);
   const [sessions, setSessions] = useState([]);
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [volunteerSubmitting, setVolunteerSubmitting] = useState(false);
 
   const token = () => localStorage.getItem("authToken");
 
@@ -120,6 +121,23 @@ useEffect(() => {
     } catch (e) { alert("❌ Error: " + e.message); }
   }
 
+  async function submitVolunteerHours() {
+    setVolunteerSubmitting(true);
+    try {
+      const res = await fetch("/api/tutor/submit-volunteer-hours", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token()}` },
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        alert(`✅ Volunteer hours submitted!\n\nPrevious: ${data.previousHours} hrs\nCurrent total: ${data.currentHours} hrs\nNew hours: ${data.newHours} hrs\n\nAn email has been sent to the admin.`);
+      } else {
+        alert("❌ Error: " + (data.error || "Failed to submit hours"));
+      }
+    } catch (e) { alert("❌ Error: " + e.message); }
+    setVolunteerSubmitting(false);
+  }
+
   function doLogout() {
     localStorage.removeItem("authToken"); localStorage.removeItem("user");
     router.push("/");
@@ -163,55 +181,57 @@ useEffect(() => {
 
             {[
               {
-                icon: "✅", title: "Step 1 — Get Approved",
+                icon: "✅", title: "Step 1 — Getting Approved",
                 items: [
-                  "Submit a tutor application from the home page.",
-                  "An admin reviews your application and approves or denies it.",
-                  "Once approved, you gain access to this dashboard and will start receiving student requests.",
+                  "Submit a tutor application from the home page with your subjects, education level, and a short bio.",
+                  "The admin reviews your application — you'll receive an email when you're approved or denied.",
+                  "Once approved, you can log in and access this dashboard to start accepting students.",
                 ]
               },
               {
-                icon: "📝", title: "Step 2 — Accepting Student Requests",
+                icon: "📥", title: "Step 2 — Accepting Student Requests",
                 items: [
-                  "Students post requests for help in specific subjects.",
-                  "You'll receive an email notification when a new matching request comes in.",
-                  "In the Dashboard tab, scroll to Student Requests and click ✅ Accept Request & Generate Zoom Meeting.",
-                  "Accepting instantly creates a unique Zoom meeting — both you and the student are emailed the link automatically.",
-                  "Each session gets its own distinct Zoom link, so there's never any overlap between students.",
+                  "Students submit requests for specific subjects and session durations (30 min to 2 hrs).",
+                  "Open requests from students who need your subjects appear under Student Requests on the Dashboard tab.",
+                  "Click ✅ Accept Request & Generate Meeting Link to accept.",
+                  "This instantly creates a private meeting room — both you and the student receive the link by email.",
+                  "Every session gets its own unique room, so sessions never overlap.",
                 ]
               },
               {
-                icon: "▶", title: "Step 3 — Running the Session",
+                icon: "🎥", title: "Step 3 — Joining the Meeting",
                 items: [
-                  "Join the meeting using the link emailed to you or shown on your dashboard.",
-                  "Tutor your student as normal.",
-                  "When the session ends, click ✅ Mark Session Complete on the session card.",
-                  "Hours are automatically logged based on the duration the student originally requested.",
+                  "Click the meeting link from your email or the Join Meeting button on your dashboard.",
+                  "You will see a screen asking you to log in — click Log In and enter just your name (no account needed).",
+                  "Joining first makes you the moderator, which lets the student enter the room.",
+                  "Once you are in, the student can join using their own link.",
                 ]
               },
               {
-                icon: "⏱️", title: "Step 4 — Volunteer Hours",
+                icon: "⏹", title: "Step 4 — Completing the Session",
                 items: [
-                  "Every hour you tutor counts as a volunteer hour.",
-                  "Your total hours are tracked automatically and shown in your stats.",
-                  "To get your hours officially confirmed for external records, email dylanduancanada@gmail.com.",
-                  "You receive a summary of your hours in the weekly report every Monday.",
+                  "Tutor your student as normal over the meeting.",
+                  "When the session ends, go to your dashboard and click ✅ Mark Session Complete on the session card.",
+                  "Hours are automatically logged based on the duration the student originally requested — no manual entry needed.",
+                  "The admin receives an email confirming the session was completed.",
                 ]
               },
               {
-                icon: "📊", title: "Weekly Reports",
+                icon: "🏅", title: "Step 5 — Submitting Volunteer Hours",
                 items: [
-                  "Every Monday morning, the admin receives a report showing every tutor's hours for the past week.",
-                  "Your name, email, sessions completed this week, and total all-time hours are included.",
-                  "This is how your volunteer hours are tracked over time.",
+                  "Every completed session counts toward your official volunteer hours.",
+                  "Your running total is always visible in your stats at the top of the dashboard.",
+                  "When you want to officially record your hours (for school, college applications, etc.), click 📨 Send Volunteer Hours.",
+                  "This sends the admin an email comparing your current total to your last submission, showing exactly how many new hours you've earned.",
+                  "You can submit as often as you like — there's no limit.",
                 ]
               },
               {
                 icon: "❓", title: "Need Help?",
                 items: [
-                  "For any issues with the platform, email dylanduancanada@gmail.com.",
-                  "If a student doesn't show up or there's a Zoom issue, end the session normally and note it in your email.",
-                  "Sessions auto-refresh every 30 seconds, so new requests appear without needing to reload the page.",
+                  "For any platform issues, email dylanduancanada@gmail.com.",
+                  "If a student doesn't show up, still mark the session complete so your hours are logged.",
+                  "The dashboard refreshes automatically every 30 seconds — new requests appear without reloading.",
                 ]
               },
             ].map((section) => (
@@ -241,16 +261,78 @@ useEffect(() => {
           </div>
         </div>
 
-        <div style={{ background: "rgba(34,197,94,0.2)", border: "2px solid rgba(34,197,94,0.5)", padding: "1.5rem", borderRadius: "12px", marginBottom: "2rem", color: "#22c55e", fontWeight: 600, fontSize: "1.1rem", textAlign: "center" }}>
-          👥 <strong>Free Volunteer Hours Available!</strong><br />
-          For every hour you tutor, you earn free volunteer hours. Email dylanduancanada@gmail.com to get your volunteer hours confirmed and added to your record.<br />
-          <a href="/volunteer-hours-guide" style={{ display: "inline-block", marginTop: "1rem", padding: "0.75rem 1.5rem", background: "rgba(212,165,116,0.1)", color: "var(--beige)", border: "1px solid var(--border)", borderRadius: "8px", textDecoration: "none", fontWeight: 700 }}>
-            📚 Learn More
-          </a>
+        {/* Meeting Info Banner */}
+        <div style={{ background: "linear-gradient(135deg, rgba(59,130,246,0.12), rgba(99,102,241,0.08))", border: "1px solid rgba(99,102,241,0.35)", borderRadius: "14px", padding: "1.5rem", marginBottom: "2rem" }}>
+          <div style={{ fontWeight: 700, color: "#818cf8", fontSize: "1.05rem", marginBottom: "0.75rem" }}>🎥 How Sessions Work</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+            {[
+              { icon: "1️⃣", text: "Accept a student request — a unique private meeting link is instantly created and emailed to both of you." },
+              { icon: "2️⃣", text: "Click the meeting link and enter your name when prompted. This makes you the moderator so students can join." },
+              { icon: "3️⃣", text: "The link is valid for the session's designated time (e.g. 1 hour) — after that it expires." },
+              { icon: "4️⃣", text: "When you're done, click ✅ Mark Session Complete — hours are logged automatically based on what the student requested." },
+            ].map(({ icon, text }) => (
+              <div key={icon} style={{ display: "flex", gap: "0.75rem", alignItems: "flex-start" }}>
+                <span style={{ fontSize: "1rem", flexShrink: 0 }}>{icon}</span>
+                <span style={{ color: "#c7d2fe", lineHeight: 1.6, fontSize: "0.95rem" }}>{text}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
-        <div className="zoom-info">
-          🎥 When you accept a request, a unique meeting link is automatically created and emailed to both you and the student. When the session is done, click <strong>✅ Mark Session Complete</strong> — hours are logged based on the time the student originally requested.
+        {/* Volunteer Hours Section */}
+        <div style={{ background: "linear-gradient(135deg, rgba(200,147,42,0.08), rgba(34,197,94,0.05))", border: "1px solid rgba(200,147,42,0.3)", borderRadius: "16px", padding: "2rem", marginBottom: "2rem" }}>
+          {/* Header row */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "1rem", marginBottom: "1.5rem" }}>
+            <div>
+              <div style={{ fontWeight: 800, color: "#c8932a", fontSize: "1.3rem", marginBottom: "0.25rem" }}>🏅 Volunteer Hours</div>
+              <div style={{ color: "#9ca3af", fontSize: "0.9rem" }}>Your tutoring time, officially tracked</div>
+            </div>
+            <div style={{ display: "flex", gap: "1.5rem" }}>
+              <div style={{ textAlign: "center", background: "rgba(200,147,42,0.12)", border: "1px solid rgba(200,147,42,0.3)", borderRadius: "10px", padding: "0.75rem 1.25rem" }}>
+                <div style={{ fontSize: "1.75rem", fontWeight: 800, color: "#c8932a" }}>{stats.hoursTaught}</div>
+                <div style={{ fontSize: "0.75rem", color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.05em" }}>Total Hrs</div>
+              </div>
+              <div style={{ textAlign: "center", background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.3)", borderRadius: "10px", padding: "0.75rem 1.25rem" }}>
+                <div style={{ fontSize: "1.75rem", fontWeight: 800, color: "#22c55e" }}>{stats.sessionsCompleted}</div>
+                <div style={{ fontSize: "0.75rem", color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.05em" }}>Sessions</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Why it matters */}
+          <div style={{ marginBottom: "1.5rem" }}>
+            <div style={{ color: "#e5e7eb", fontWeight: 600, marginBottom: "0.75rem", fontSize: "0.95rem" }}>Why your hours matter</div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "0.75rem" }}>
+              {[
+                { icon: "🎓", label: "School & College", desc: "Fulfill community service requirements and strengthen college applications" },
+                { icon: "💼", label: "Career & Resume", desc: "List tutoring as volunteer experience — valued by employers and grad programs" },
+                { icon: "🤝", label: "Community Impact", desc: "Every hour directly helps First Nations students succeed academically" },
+                { icon: "📄", label: "Official Docs", desc: "We provide official verification letters and hour breakdowns on request" },
+              ].map(({ icon, label, desc }) => (
+                <div key={label} style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "10px", padding: "1rem" }}>
+                  <div style={{ fontSize: "1.25rem", marginBottom: "0.4rem" }}>{icon}</div>
+                  <div style={{ color: "#e5e7eb", fontWeight: 600, fontSize: "0.85rem", marginBottom: "0.3rem" }}>{label}</div>
+                  <div style={{ color: "#9ca3af", fontSize: "0.8rem", lineHeight: 1.5 }}>{desc}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)", marginBottom: "1.25rem" }} />
+
+          {/* CTA */}
+          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
+            <div style={{ flex: 1, minWidth: "200px" }}>
+              <div style={{ color: "#d1d5db", fontSize: "0.9rem", lineHeight: 1.6 }}>
+                Click <strong style={{ color: "#c8932a" }}>Send Volunteer Hours</strong> to notify the admin of your current hours. The email shows your previous total vs. now — perfect for submitting to schools, employers, or for your own records. We will provide official documentation with additional info (dates, subjects, letter) anytime on request.
+              </div>
+            </div>
+            <button type="button" onClick={submitVolunteerHours} disabled={volunteerSubmitting}
+              style={{ padding: "0.9rem 2rem", background: volunteerSubmitting ? "#444" : "linear-gradient(135deg,#c8932a,#a87020)", color: "#fff", border: "none", borderRadius: "10px", fontWeight: 700, fontSize: "1rem", cursor: volunteerSubmitting ? "not-allowed" : "pointer", fontFamily: "inherit", whiteSpace: "nowrap", boxShadow: "0 4px 15px rgba(200,147,42,0.3)" }}>
+              {volunteerSubmitting ? "Sending..." : "📨 Send Volunteer Hours"}
+            </button>
+          </div>
         </div>
 
         <div className="card">

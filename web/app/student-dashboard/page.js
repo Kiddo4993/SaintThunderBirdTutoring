@@ -160,54 +160,52 @@ export default function StudentDashboardPage() {
               {
                 icon: "🔐", title: "Step 1 — Create Your Account",
                 items: [
-                  "Sign up at the home page with your name, email, and password.",
+                  "Sign up at the home page with your name, email, and a password.",
                   "Select Student as your account type.",
-                  "Once logged in, you'll land on this dashboard — no approval needed for students.",
+                  "You're in immediately — no approval process for students.",
                 ]
               },
               {
                 icon: "📝", title: "Step 2 — Request a Tutor",
                 items: [
                   "Click the gold ⚡ REQUEST TUTORING HELP button at the top of the dashboard.",
-                  "Select the subject you need help with and how long you'd like the session to be (30 min to 2 hours).",
-                  "Optionally add a description of what specific topics you need help with — this helps tutors prepare.",
-                  "Your request is sent to all available tutors who teach that subject.",
-                  "You'll receive a confirmation email that your request was submitted.",
+                  "Choose the subject you need help with and how long you want the session (30 min, 1 hr, 1.5 hrs, or 2 hrs).",
+                  "Optionally describe what specific topics or problems you need help with — tutors use this to prepare.",
+                  "Your request is sent to all tutors who teach that subject.",
                 ]
               },
               {
-                icon: "📧", title: "Step 3 — Tutor Accepts Your Request",
+                icon: "📧", title: "Step 3 — Getting Accepted",
                 items: [
-                  "When a tutor accepts your request, you'll receive an email automatically.",
-                  "The email includes the tutor's name, contact email, and a unique Zoom meeting link for your session.",
-                  "Your session will also appear under Your Sessions on this dashboard with a Join Meeting button.",
-                  "Each session has its own separate Zoom link — you never share a room with other students.",
+                  "When a tutor accepts your request, you'll get an email right away.",
+                  "The email includes the tutor's name, their contact email, and a private meeting link for your session.",
+                  "Your session also appears under Your Sessions on this dashboard with a Join Meeting button.",
+                  "Every session has its own private room — you never share a meeting with other students.",
                 ]
               },
               {
-                icon: "🎥", title: "Step 4 — Attending Your Session",
+                icon: "🎥", title: "Step 4 — Joining the Session",
                 items: [
-                  "Join the Zoom meeting using the link from your email or the Join Meeting button on your dashboard.",
-                  "Make sure you have a working microphone and camera before the session.",
-                  "The tutor will start the session timer on their end when you begin.",
-                  "When the session ends, the tutor ends it — your hours are logged automatically.",
+                  "Click the Join Meeting button from your email or your dashboard.",
+                  "If you see a screen saying 'waiting for moderator', it just means your tutor hasn't joined yet — wait a moment and they'll let you in.",
+                  "Make sure your microphone and camera are working before the session starts.",
+                  "No app download required — the meeting runs in your browser.",
                 ]
               },
               {
                 icon: "📊", title: "Tracking Your Progress",
                 items: [
-                  "Your stats at the top of the dashboard show total requests made, completed sessions, and hours learned.",
-                  "Under Your Sessions, you can see all past and upcoming sessions with your tutor's name and subject.",
-                  "Completed sessions show how many hours were logged for that session.",
+                  "Your stats at the top show total requests made, completed sessions, and total hours learned.",
+                  "Under Your Sessions, you can see every session — upcoming and completed — with tutor name and subject.",
+                  "Completed sessions show the hours logged for that session.",
                 ]
               },
               {
                 icon: "❓", title: "Need Help?",
                 items: [
-                  "If you're having trouble with the platform or a session, email dylanduancanada@gmail.com.",
-                  "If a tutor hasn't responded to your request within a day or two, you can submit a new request.",
-                  "For Zoom issues, make sure Zoom is installed on your device before the session.",
-                  "Your dashboard refreshes automatically every 30 seconds — no need to reload.",
+                  "For any issues with the platform or a session, email dylanduancanada@gmail.com.",
+                  "If no tutor has responded within a day or two, you can submit a new request.",
+                  "The dashboard refreshes every 30 seconds — no need to reload the page.",
                 ]
               },
             ].map((section) => (
@@ -259,11 +257,11 @@ export default function StudentDashboardPage() {
             🎥 <strong>How It Works:</strong><br />
             1. Submit a tutoring request below<br />
             2. A tutor will accept your request<br />
-            3. Both you and the tutor will receive an email with each other&apos;s contact info<br />
-            4. The tutor will email you a Zoom or Google Meet link for your session!
+            3. Both you and the tutor get an email with a private meeting link<br />
+            4. Click the link to join your session — no app download needed!
           </div>
           <div style={{ borderTop: "2px solid rgba(59,130,246,0.5)", paddingTop: "1rem" }}>
-            💻 <strong>Requirements:</strong> You need a computer with Zoom or Google Meet installed, plus a working microphone and camera.
+            💻 <strong>Requirements:</strong> A computer or phone with a working microphone and camera. The meeting runs in your browser.
           </div>
         </div>
 
