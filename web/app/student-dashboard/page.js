@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import BrandIcon from "@/components/BrandIcon";
 
 const TIME_LABELS = { "30min": "30 minutes", "1hour": "1 hour", "1.5hours": "1.5 hours", "2hours": "2 hours" };
 
@@ -133,17 +134,17 @@ export default function StudentDashboardPage() {
       <div className="container" style={{ padding: "2rem", position: "relative", zIndex: 10 }}>
         <div className="header">
           <div className="header-content">
-            <h1>⚡ Welcome, <span>{user?.firstName || "Student"}</span>!</h1>
+            <h1><BrandIcon name="lightning" size={22} style={{ display: "inline", verticalAlign: "middle", marginRight: "0.4rem" }} /> Welcome, <span>{user?.firstName || "Student"}</span>!</h1>
             <p>Request tutoring help and get connected with tutors</p>
           </div>
           <div className="header-actions">
-            <button type="button" className="btn-secondary" onClick={doLogout}>🚪 Logout</button>
+            <button type="button" className="btn-secondary" onClick={doLogout}><BrandIcon name="logout" size={14} style={{ display: "inline", verticalAlign: "middle", marginRight: "0.35rem" }} />Logout</button>
           </div>
         </div>
 
         {/* Tab Bar */}
         <div style={{ display: "flex", gap: "0.5rem", marginBottom: "2rem", borderBottom: "2px solid rgba(255,255,255,0.1)", paddingBottom: "0" }}>
-          {[{ id: "dashboard", label: "📊 Dashboard" }, { id: "guide", label: "📖 How to Use" }].map((tab) => (
+          {[{ id: "dashboard", label: "Dashboard" }, { id: "guide", label: "How to Use" }].map((tab) => (
             <button key={tab.id} type="button" onClick={() => setActiveTab(tab.id)}
               style={{ padding: "0.75rem 1.5rem", background: "none", border: "none", borderBottom: activeTab === tab.id ? "3px solid #c8932a" : "3px solid transparent", color: activeTab === tab.id ? "#c8932a" : "#9ca3af", fontWeight: activeTab === tab.id ? 700 : 500, fontSize: "1rem", cursor: "pointer", fontFamily: "inherit", marginBottom: "-2px", transition: "all 0.2s" }}>
               {tab.label}
@@ -158,7 +159,7 @@ export default function StudentDashboardPage() {
 
             {[
               {
-                icon: "🔐", title: "Step 1 — Create Your Account",
+                icon: "lock", title: "Step 1 — Create Your Account",
                 items: [
                   "Sign up at the home page with your name, email, and a password.",
                   "Select Student as your account type.",
@@ -166,7 +167,7 @@ export default function StudentDashboardPage() {
                 ]
               },
               {
-                icon: "📝", title: "Step 2 — Request a Tutor",
+                icon: "memo", title: "Step 2 — Request a Tutor",
                 items: [
                   "Click the gold ⚡ REQUEST TUTORING HELP button at the top of the dashboard.",
                   "Choose the subject you need help with and how long you want the session (30 min, 1 hr, 1.5 hrs, or 2 hrs).",
@@ -175,7 +176,7 @@ export default function StudentDashboardPage() {
                 ]
               },
               {
-                icon: "📧", title: "Step 3 — Getting Accepted",
+                icon: "email", title: "Step 3 — Getting Accepted",
                 items: [
                   "When a tutor accepts your request, you'll get an email right away.",
                   "The email includes the tutor's name, their contact email, and a private meeting link for your session.",
@@ -184,7 +185,7 @@ export default function StudentDashboardPage() {
                 ]
               },
               {
-                icon: "🎥", title: "Step 4 — Joining the Session",
+                icon: "video", title: "Step 4 — Joining the Session",
                 items: [
                   "Click the Join Meeting button from your email or your dashboard.",
                   "If you see a screen saying 'waiting for moderator', it just means your tutor hasn't joined yet — wait a moment and they'll let you in.",
@@ -193,7 +194,7 @@ export default function StudentDashboardPage() {
                 ]
               },
               {
-                icon: "📊", title: "Tracking Your Progress",
+                icon: "chart", title: "Tracking Your Progress",
                 items: [
                   "Your stats at the top show total requests made, completed sessions, and total hours learned.",
                   "Under Your Sessions, you can see every session — upcoming and completed — with tutor name and subject.",
@@ -201,7 +202,7 @@ export default function StudentDashboardPage() {
                 ]
               },
               {
-                icon: "❓", title: "Need Help?",
+                icon: "question", title: "Need Help?",
                 items: [
                   "For any issues with the platform or a session, email dylanduancanada@gmail.com.",
                   "If no tutor has responded within a day or two, you can submit a new request.",
@@ -210,7 +211,7 @@ export default function StudentDashboardPage() {
               },
             ].map((section) => (
               <div key={section.title} style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "12px", padding: "1.5rem", marginBottom: "1.25rem" }}>
-                <div style={{ fontSize: "1.15rem", fontWeight: 700, color: "#e5e7eb", marginBottom: "1rem" }}>{section.icon} {section.title}</div>
+                <div style={{ fontSize: "1.05rem", fontWeight: 600, color: "#e5e7eb", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.6rem" }}><BrandIcon name={section.icon} size={16} strokeWidth={1.5} style={{ color: "#c8932a", flexShrink: 0 }} />{section.title}</div>
                 <ul style={{ margin: 0, paddingLeft: "1.25rem", display: "flex", flexDirection: "column", gap: "0.6rem" }}>
                   {section.items.map((item, i) => (
                     <li key={i} style={{ color: "#d1d5db", lineHeight: 1.6 }}>{item}</li>
@@ -224,29 +225,29 @@ export default function StudentDashboardPage() {
         {activeTab === "dashboard" && <>
         <div className="stats-grid">
           <div className="stat-card">
-            <div className="stat-icon">📝</div>
+            <div className="stat-icon"><BrandIcon name="memo" size={22} /></div>
             <div className="stat-value">{stats.requestsMade}</div>
             <div className="stat-label">Requests Made</div>
           </div>
           <div className="stat-card">
-            <div className="stat-icon">✅</div>
+            <div className="stat-icon"><BrandIcon name="check" size={22} /></div>
             <div className="stat-value">{stats.completedSessions}</div>
             <div className="stat-label">Completed Sessions</div>
           </div>
           <div className="stat-card">
-            <div className="stat-icon">⏱️</div>
+            <div className="stat-icon"><BrandIcon name="clock" size={22} /></div>
             <div className="stat-value">{stats.hoursLearned}</div>
             <div className="stat-label">Hours Learned</div>
           </div>
           <button type="button" onClick={() => setShowQuickModal(true)}
             style={{ gridColumn: "1/-1", width: "100%", padding: "16px", background: "#c8932a", color: "#000", border: "none", borderRadius: "8px", fontWeight: "bold", fontSize: "16px", cursor: "pointer", fontFamily: "inherit" }}>
-            ⚡ REQUEST TUTORING HELP
+            REQUEST TUTORING HELP
           </button>
         </div>
 
         {requestSentVisible && (
           <div className="request-sent-banner show">
-            <div className="banner-icon">✅</div>
+            <div className="banner-icon"><BrandIcon name="check" size={22} /></div>
             <div className="banner-title">Request Sent!</div>
             <div className="banner-subtitle">A tutor will be notified and contact you via email with session details.</div>
           </div>
@@ -254,28 +255,28 @@ export default function StudentDashboardPage() {
 
         <div style={{ background: "rgba(59,130,246,0.2)", border: "2px solid rgba(59,130,246,0.5)", padding: "1.5rem", borderRadius: "12px", marginBottom: "2rem", color: "#60a5fa", fontWeight: 600, fontSize: "1.1rem" }}>
           <div style={{ marginBottom: "1rem" }}>
-            🎥 <strong>How It Works:</strong><br />
+            <strong>How It Works:</strong><br />
             1. Submit a tutoring request below<br />
             2. A tutor will accept your request<br />
             3. Both you and the tutor get an email with a private meeting link<br />
             4. Click the link to join your session — no app download needed!
           </div>
           <div style={{ borderTop: "2px solid rgba(59,130,246,0.5)", paddingTop: "1rem" }}>
-            💻 <strong>Requirements:</strong> A computer or phone with a working microphone and camera. The meeting runs in your browser.
+            <strong>Requirements:</strong> A computer or phone with a working microphone and camera. The meeting runs in your browser.
           </div>
         </div>
 
         <div style={{ background: "rgba(239,68,68,0.2)", border: "2px solid rgba(239,68,68,0.5)", padding: "1.5rem", borderRadius: "12px", marginBottom: "2rem", color: "#ef4444", fontWeight: 600, fontSize: "1.1rem", textAlign: "center" }}>
-          📞 <strong>Need Help?</strong><br />
+          <strong>Need Help?</strong><br />
           If you feel like the tutoring isn&apos;t working well or if you experience any difficulties, please contact us at:<br />
-          <strong style={{ fontSize: "1.2rem", display: "block", marginTop: "0.5rem" }}>📧 dylanduancanada@gmail.com</strong>
+          <strong style={{ fontSize: "1.2rem", display: "block", marginTop: "0.5rem" }}>dylanduancanada@gmail.com</strong>
         </div>
 
         <div className="card">
-          <div className="card-title">📝 Your Requests</div>
+          <div className="card-title">Your Requests</div>
           {requests.length === 0 ? (
             <div className="empty-state">
-              <div className="empty-state-icon">📖</div>
+              <div className="empty-state-icon"></div>
               <div className="empty-state-text">No requests yet</div>
               <div className="empty-state-subtext">Create your first request to find a tutor!</div>
             </div>
@@ -286,10 +287,10 @@ export default function StudentDashboardPage() {
                 <span className={`request-status status-${req.status}`}>{req.status.toUpperCase()}</span>
                 <div className="request-description">&quot;{req.description || "No additional details provided"}&quot;</div>
                 <div style={{ fontSize: "0.9rem", color: "var(--beige)", margin: "0.75rem 0", fontWeight: 600 }}>
-                  ⏱️ Duration: {TIME_LABELS[req.requestedTime] || req.requestedTime || "Not specified"}
+                  Duration: {TIME_LABELS[req.requestedTime] || req.requestedTime || "Not specified"}
                 </div>
                 <div style={{ fontSize: "0.85rem", color: "#9ca3af" }}>
-                  📅 Submitted: {new Date(req.createdAt).toLocaleDateString()}
+                  Submitted: {new Date(req.createdAt).toLocaleDateString()}
                 </div>
               </div>
             ))
@@ -297,11 +298,11 @@ export default function StudentDashboardPage() {
         </div>
 
         <div className="card">
-          <div className="card-title">🎓 Your Sessions</div>
+          <div className="card-title">Your Sessions</div>
           <div className="tutors-grid">
             {sessions.length === 0 ? (
               <div className="empty-state" style={{ gridColumn: "1/-1" }}>
-                <div className="empty-state-icon">🎓</div>
+                <div className="empty-state-icon"></div>
                 <div className="empty-state-text">No upcoming sessions</div>
                 <div className="empty-state-subtext">When a tutor accepts your request, it will appear here.</div>
               </div>
@@ -376,7 +377,7 @@ export default function StudentDashboardPage() {
         <div className="modal active" onClick={(e) => { if (e.target === e.currentTarget) setShowRequestModal(false); }}>
           <div className="modal-content">
             <div className="modal-header">
-              <span>📝 Request Tutoring Help</span>
+              <span>Request Tutoring Help</span>
               <button type="button" className="close-btn" onClick={() => setShowRequestModal(false)}>×</button>
             </div>
             <form onSubmit={submitRequestModal}>
@@ -384,12 +385,12 @@ export default function StudentDashboardPage() {
                 <label>Subject</label>
                 <select value={reqSubject} onChange={(e) => setReqSubject(e.target.value)} required>
                   <option value="">Select a subject</option>
-                  <option value="Mathematics">Mathematics 📐</option>
-                  <option value="Sciences">Sciences 🔬</option>
-                  <option value="Languages">Languages 🌐</option>
-                  <option value="Social Studies">Social Studies 📚</option>
-                  <option value="Technology">Technology 💻</option>
-                  <option value="Arts & Culture">Arts &amp; Culture 🎨</option>
+                  <option value="Mathematics">Mathematics</option>
+                  <option value="Sciences">Sciences</option>
+                  <option value="Languages">Languages</option>
+                  <option value="Social Studies">Social Studies</option>
+                  <option value="Technology">Technology</option>
+                  <option value="Arts & Culture">Arts &amp; Culture</option>
                 </select>
               </div>
               <div className="form-group">

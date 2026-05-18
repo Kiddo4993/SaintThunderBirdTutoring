@@ -1,4 +1,5 @@
 import MarketingShell from "@/components/MarketingShell";
+import BrandIcon from "@/components/BrandIcon";
 
 export const metadata = {
   title: "About Us - Saint Thunderbird Tutoring",
@@ -23,7 +24,7 @@ export default function AboutPage() {
           </div>
 
           <div className="purpose-highlight">
-            <h4>🎓 Non-Profit, Student-Led</h4>
+            <h4>Non-Profit, Student-Led</h4>
             <p>Saint Thunderbird Tutoring is a student-to-student non-profit organization that introduces tutors and students, with a focus on providing academic support to First Nations children. Our tutors are passionate about education, and our students are committed to learning. Together, we create a community where knowledge flows freely and cultural understanding deepens.</p>
           </div>
 
@@ -49,17 +50,17 @@ export default function AboutPage() {
             </div>
             <div className="grid">
               <div className="glass-card">
-                <span className="card-icon">🌟</span>
+                <BrandIcon name="star" className="card-icon" />
                 <h3>Our Mission</h3>
                 <p>To provide culturally responsive education that honors indigenous traditions while preparing students for future success through accessible, high-quality tutoring and mentorship.</p>
               </div>
               <div className="glass-card">
-                <span className="card-icon">👁️</span>
+                <BrandIcon name="eye" className="card-icon" />
                 <h3>Our Vision</h3>
                 <p>A world where indigenous students thrive academically while maintaining strong connections to their cultural heritage, languages, and community values.</p>
               </div>
               <div className="glass-card">
-                <span className="card-icon">💎</span>
+                <BrandIcon name="gem" className="card-icon" />
                 <h3>Our Values</h3>
                 <p>Cultural respect, educational excellence, community empowerment, inclusivity, and sustainable growth through collaborative learning and mutual support.</p>
               </div>
@@ -72,7 +73,7 @@ export default function AboutPage() {
               <h2 className="section-title">Meet Our <span className="gradient-text">Founder</span></h2>
             </div>
             <div className="founder-card">
-              <div className="founder-image">👤</div>
+              <div className="founder-image"><BrandIcon name="user" size={52} strokeWidth={1} /></div>
               <div className="founder-content">
                 <h3>Dylan Duan</h3>
                 <p className="founder-title">Founder</p>
@@ -82,7 +83,7 @@ export default function AboutPage() {
                 <p className="founder-bio">
                   The history of fellowship and understanding between Asian communities and First Nations is embedded in Canadian history. Dylan carries forward this legacy of cross-cultural collaboration, building bridges through education and mutual respect. Saint Thunderbird Tutoring embodies his vision of student-led change and community empowerment.
                 </p>
-                <span className="heritage-badge">🤝 Building Bridges Through Education</span>
+                <span className="heritage-badge">Building Bridges Through Education</span>
               </div>
             </div>
           </div>
@@ -91,32 +92,32 @@ export default function AboutPage() {
             <h2 className="section-title">Why Choose <span className="gradient-text">Us</span></h2>
             <div className="grid subjects-grid" style={{ marginTop: "3rem" }}>
               <div className="glass-card">
-                <span className="card-icon">🎯</span>
+                <BrandIcon name="target" className="card-icon" />
                 <h3>Culturally Responsive</h3>
                 <p>All our programs integrate indigenous knowledge, languages, and cultural practices into the learning experience, ensuring education that respects and celebrates heritage.</p>
               </div>
               <div className="glass-card">
-                <span className="card-icon">🏆</span>
+                <BrandIcon name="trophy" className="card-icon" />
                 <h3>Proven Results</h3>
                 <p>100% of our students show significant academic improvement within the first semester of tutoring, with measurable gains in confidence and cultural pride.</p>
               </div>
               <div className="glass-card">
-                <span className="card-icon">🤝</span>
+                <BrandIcon name="handshake" className="card-icon" />
                 <h3>Community Driven</h3>
                 <p>Led by indigenous educators and community members who understand the unique needs of our students, ensuring authentic and meaningful support.</p>
               </div>
               <div className="glass-card">
-                <span className="card-icon">💝</span>
+                <BrandIcon name="heart" className="card-icon" />
                 <h3>Student-to-Student</h3>
                 <p>Peer-led learning creates relatable connections where students feel understood, supported, and empowered to reach their full potential.</p>
               </div>
               <div className="glass-card">
-                <span className="card-icon">🌍</span>
+                <BrandIcon name="globe" className="card-icon" />
                 <h3>Cross-Cultural Unity</h3>
                 <p>Honoring the historical bonds between diverse communities while building new bridges for future generations of learners and leaders.</p>
               </div>
               <div className="glass-card">
-                <span className="card-icon">⚡</span>
+                <BrandIcon name="lightning" className="card-icon" />
                 <h3>Completely Free</h3>
                 <p>As a non-profit organization, all our services are provided at no cost, ensuring every First Nations student has access to quality education.</p>
               </div>

@@ -15,10 +15,9 @@ import {
   Palette,
   Eye,
   Gem,
-  Music,
 } from "lucide-react";
 
-const ICON = { size: 48, strokeWidth: 1.5, "aria-hidden": "true" };
+const ICON = { size: 18, strokeWidth: 1.5, "aria-hidden": "true" };
 
 const subjects = [
   {
@@ -415,46 +414,6 @@ export default function HomeContent() {
       <button id="scrollTopBtn" type="button" title="Back to Top" aria-label="Back to top">
         ↑
       </button>
-
-      <div className="music-control" id="musicControl">
-        <div className="music-header">
-          <Music className="music-icon" size={22} strokeWidth={1.5} aria-hidden="true" />
-          <div className="music-title">Music</div>
-          <button
-            type="button"
-            className="collapse-btn"
-            id="collapseBtn"
-            aria-label="Collapse music player"
-          >
-            →
-          </button>
-        </div>
-
-        <div className="music-panel">
-          <label htmlFor="volumeSlider" className="sr-only">
-            Volume
-          </label>
-          <input
-            type="range"
-            id="volumeSlider"
-            className="volume-slider"
-            min="0"
-            max="100"
-            defaultValue="30"
-            aria-label="Volume"
-          />
-
-          <div className="volume-label">
-            <span>Soft</span>
-            <span id="volumeValue">30%</span>
-            <span>Intense</span>
-          </div>
-
-          <button type="button" className="music-toggle" id="musicToggle" aria-label="Play music">
-            ▶ Play Music
-          </button>
-        </div>
-      </div>
 
       <footer>
         <p>© 2026 Saint Thunderbird Tutoring</p>

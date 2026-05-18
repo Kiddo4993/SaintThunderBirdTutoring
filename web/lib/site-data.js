@@ -1,55 +1,55 @@
 export const popups = [
   {
-    icon: "🎓",
+    icon: "graduation",
     title: "Welcome!",
     msg: "Explore culturally responsive education for Indigenous students",
     btn: "Learn More",
     link: "#about",
   },
   {
-    icon: "500️⃣",
+    icon: "community",
     title: "Targeting 500+ Students",
     msg: "Join our thriving community targeting over 15 Indigenous communities",
     btn: "Join Us",
     link: "#students",
   },
   {
-    icon: "💝",
+    icon: "heart",
     title: "Completely Free",
     msg: "All tutoring services are free for First Nations students",
     btn: "Get Started",
     link: "#subjects",
   },
   {
-    icon: "👨‍🏫",
+    icon: "graduation",
     title: "Become a Tutor",
     msg: "Share your knowledge and make a lasting impact",
     btn: "Apply Now",
     link: "#mentors",
   },
   {
-    icon: "⚡",
+    icon: "lightning",
     title: "Expert Mentorship",
     msg: "Learn from certified educators and indigenous community leaders",
     btn: "Meet Our Team",
     link: "#mentors",
   },
   {
-    icon: "🌟",
+    icon: "star",
     title: "100% Success Rate",
     msg: "Students are improving their grades with our personalized support",
     btn: "View Subjects",
     link: "#subjects",
   },
   {
-    icon: "🤝",
+    icon: "handshake",
     title: "Community First",
     msg: "Join study groups and connect with fellow indigenous students",
     btn: "Explore More",
     link: "#students",
   },
   {
-    icon: "🏆",
+    icon: "trophy",
     title: "Celebrate Success",
     msg: "We recognize every achievement and celebrate your growth",
     btn: "Learn More",
@@ -59,7 +59,7 @@ export const popups = [
 
 export const infoCards = [
   {
-    icon: "🎓",
+    icon: "graduation",
     title: "Our Mission",
     subtitle: "Empowering Through Education",
     description:
@@ -68,7 +68,7 @@ export const infoCards = [
     stats: ["Targeting 500+ Students", "100% Success Rate", "Targeting 15 Communities"],
   },
   {
-    icon: "🌍",
+    icon: "globe",
     title: "Serving Communities",
     subtitle: "Across the Nation",
     description:
@@ -77,7 +77,7 @@ export const infoCards = [
     stats: ["Targeting 15 Communities", "Targeting 3 Provinces", "Growing Daily"],
   },
   {
-    icon: "⚡",
+    icon: "lightning",
     title: "Targeting 500+ Students Strong",
     subtitle: "A Growing Movement",
     description:
@@ -86,7 +86,7 @@ export const infoCards = [
     stats: ["Targeting 500+ Enrolled", "45% Growth YoY", "Free Access"],
   },
   {
-    icon: "👨‍🏫",
+    icon: "graduation",
     title: "Expert Team",
     subtitle: "Dedicated Educators",
     description:
@@ -95,7 +95,7 @@ export const infoCards = [
     stats: ["Targeting 45+ Tutors", "All Certified", "Community Leaders"],
   },
   {
-    icon: "🏆",
+    icon: "trophy",
     title: "100% Success Rate",
     subtitle: "Proven Results",
     description:
@@ -104,7 +104,7 @@ export const infoCards = [
     stats: ["100% Improve", "Grade Increases", "Confidence Boost"],
   },
   {
-    icon: "💝",
+    icon: "heart",
     title: "Completely Free",
     subtitle: "No Hidden Costs",
     description:
@@ -113,7 +113,7 @@ export const infoCards = [
     stats: ["100% Free", "No Fees", "All Services Covered"],
   },
   {
-    icon: "🤝",
+    icon: "handshake",
     title: "Student-Led Non-Profit",
     subtitle: "By Students, For Students",
     description:
@@ -122,7 +122,7 @@ export const infoCards = [
     stats: ["Student Founded", "Community Driven", "Growing Network"],
   },
   {
-    icon: "🌟",
+    icon: "star",
     title: "Cultural Pride",
     subtitle: "Honoring Our Heritage",
     description:

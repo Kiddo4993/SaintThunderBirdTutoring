@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { infoCards, popups } from "@/lib/site-data";
+import BrandIcon from "@/components/BrandIcon";
 
 function rnd(min, max) {
   return Math.random() * (max - min) + min;
@@ -17,9 +18,6 @@ export default function HomeEffects({ infoMenuOpen, setInfoMenuOpen }) {
   const [premiumOpen, setPremiumOpen] = useState(false);
   const [cardIndex, setCardIndex] = useState(0);
   const premiumTimerRef = useRef(null);
-
-  const audioContextRef = useRef(null);
-  const isPlayingRef = useRef(false);
 
   useEffect(() => {
     setMounted(true);
@@ -242,94 +240,6 @@ export default function HomeEffects({ infoMenuOpen, setInfoMenuOpen }) {
   }, [tryShowPopup]);
 
   useEffect(() => {
-    const volumeSlider = document.getElementById("volumeSlider");
-    const musicToggle = document.getElementById("musicToggle");
-    const volumeValue = document.getElementById("volumeValue");
-    const collapseBtn = document.getElementById("collapseBtn");
-    const musicControl = document.getElementById("musicControl");
-
-    function onVolumeInput() {
-      if (volumeValue && volumeSlider) volumeValue.textContent = `${volumeSlider.value}%`;
-    }
-
-    function playNote(frequency, duration) {
-      const ctx = audioContextRef.current;
-      if (!ctx) return;
-      const volumeSliderEl = document.getElementById("volumeSlider");
-      const volume = volumeSliderEl ? volumeSliderEl.value / 100 : 0.3;
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = "sine";
-      osc.frequency.value = frequency;
-      gain.gain.setValueAtTime(0.05 * volume, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001 * volume, ctx.currentTime + duration);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + duration);
-    }
-
-    function playClassicalMusic() {
-      if (!isPlayingRef.current) return;
-      const notes = [
-        { freq: 329.63, duration: 0.6 },
-        { freq: 349.23, duration: 0.6 },
-        { freq: 392.0, duration: 0.9 },
-        { freq: 349.23, duration: 0.6 },
-        { freq: 329.63, duration: 0.6 },
-        { freq: 293.66, duration: 0.9 },
-        { freq: 261.63, duration: 0.6 },
-        { freq: 293.66, duration: 0.6 },
-        { freq: 329.63, duration: 0.9 },
-      ];
-      let delay = 0;
-      notes.forEach((note) => {
-        setTimeout(() => {
-          if (isPlayingRef.current) playNote(note.freq, note.duration);
-        }, delay * 1000);
-        delay += note.duration;
-      });
-      if (isPlayingRef.current) {
-        setTimeout(() => playClassicalMusic(), delay * 1000);
-      }
-    }
-
-    function toggleMusic() {
-      const btn = document.getElementById("musicToggle");
-      if (!isPlayingRef.current) {
-        if (!audioContextRef.current) {
-          audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        audioContextRef.current.resume();
-        isPlayingRef.current = true;
-        if (btn) btn.textContent = "⏸ Stop Music";
-        playClassicalMusic();
-      } else {
-        isPlayingRef.current = false;
-        if (btn) btn.textContent = "▶ Play Music";
-      }
-    }
-
-    if (volumeSlider) {
-      volumeSlider.addEventListener("input", onVolumeInput);
-    }
-    if (musicToggle) {
-      musicToggle.addEventListener("click", toggleMusic);
-    }
-    if (collapseBtn && musicControl) {
-      collapseBtn.addEventListener("click", () => {
-        const isCollapsed = musicControl.classList.toggle("collapsed");
-        collapseBtn.textContent = isCollapsed ? "←" : "→";
-      });
-    }
-
-    return () => {
-      if (volumeSlider) volumeSlider.removeEventListener("input", onVolumeInput);
-      if (musicToggle) musicToggle.removeEventListener("click", toggleMusic);
-    };
-  }, []);
-
-  useEffect(() => {
     function onDocClick(e) {
       if (!infoMenuOpen) return;
       if (!e.target.closest(".info-menu-btn") && !e.target.closest(".info-menu-dropdown")) {
@@ -351,7 +261,7 @@ export default function HomeEffects({ infoMenuOpen, setInfoMenuOpen }) {
           <button type="button" className="st-popup-close" aria-label="Close" onClick={hidePopupManual}>
             ×
           </button>
-          <div className="st-popup-icon">{p.icon}</div>
+          <div className="st-popup-icon"><BrandIcon name={p.icon} size={30} strokeWidth={1.2} /></div>
           <h3 className="st-popup-title">{p.title}</h3>
           <p className="st-popup-msg">{p.msg}</p>
           <a href={p.link} className="st-popup-btn">
@@ -372,7 +282,7 @@ export default function HomeEffects({ infoMenuOpen, setInfoMenuOpen }) {
           <button type="button" className="premium-info-close" aria-label="Close" onClick={hidePremium}>
             ×
           </button>
-          <div className="premium-info-icon">{card.icon}</div>
+          <div className="premium-info-icon"><BrandIcon name={card.icon} size={38} strokeWidth={1.2} /></div>
           <div className="premium-info-header">
             <h3 className="premium-info-title">{card.title}</h3>
             <p className="premium-info-subtitle">{card.subtitle}</p>
@@ -424,7 +334,7 @@ export default function HomeEffects({ infoMenuOpen, setInfoMenuOpen }) {
               className="info-menu-item w-full border-0 bg-transparent text-left"
               onClick={() => showPremiumCard(index)}
             >
-              <span className="menu-item-icon">{c.icon}</span>
+              <span className="menu-item-icon"><BrandIcon name={c.icon} size={20} strokeWidth={1.4} /></span>
               <div className="menu-item-text">
                 <div className="menu-item-title">{c.title}</div>
                 <div className="menu-item-subtitle">{c.subtitle}</div>
