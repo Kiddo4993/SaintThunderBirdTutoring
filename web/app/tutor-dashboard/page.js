@@ -272,7 +272,7 @@ useEffect(() => {
               { icon: null, step: 3, text: "The link is valid for the session's designated time (e.g. 1 hour) — after that it expires." },
               { icon: null, step: 4, text: "When you're done, click Mark Session Complete — hours are logged automatically based on what the student requested." },
             ].map(({ step, text }) => (
-              <div key={icon} style={{ display: "flex", gap: "0.75rem", alignItems: "flex-start" }}>
+              <div key={step} style={{ display: "flex", gap: "0.75rem", alignItems: "flex-start" }}>
                 <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "22px", height: "22px", minWidth: "22px", borderRadius: "50%", background: "rgba(99,102,241,0.15)", border: "1px solid rgba(99,102,241,0.35)", color: "#818cf8", fontSize: "0.7rem", fontWeight: 700, flexShrink: 0 }}>{step}</span>
                 <span style={{ color: "#c7d2fe", lineHeight: 1.6, fontSize: "0.95rem" }}>{text}</span>
               </div>

@@ -7,50 +7,13 @@ import {
   Trophy,
   Sprout,
   Briefcase,
-  BookMarked,
-  Calculator,
-  FlaskConical,
-  Globe,
-  Monitor,
-  Palette,
   Eye,
   Gem,
 } from "lucide-react";
+import SubjectCarousel from "@/components/home/SubjectCarousel";
 
 const ICON = { size: 18, strokeWidth: 1.5, "aria-hidden": "true" };
 
-const subjects = [
-  {
-    Icon: BookMarked,
-    title: "English & Literature",
-    text: "Strengthen communication, essay writing, and analytical reading through Indigenous perspectives and contemporary voices.",
-  },
-  {
-    Icon: Calculator,
-    title: "Mathematics",
-    text: "Master foundational to advanced math concepts with culturally relevant examples and step-by-step mentorship.",
-  },
-  {
-    Icon: FlaskConical,
-    title: "Science",
-    text: "Explore biology, chemistry, and physics while connecting traditional Indigenous knowledge with modern discoveries.",
-  },
-  {
-    Icon: Globe,
-    title: "Social Studies",
-    text: "Understand history, geography, and social justice through inclusive and Indigenous-centered perspectives.",
-  },
-  {
-    Icon: Monitor,
-    title: "Computer Science",
-    text: "Build digital skills, learn to code, and explore technology as a tool for creativity and community empowerment.",
-  },
-  {
-    Icon: Palette,
-    title: "Arts & Culture",
-    text: "Express yourself through visual arts, music, and storytelling — celebrating Indigenous creativity and identity.",
-  },
-];
 
 export default function HomeContent() {
   return (
@@ -305,15 +268,7 @@ export default function HomeContent() {
             </p>
           </div>
 
-          <div className="subjects-grid grid">
-            {subjects.map(({ Icon, title, text }) => (
-              <div key={title} className="glass-card">
-                <Icon className="card-icon" {...ICON} />
-                <h3>{title}</h3>
-                <p>{text}</p>
-              </div>
-            ))}
-          </div>
+          <SubjectCarousel />
         </div>
       </section>
 
