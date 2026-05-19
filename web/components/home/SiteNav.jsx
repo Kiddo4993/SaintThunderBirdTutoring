@@ -7,6 +7,7 @@ const THEME_KEY = "st-theme";
 
 export default function SiteNav({ onInfoClick }) {
   const [isLight, setIsLight] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     try {
@@ -18,6 +19,15 @@ export default function SiteNav({ onInfoClick }) {
     } catch {
       /* ignore */
     }
+  }, []);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      setProgress(max > 0 ? Math.min(100, (window.scrollY / max) * 100) : 0);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   function toggleTheme() {
@@ -93,6 +103,9 @@ export default function SiteNav({ onInfoClick }) {
               </a>
             </li>
           </ul>
+        </div>
+        <div className="nav-progress" aria-hidden="true">
+          <div className="nav-progress-fill" style={{ width: `${progress}%` }} />
         </div>
       </nav>
     </>

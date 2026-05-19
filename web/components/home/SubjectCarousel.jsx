@@ -48,15 +48,22 @@ export default function SubjectCarousel() {
     setTimeout(() => {
       setActive(index);
       setFading(false);
-    }, 200);
+    }, 180);
+  };
+
+  const prev = () => goTo((active - 1 + subjects.length) % subjects.length);
+  const next = () => goTo((active + 1) % subjects.length);
+
+  const resetInterval = () => {
+    clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
+      if (!hovered.current) setActive((p) => (p + 1) % subjects.length);
+    }, 5000);
   };
 
   useEffect(() => {
     intervalRef.current = setInterval(() => {
-      setActive((prev) => {
-        if (hovered.current) return prev;
-        return (prev + 1) % subjects.length;
-      });
+      if (!hovered.current) setActive((p) => (p + 1) % subjects.length);
     }, 5000);
     return () => clearInterval(intervalRef.current);
   }, []);
@@ -72,9 +79,7 @@ export default function SubjectCarousel() {
       onMouseLeave={() => { hovered.current = false; }}
     >
       <div className="subject-carousel-left">
-        <span className="subject-counter">
-          Subject {idx} of {total}
-        </span>
+        <span className="subject-counter">Subject {idx} of {total}</span>
 
         <div className="subject-ghost-num" aria-hidden="true">{idx}</div>
 
@@ -83,17 +88,37 @@ export default function SubjectCarousel() {
           <p className="subject-text">{text}</p>
         </div>
 
-        <div className="subject-dots" role="tablist" aria-label="Subject navigation">
-          {subjects.map((_, i) => (
+        <div className="subject-controls">
+          <div className="subject-dots" role="tablist" aria-label="Subject navigation">
+            {subjects.map((_, i) => (
+              <button
+                key={i}
+                role="tab"
+                aria-selected={i === active}
+                aria-label={subjects[i].title}
+                className={`subject-dot${i === active ? " active" : ""}`}
+                onClick={() => { goTo(i); resetInterval(); }}
+              />
+            ))}
+          </div>
+          <div className="subject-arrows">
             <button
-              key={i}
-              role="tab"
-              aria-selected={i === active}
-              aria-label={`${subjects[i].title}`}
-              className={`subject-dot${i === active ? " active" : ""}`}
-              onClick={() => goTo(i)}
-            />
-          ))}
+              type="button"
+              className="subject-arrow"
+              aria-label="Previous subject"
+              onClick={() => { prev(); resetInterval(); }}
+            >
+              ←
+            </button>
+            <button
+              type="button"
+              className="subject-arrow"
+              aria-label="Next subject"
+              onClick={() => { next(); resetInterval(); }}
+            >
+              →
+            </button>
+          </div>
         </div>
       </div>
 

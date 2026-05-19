@@ -160,6 +160,24 @@ nav.scrolled {
     box-shadow: 0 1px 0 rgba(212, 165, 116, 0.06), 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
+.nav-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: rgba(212, 165, 116, 0.1);
+    overflow: hidden;
+}
+
+.nav-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #d4a574, #f0c896, #d4a574);
+    background-size: 200% 100%;
+    animation: progressShimmer 2s linear infinite;
+    transition: width 0.1s linear;
+}
+
 .nav-container {
     max-width: 1600px;
     margin: 0 auto;
@@ -538,13 +556,18 @@ nav.scrolled {
 }
 
 /* Subject Carousel */
+#subjects.section {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+}
+
 .subject-carousel {
     display: flex;
     align-items: center;
     gap: 5rem;
-    min-height: 460px;
+    min-height: 360px;
     position: relative;
-    padding: 2rem 0;
+    padding: 1.5rem 0;
 }
 
 .subject-carousel-left {
@@ -608,10 +631,42 @@ nav.scrolled {
     margin-bottom: 2.5rem;
 }
 
+.subject-controls {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
 .subject-dots {
     display: flex;
     gap: 0.5rem;
     align-items: center;
+}
+
+.subject-arrows {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.subject-arrow {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid rgba(212, 165, 116, 0.25);
+    background: transparent;
+    color: rgba(212, 165, 116, 0.7);
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.subject-arrow:hover {
+    background: rgba(212, 165, 116, 0.12);
+    border-color: rgba(212, 165, 116, 0.5);
+    color: #d4a574;
 }
 
 .subject-dot {
