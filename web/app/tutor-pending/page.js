@@ -65,24 +65,24 @@ export default function TutorPendingPage() {
       <div className="dash-mesh-gradient"></div>
       <div className="auth-page-wrapper">
         <div className="pending-container">
-          <div className="pending-logo">⚡</div>
+          <div className="pending-logo"><svg viewBox="0 0 40 40" width="40" height="40" fill="none"><rect x="4" y="8" width="32" height="4" fill="#d4a574" rx="1"/><rect x="18" y="12" width="4" height="22" fill="#d4a574" rx="1"/></svg></div>
           <h1>Application Submitted</h1>
           <p className="pending-status">Your tutor application is under review</p>
-          <div className="pending-badge">⏳ PENDING APPROVAL</div>
+          <div className="pending-badge">PENDING APPROVAL</div>
           <div className="pending-spinner"></div>
           <div className="pending-email-sent">
-            <strong>✉️ Confirmation email sent</strong>
+            <strong>Confirmation email sent</strong>
             <p id="emailDisplay">Check your email for updates</p>
           </div>
           <div className="pending-info-box">
-            <h3>📋 What happens next?</h3>
+            <h3>What happens next?</h3>
             <p>✓ Our team will review your application</p>
             <p>✓ We&apos;ll verify your information</p>
             <p>✓ You&apos;ll receive an email with our decision</p>
             <p>✓ Approved tutors can start teaching immediately</p>
           </div>
           <div className="pending-info-box">
-            <h3>⏱️ Typical Review Time</h3>
+            <h3>Typical Review Time</h3>
             <p>Most applications are reviewed within 24-48 hours</p>
             <p>You&apos;ll be notified by email as soon as we make a decision</p>
           </div>

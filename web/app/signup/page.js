@@ -1,4 +1,6 @@
 'use client';
+import { Sun, Moon } from 'lucide-react';
+import BrandIcon from '@/components/BrandIcon';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -142,13 +144,13 @@ export default function SignupPage() {
     <>
       <div className="mesh-gradient"></div>
       <button type="button" className="theme-toggle-btn" onClick={toggleTheme}>
-        {isLight ? '☀️' : '🌓'}
+        {isLight ? <Sun size={16} strokeWidth={1.5} /> : <Moon size={16} strokeWidth={1.5} />}
       </button>
 
       <div className="auth-page-wrapper">
       <div className="signup-container">
         <div className="logo">
-          <div style={{ fontSize: '4rem', filter: 'drop-shadow(0 0 20px rgba(96,165,250,0.6))' }}>⚡</div>
+          <BrandIcon name="lightning" size={40} strokeWidth={1} style={{ color: "#d4a574" }} />
         </div>
 
         <h1 style={{
@@ -190,7 +192,7 @@ export default function SignupPage() {
         {/* Student Sign Up */}
         <div className={`tab-content${activeTab === 'student' ? ' active' : ''}`}>
           <div className="info-text">
-            ✨ Join 500+ First Nations students receiving free, culturally responsive tutoring!
+            Join 500+ First Nations students receiving free, culturally responsive tutoring
           </div>
           <form onSubmit={handleStudentSubmit}>
             <div className="form-row">
@@ -273,7 +275,7 @@ export default function SignupPage() {
         {/* Tutor Sign Up */}
         <div className={`tab-content${activeTab === 'tutor' ? ' active' : ''}`}>
           <div className="info-text">
-            🎓 Join 45+ dedicated tutors making a difference in First Nations education!
+            Join 45+ dedicated tutors making a difference in First Nations education
           </div>
           <form onSubmit={handleTutorSubmit}>
             <div className="form-row">

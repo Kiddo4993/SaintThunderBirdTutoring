@@ -1,3 +1,4 @@
+import BrandIcon from "@/components/BrandIcon";
 import MarketingShell from "@/components/MarketingShell";
 
 export const metadata = {
@@ -19,17 +20,17 @@ export default function StudentsPage() {
         <div className="container">
           <div className="grid">
             <div className="glass-card">
-              <span className="card-icon">🎯</span>
+              <BrandIcon name="target" className="card-icon" />
               <h3>Personalized Learning</h3>
               <p>Each student receives a customized learning plan that adapts to their pace, learning style, and academic goals while honoring their cultural background.</p>
             </div>
             <div className="glass-card">
-              <span className="card-icon">🤝</span>
+              <BrandIcon name="handshake" className="card-icon" />
               <h3>Peer Support</h3>
               <p>Join study groups and connect with fellow indigenous students for collaborative learning, mutual encouragement, and community building.</p>
             </div>
             <div className="glass-card">
-              <span className="card-icon">🏆</span>
+              <BrandIcon name="trophy" className="card-icon" />
               <h3>Achievement Recognition</h3>
               <p>Celebrate your successes! We recognize academic achievements, cultural contributions, and personal growth throughout your educational journey.</p>
             </div>

@@ -61,7 +61,7 @@ export default function LoadingPage() {
       <div className="scan-line"></div>
       <div className="loading-content">
         <div className="hologram-container">
-          <div className="thunderbird-hologram">⚡</div>
+          <div className="thunderbird-hologram"><svg viewBox="0 0 80 80" width="80" height="80" fill="none" aria-hidden="true"><rect x="8" y="18" width="64" height="8" fill="#d4a574" rx="2"/><rect x="36" y="26" width="8" height="40" fill="#d4a574" rx="2"/></svg></div>
         </div>
         <h1 className="intro-title">Saint Thunderbird</h1>
         <p className="intro-subtitle">Tutoring</p>

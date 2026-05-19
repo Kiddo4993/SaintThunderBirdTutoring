@@ -1,3 +1,4 @@
+import BrandIcon from "@/components/BrandIcon";
 import MarketingShell from "@/components/MarketingShell";
 
 export const metadata = {
@@ -19,7 +20,7 @@ export default function SubjectsPage() {
         <div className="container">
           <div className="grid subjects-grid">
             <div className="glass-card">
-              <span className="card-icon">📐</span>
+              <BrandIcon name="target" className="card-icon" />
               <h3>Mathematics</h3>
               <p>From basic arithmetic to advanced calculus, we help students build confidence and master mathematical concepts through culturally relevant examples.</p>
               <ul style={{ marginTop: "1.5rem", color: "var(--beige-light)", listStyle: "none" }}>
@@ -30,7 +31,7 @@ export default function SubjectsPage() {
               </ul>
             </div>
             <div className="glass-card">
-              <span className="card-icon">🔬</span>
+              <BrandIcon name="flask" className="card-icon" />
               <h3>Science</h3>
               <p>Biology, chemistry, physics, and environmental science taught with connections to traditional ecological knowledge and indigenous perspectives.</p>
               <ul style={{ marginTop: "1.5rem", color: "var(--beige-light)", listStyle: "none" }}>
@@ -41,7 +42,7 @@ export default function SubjectsPage() {
               </ul>
             </div>
             <div className="glass-card">
-              <span className="card-icon">📖</span>
+              <BrandIcon name="book" className="card-icon" />
               <h3>Languages</h3>
               <p>English, indigenous languages, and language arts programs that celebrate multilingualism and preserve cultural linguistic heritage.</p>
               <ul style={{ marginTop: "1.5rem", color: "var(--beige-light)", listStyle: "none" }}>
@@ -52,7 +53,7 @@ export default function SubjectsPage() {
               </ul>
             </div>
             <div className="glass-card">
-              <span className="card-icon">🌍</span>
+              <BrandIcon name="globe" className="card-icon" />
               <h3>Social Studies</h3>
               <p>History, geography, and civics taught through indigenous perspectives, highlighting contributions and addressing historical contexts.</p>
               <ul style={{ marginTop: "1.5rem", color: "var(--beige-light)", listStyle: "none" }}>
@@ -63,7 +64,7 @@ export default function SubjectsPage() {
               </ul>
             </div>
             <div className="glass-card">
-              <span className="card-icon">💻</span>
+              <BrandIcon name="monitor" className="card-icon" />
               <h3>Technology</h3>
               <p>Computer science, coding, digital literacy, and media production skills for the modern world while promoting digital sovereignty.</p>
               <ul style={{ marginTop: "1.5rem", color: "var(--beige-light)", listStyle: "none" }}>
@@ -74,7 +75,7 @@ export default function SubjectsPage() {
               </ul>
             </div>
             <div className="glass-card">
-              <span className="card-icon">🎨</span>
+              <BrandIcon name="palette" className="card-icon" />
               <h3>Arts &amp; Culture</h3>
               <p>Traditional arts, music, storytelling, and creative expression that strengthens cultural identity and artistic skills.</p>
               <ul style={{ marginTop: "1.5rem", color: "var(--beige-light)", listStyle: "none" }}>

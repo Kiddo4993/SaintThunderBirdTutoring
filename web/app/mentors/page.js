@@ -1,3 +1,4 @@
+import BrandIcon from "@/components/BrandIcon";
 import MarketingShell from "@/components/MarketingShell";
 
 export const metadata = {
@@ -19,17 +20,17 @@ export default function MentorsPage() {
         <div className="container">
           <div className="grid">
             <div className="glass-card">
-              <span className="card-icon">👨‍🏫</span>
+              <BrandIcon name="graduation" className="card-icon" />
               <h3>Expert Educators</h3>
               <p>Certified teachers, university professors, and subject matter experts committed to culturally responsive education and student success.</p>
             </div>
             <div className="glass-card">
-              <span className="card-icon">🌱</span>
+              <BrandIcon name="sprout" className="card-icon" />
               <h3>Community Leaders</h3>
               <p>Indigenous community members, elders, and cultural practitioners who share traditional knowledge and provide cultural guidance.</p>
             </div>
             <div className="glass-card">
-              <span className="card-icon">💼</span>
+              <BrandIcon name="briefcase" className="card-icon" />
               <h3>Career Professionals</h3>
               <p>Successful indigenous professionals from various fields who inspire students and share real-world experience and career insights.</p>
             </div>
@@ -39,32 +40,32 @@ export default function MentorsPage() {
             <h2 className="section-title">Why <span className="gradient-text">Mentor</span> With Us?</h2>
             <div className="grid subjects-grid" style={{ marginTop: "3rem" }}>
               <div className="glass-card">
-                <span className="card-icon">💝</span>
+                <BrandIcon name="heart" className="card-icon" />
                 <h3>Make an Impact</h3>
                 <p>Directly influence the academic success and personal development of indigenous students in your community.</p>
               </div>
               <div className="glass-card">
-                <span className="card-icon">⏰</span>
+                <BrandIcon name="clock" className="card-icon" />
                 <h3>Flexible Schedule</h3>
                 <p>Set your own hours and availability. Tutor as much or as little as your schedule allows.</p>
               </div>
               <div className="glass-card">
-                <span className="card-icon">💰</span>
+                <BrandIcon name="award" className="card-icon" />
                 <h3>Competitive Volunteering</h3>
                 <p>Receive TONS of volunteer hours for your expertise and dedication to helping students succeed.</p>
               </div>
               <div className="glass-card">
-                <span className="card-icon">📚</span>
+                <BrandIcon name="book" className="card-icon" />
                 <h3>Professional Development</h3>
                 <p>Access training resources and join a network of dedicated indigenous educators.</p>
               </div>
               <div className="glass-card">
-                <span className="card-icon">🏅</span>
+                <BrandIcon name="award" className="card-icon" />
                 <h3>Recognition</h3>
                 <p>Be recognized as a valued member of our educational community making real change.</p>
               </div>
               <div className="glass-card">
-                <span className="card-icon">🌍</span>
+                <BrandIcon name="globe" className="card-icon" />
                 <h3>Cultural Connection</h3>
                 <p>Work within a framework that honors and integrates indigenous knowledge and perspectives.</p>
               </div>

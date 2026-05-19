@@ -288,7 +288,7 @@ export default function HomeEffects({ infoMenuOpen, setInfoMenuOpen }) {
             <p className="premium-info-subtitle">{card.subtitle}</p>
           </div>
           <p className="premium-info-description">{card.description}</p>
-          <div className="premium-info-highlight">✨ {card.highlight} ✨</div>
+          <div className="premium-info-highlight">{card.highlight}</div>
           <div className="premium-info-stats">
             {card.stats.map((stat) => (
               <span key={stat} className="stat-badge">

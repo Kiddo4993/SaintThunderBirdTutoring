@@ -2,14 +2,15 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import BrandIcon from "@/components/BrandIcon";
 
 const SUBJECTS = [
-  { name: "Mathematics", icon: "📐" },
-  { name: "Sciences", icon: "🔬" },
-  { name: "Languages", icon: "🌐" },
-  { name: "Social Studies", icon: "📚" },
-  { name: "Technology", icon: "💻" },
-  { name: "Arts & Culture", icon: "🎨" },
+  { name: "Mathematics", icon: "target" },
+  { name: "Sciences", icon: "flask" },
+  { name: "Languages", icon: "globe" },
+  { name: "Social Studies", icon: "book" },
+  { name: "Technology", icon: "monitor" },
+  { name: "Arts & Culture", icon: "palette" },
 ];
 
 const EMAIL_PREFS = [
@@ -92,24 +93,24 @@ export default function StudentProfilePage() {
       <div className="container" style={{ padding: "2rem", position: "relative", zIndex: 10 }}>
         <div className="header">
           <div className="header-content">
-            <h1>⚡ Welcome, <span>{user?.firstName || "Student"}</span>!</h1>
+            <h1>Welcome, <span>{user?.firstName || "Student"}</span>!</h1>
             <p>Your student profile &amp; learning preferences</p>
           </div>
           <div className="header-actions">
-            <button type="button" className="btn-secondary" onClick={() => router.push("/student-dashboard")}>📚 Go to Dashboard</button>
-            <button type="button" className="btn-secondary" onClick={doLogout}>🚪 Logout</button>
+            <button type="button" className="btn-secondary" onClick={() => router.push("/student-dashboard")}>Go to Dashboard</button>
+            <button type="button" className="btn-secondary" onClick={doLogout}>Logout</button>
           </div>
         </div>
 
         <div className="grid-2">
           <div className="card">
-            <div className="welcome-badge">👋 Welcome to Saint Thunderbird</div>
-            <div className="card-title">🎓 Start Your Learning Journey</div>
+            <div className="welcome-badge">Welcome to Saint Thunderbird</div>
+            <div className="card-title">Start Your Learning Journey</div>
             <div className="info-box">
               <p>Welcome to Saint Thunderbird Tutoring! A free, volunteer-powered tutoring platform dedicated to helping First Nations students succeed. Select your learning interests and let us find the perfect tutor for you.</p>
             </div>
             <div style={{ background: "rgba(212,165,116,0.05)", padding: "1rem", borderRadius: "8px" }}>
-              <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem", marginBottom: "0.75rem" }}><strong>📧 Email Notifications:</strong></p>
+              <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem", marginBottom: "0.75rem" }}><strong>Email Notifications:</strong></p>
               <p style={{ color: "var(--text-secondary)", fontSize: "0.85rem" }}>We&apos;ll send you emails when:</p>
               <ul style={{ listStyle: "none", marginTop: "0.5rem", color: "var(--text-secondary)", fontSize: "0.85rem" }}>
                 <li>✓ A tutor accepts your request</li>
@@ -132,19 +133,19 @@ export default function StudentProfilePage() {
 
         <div className="grid-2">
           <div className="card">
-            <div className="card-title">📖 Learning Interests</div>
+            <div className="card-title">Learning Interests</div>
             <p style={{ color: "var(--text-secondary)", marginBottom: "1.5rem" }}>Select the subjects you&apos;d like to focus on. This helps us match you with the right tutors.</p>
             <div className="interests-grid">
               {SUBJECTS.map(({ name, icon }) => (
                 <div key={name} className={`interest-item${selectedInterests.has(name) ? " selected" : ""}`} onClick={() => toggleInterest(name)}>
                   <div className="interest-checkmark">✓</div>
-                  <div className="interest-icon">{icon}</div>
+                  <div className="interest-icon"><BrandIcon name={icon} size={20} strokeWidth={1.5} /></div>
                   <div className="interest-name">{name}</div>
                 </div>
               ))}
             </div>
             <div className="grade-section">
-              <div className="grade-label">📚 Your Grade Level</div>
+              <div className="grade-label">Your Grade Level</div>
               <select value={gradeLevel} onChange={(e) => setGradeLevel(e.target.value)}>
                 <option value="">Select your grade level</option>
                 <option value="elementary">Elementary (K-5)</option>
@@ -157,7 +158,7 @@ export default function StudentProfilePage() {
           </div>
 
           <div className="card">
-            <div className="card-title">📧 Email Preferences</div>
+            <div className="card-title">Email Preferences</div>
             <p style={{ color: "var(--text-secondary)", marginBottom: "1.5rem" }}>Control how and when you receive notifications from Saint Thunderbird.</p>
             <div className="email-settings">
               {EMAIL_PREFS.map((label, i) => (
@@ -174,7 +175,7 @@ export default function StudentProfilePage() {
         </div>
 
         <div className="card">
-          <div className="card-title">📝 Your Tutoring Requests</div>
+          <div className="card-title">Your Tutoring Requests</div>
           <div className="tutoring-requests">
             {requests.length === 0 ? (
               <div style={{ color: "var(--text-secondary)", textAlign: "center", padding: "2rem" }}>

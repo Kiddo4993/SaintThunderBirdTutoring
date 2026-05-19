@@ -3,6 +3,7 @@ import {
   Eye, Gem, Target, FileText, CheckCircle, Clock, Mail, BarChart2,
   BookOpen, Video, HelpCircle, Lock, LogOut, Sun, Moon, User,
   Send, Award, Briefcase, Inbox, CheckSquare, Calendar,
+  FlaskConical, Sprout, Monitor, Palette,
 } from "lucide-react";
 
 const ICON_MAP = {
@@ -37,6 +38,10 @@ const ICON_MAP = {
   document: FileText,
   done: CheckSquare,
   calendar: Calendar,
+  flask: FlaskConical,
+  sprout: Sprout,
+  monitor: Monitor,
+  palette: Palette,
 };
 
 export default function BrandIcon({ name, size = 20, className = "", strokeWidth = 1.5, style }) {
