@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Zap, Moon, Sun, Menu, User } from "lucide-react";
+import BrandIcon from "@/components/BrandIcon";
 
 const THEME_KEY = "st-theme";
 
@@ -39,7 +39,7 @@ export default function SiteNav({ onInfoClick }) {
       <nav id="nav">
         <div className="nav-container">
           <div className="logo">
-            <Zap className="logo-icon" size={22} aria-hidden="true" />
+            <BrandIcon name="lightning" size={22} className="logo-icon" color="d4a574" />
             <span>Saint Thunderbird</span>
           </div>
           <ul className="nav-links">
@@ -71,9 +71,9 @@ export default function SiteNav({ onInfoClick }) {
                 onClick={toggleTheme}
               >
                 {isLight ? (
-                  <Sun size={18} aria-hidden="true" />
+                  <BrandIcon name="sun" size={18} />
                 ) : (
-                  <Moon size={18} aria-hidden="true" />
+                  <BrandIcon name="moon" size={18} />
                 )}
               </button>
             </li>
@@ -84,12 +84,12 @@ export default function SiteNav({ onInfoClick }) {
                 aria-label="Organization info menu"
                 onClick={onInfoClick}
               >
-                <Menu size={18} aria-hidden="true" />
+                <BrandIcon name="menu" size={18} />
               </button>
             </li>
             <li>
               <a href="/login" className="profile-icon" aria-label="Login or sign up">
-                <User size={18} aria-hidden="true" />
+                <BrandIcon name="user" size={18} />
               </a>
             </li>
           </ul>

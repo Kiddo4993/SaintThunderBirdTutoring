@@ -1,5 +1,4 @@
 'use client';
-import { Sun, Moon } from 'lucide-react';
 import BrandIcon from '@/components/BrandIcon';
 
 import { useState, useEffect } from 'react';
@@ -144,13 +143,13 @@ export default function SignupPage() {
     <>
       <div className="mesh-gradient"></div>
       <button type="button" className="theme-toggle-btn" onClick={toggleTheme}>
-        {isLight ? <Sun size={16} strokeWidth={1.5} /> : <Moon size={16} strokeWidth={1.5} />}
+        {isLight ? <BrandIcon name="sun" size={16} /> : <BrandIcon name="moon" size={16} />}
       </button>
 
       <div className="auth-page-wrapper">
       <div className="signup-container">
         <div className="logo">
-          <BrandIcon name="lightning" size={40} strokeWidth={1} style={{ color: "#d4a574" }} />
+          <BrandIcon name="lightning" size={40} color="d4a574" />
         </div>
 
         <h1 style={{

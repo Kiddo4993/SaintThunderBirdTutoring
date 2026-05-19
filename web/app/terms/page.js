@@ -1,5 +1,5 @@
 "use client";
-import { Sun, Moon } from "lucide-react";;
+import BrandIcon from "@/components/BrandIcon";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -29,7 +29,7 @@ export default function TermsPage() {
 
   return (
     <>
-      <button className="theme-toggle-btn" onClick={toggleTheme}>{isLight ? <Sun size={16} strokeWidth={1.5} /> : <Moon size={16} strokeWidth={1.5} />}</button>
+      <button className="theme-toggle-btn" onClick={toggleTheme}>{isLight ? <BrandIcon name="sun" size={16} /> : <BrandIcon name="moon" size={16} />}</button>
       <div className="terms-container">
         <h1>Terms &amp; Conditions</h1>
         <p>Welcome to <strong>Saint Thunderbird Tutoring</strong>. By creating an account as a student or tutor, you agree to the following terms and conditions designed to ensure a safe, respectful, and effective learning environment for everyone involved.</p>

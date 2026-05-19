@@ -1,59 +1,60 @@
-import {
-  GraduationCap, Zap, Star, Trophy, Users, Handshake, Heart, Globe,
-  Eye, Gem, Target, FileText, CheckCircle, Clock, Mail, BarChart2,
-  BookOpen, Video, HelpCircle, Lock, LogOut, Sun, Moon, User,
-  Send, Award, Briefcase, Inbox, CheckSquare, Calendar,
-  FlaskConical, Sprout, Monitor, Palette,
-} from "lucide-react";
+"use client";
 
-const ICON_MAP = {
-  graduation: GraduationCap,
-  lightning: Zap,
-  star: Star,
-  trophy: Trophy,
-  community: Users,
-  handshake: Handshake,
-  heart: Heart,
-  globe: Globe,
-  eye: Eye,
-  gem: Gem,
-  target: Target,
-  memo: FileText,
-  check: CheckCircle,
-  clock: Clock,
-  email: Mail,
-  chart: BarChart2,
-  book: BookOpen,
-  video: Video,
-  question: HelpCircle,
-  lock: Lock,
-  logout: LogOut,
-  sun: Sun,
-  moon: Moon,
-  user: User,
-  send: Send,
-  award: Award,
-  briefcase: Briefcase,
-  inbox: Inbox,
-  document: FileText,
-  done: CheckSquare,
-  calendar: Calendar,
-  flask: FlaskConical,
-  sprout: Sprout,
-  monitor: Monitor,
-  palette: Palette,
+const ICON_NAMES = {
+  graduation: "graduation-cap",
+  lightning: "lightning-bolt",
+  star: "star",
+  trophy: "trophy",
+  community: "conference-call",
+  handshake: "handshake",
+  heart: "like",
+  globe: "globe",
+  eye: "visible",
+  gem: "gem",
+  target: "target",
+  memo: "memo",
+  check: "checkmark",
+  clock: "clock",
+  email: "email",
+  chart: "bar-chart",
+  book: "open-book",
+  video: "video-call",
+  question: "help",
+  lock: "lock",
+  logout: "logout",
+  sun: "sun",
+  moon: "moon",
+  user: "user",
+  send: "sent",
+  award: "medal",
+  briefcase: "briefcase",
+  inbox: "inbox",
+  document: "document",
+  done: "done",
+  calendar: "calendar",
+  flask: "flask",
+  sprout: "seedling",
+  monitor: "monitor",
+  palette: "paint-palette",
+  calculator: "calculator",
+  bookmark: "bookmark",
+  menu: "menu",
 };
 
-export default function BrandIcon({ name, size = 20, className = "", strokeWidth = 1.5, style }) {
-  const Icon = ICON_MAP[name];
-  if (!Icon) return null;
+export default function BrandIcon({ name, size = 20, className = "", style, color = "ffffff" }) {
+  const iconName = ICON_NAMES[name];
+  if (!iconName) return null;
   return (
-    <Icon
-      size={size}
-      strokeWidth={strokeWidth}
+    <img
+      src={`https://img.icons8.com/ios-filled/96/${color}/${iconName}.png`}
+      width={size}
+      height={size}
       className={className}
-      style={style}
+      style={{ display: "inline-block", flexShrink: 0, ...style }}
+      alt=""
       aria-hidden="true"
+      draggable="false"
+      onError={(e) => { e.currentTarget.style.display = "none"; }}
     />
   );
 }

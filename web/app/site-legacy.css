@@ -714,7 +714,8 @@ nav.scrolled {
     position: absolute;
     top: 1.6rem;
     right: 1.6rem;
-    color: rgba(212, 165, 116, 0.35);
+    color: rgb(212, 165, 116);
+    opacity: 0.35;
     display: block;
 }
 

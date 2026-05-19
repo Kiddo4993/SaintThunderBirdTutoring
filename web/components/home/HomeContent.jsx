@@ -1,18 +1,5 @@
-import {
-  Star,
-  BookOpen,
-  GraduationCap,
-  Target,
-  Users,
-  Trophy,
-  Sprout,
-  Briefcase,
-  Eye,
-  Gem,
-} from "lucide-react";
+import BrandIcon from "@/components/BrandIcon";
 import SubjectCarousel from "@/components/home/SubjectCarousel";
-
-const ICON = { size: 18, strokeWidth: 1.5, "aria-hidden": "true" };
 
 
 export default function HomeContent() {
@@ -132,7 +119,7 @@ export default function HomeContent() {
 
           <div className="subjects-grid mt-24 grid">
             <div className="glass-card">
-              <Star className="card-icon" {...ICON} />
+              <BrandIcon name="star" size={18} className="card-icon" color="d4a574" />
               <h3>About Us</h3>
               <p>
                 We provide culturally responsive education that honors indigenous traditions while preparing
@@ -146,7 +133,7 @@ export default function HomeContent() {
               </a>
             </div>
             <div className="glass-card">
-              <BookOpen className="card-icon" {...ICON} />
+              <BrandIcon name="book" size={18} className="card-icon" color="d4a574" />
               <h3>Our Subjects</h3>
               <p>
                 From mathematics and sciences to languages and arts, we offer comprehensive tutoring across all
@@ -160,7 +147,7 @@ export default function HomeContent() {
               </a>
             </div>
             <div className="glass-card">
-              <GraduationCap className="card-icon" {...ICON} />
+              <BrandIcon name="graduation" size={18} className="card-icon" color="d4a574" />
               <h3>Expert Mentors</h3>
               <p>
                 Our team includes certified educators, indigenous community leaders, and career professionals
@@ -188,7 +175,7 @@ export default function HomeContent() {
           </div>
           <div className="subjects-grid grid">
             <div className="glass-card">
-              <Target className="card-icon" {...ICON} />
+              <BrandIcon name="target" size={18} className="card-icon" color="d4a574" />
               <h3>Personalized Learning</h3>
               <p>
                 Each student receives a customized learning plan that adapts to their pace, learning style, and
@@ -196,7 +183,7 @@ export default function HomeContent() {
               </p>
             </div>
             <div className="glass-card">
-              <Users className="card-icon" {...ICON} />
+              <BrandIcon name="community" size={18} className="card-icon" color="d4a574" />
               <h3>Peer Support</h3>
               <p>
                 Join study groups and connect with fellow indigenous students for collaborative learning, mutual
@@ -204,7 +191,7 @@ export default function HomeContent() {
               </p>
             </div>
             <div className="glass-card">
-              <Trophy className="card-icon" {...ICON} />
+              <BrandIcon name="trophy" size={18} className="card-icon" color="d4a574" />
               <h3>Achievement Recognition</h3>
               <p>
                 Celebrate your successes! We recognize academic achievements, cultural contributions, and personal
@@ -228,7 +215,7 @@ export default function HomeContent() {
           </div>
           <div className="subjects-grid grid">
             <div className="glass-card">
-              <Star className="card-icon" {...ICON} />
+              <BrandIcon name="star" size={18} className="card-icon" color="d4a574" />
               <h3>Our Mission</h3>
               <p>
                 To provide culturally responsive education that honors indigenous traditions while preparing
@@ -236,7 +223,7 @@ export default function HomeContent() {
               </p>
             </div>
             <div className="glass-card">
-              <Eye className="card-icon" {...ICON} />
+              <BrandIcon name="eye" size={18} className="card-icon" color="d4a574" />
               <h3>Our Vision</h3>
               <p>
                 A world where indigenous students thrive academically while maintaining strong connections to their
@@ -244,7 +231,7 @@ export default function HomeContent() {
               </p>
             </div>
             <div className="glass-card">
-              <Gem className="card-icon" {...ICON} />
+              <BrandIcon name="gem" size={18} className="card-icon" color="d4a574" />
               <h3>Our Values</h3>
               <p>
                 Cultural respect, educational excellence, community empowerment, inclusivity, and sustainable
@@ -314,7 +301,7 @@ export default function HomeContent() {
 
           <div className="subjects-grid mt-16 grid">
             <div className="glass-card">
-              <GraduationCap className="card-icon" {...ICON} />
+              <BrandIcon name="graduation" size={18} className="card-icon" color="d4a574" />
               <h3>Expert Educators</h3>
               <p>
                 Certified teachers, university professors, and subject matter experts committed to culturally
@@ -322,7 +309,7 @@ export default function HomeContent() {
               </p>
             </div>
             <div className="glass-card">
-              <Sprout className="card-icon" {...ICON} />
+              <BrandIcon name="sprout" size={18} className="card-icon" color="d4a574" />
               <h3>Community Leaders</h3>
               <p>
                 Indigenous community members, elders, and cultural practitioners who share traditional knowledge
@@ -330,7 +317,7 @@ export default function HomeContent() {
               </p>
             </div>
             <div className="glass-card">
-              <Briefcase className="card-icon" {...ICON} />
+              <BrandIcon name="briefcase" size={18} className="card-icon" color="d4a574" />
               <h3>Career Professionals</h3>
               <p>
                 Successful indigenous professionals from various fields who inspire students and share real-world

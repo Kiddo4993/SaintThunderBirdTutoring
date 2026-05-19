@@ -1,43 +1,36 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import {
-  BookMarked,
-  Calculator,
-  FlaskConical,
-  Globe,
-  Monitor,
-  Palette,
-} from "lucide-react";
+import BrandIcon from "@/components/BrandIcon";
 
 const subjects = [
   {
-    Icon: BookMarked,
+    iconName: "book",
     title: "English & Literature",
     text: "Strengthen communication, essay writing, and analytical reading through Indigenous perspectives and contemporary voices.",
   },
   {
-    Icon: Calculator,
+    iconName: "calculator",
     title: "Mathematics",
     text: "Master foundational to advanced math concepts with culturally relevant examples and step-by-step mentorship.",
   },
   {
-    Icon: FlaskConical,
+    iconName: "flask",
     title: "Science",
     text: "Explore biology, chemistry, and physics while connecting traditional Indigenous knowledge with modern discoveries.",
   },
   {
-    Icon: Globe,
+    iconName: "globe",
     title: "Social Studies",
     text: "Understand history, geography, and social justice through inclusive and Indigenous-centered perspectives.",
   },
   {
-    Icon: Monitor,
+    iconName: "monitor",
     title: "Computer Science",
     text: "Build digital skills, learn to code, and explore technology as a tool for creativity, sovereignty, and community empowerment.",
   },
   {
-    Icon: Palette,
+    iconName: "palette",
     title: "Arts & Culture",
     text: "Express yourself through visual arts, music, and storytelling — celebrating Indigenous creativity and cultural identity.",
   },
@@ -58,11 +51,6 @@ export default function SubjectCarousel() {
     }, 200);
   };
 
-  const advance = () => {
-    if (hovered.current) return;
-    goTo((active + 1) % subjects.length);
-  };
-
   useEffect(() => {
     intervalRef.current = setInterval(() => {
       setActive((prev) => {
@@ -73,7 +61,7 @@ export default function SubjectCarousel() {
     return () => clearInterval(intervalRef.current);
   }, []);
 
-  const { Icon, title, text } = subjects[active];
+  const { iconName, title, text } = subjects[active];
   const idx = String(active + 1).padStart(2, "0");
   const total = String(subjects.length).padStart(2, "0");
 
@@ -111,7 +99,7 @@ export default function SubjectCarousel() {
 
       <div className="subject-carousel-right">
         <div className={`subject-icon-card${fading ? " fading" : ""}`} aria-hidden="true">
-          <Icon size={72} strokeWidth={1} />
+          <BrandIcon name={iconName} size={72} />
         </div>
       </div>
     </div>
