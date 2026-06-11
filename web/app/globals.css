@@ -66,9 +66,9 @@
 }
 
 body.light-mode .login-container {
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(212, 165, 116, 0.3);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    background: rgba(253, 246, 238, 0.92);
+    border: 1px solid rgba(107, 68, 35, 0.3);
+    box-shadow: 0 20px 60px rgba(44, 24, 16, 0.1);
 }
 
 .forgot-password {
@@ -89,7 +89,7 @@ body.light-mode .login-container {
 }
 
 body.light-mode .forgot-password a {
-    color: #4a4a4a;
+    color: #5c3d2e;
 }
 
 .divider {
@@ -119,7 +119,7 @@ body.light-mode .forgot-password a {
 }
 
 body.light-mode .divider {
-    color: #4a4a4a;
+    color: #5c3d2e;
 }
 
 .signup-link {
@@ -140,11 +140,11 @@ body.light-mode .divider {
 }
 
 body.light-mode .signup-link {
-    color: #4a4a4a;
+    color: #5c3d2e;
 }
 
 body.light-mode .signup-link a {
-    color: #2d2d2d;
+    color: #2c1810;
 }
 
 .back-link {
@@ -163,7 +163,7 @@ body.light-mode .signup-link a {
 }
 
 body.light-mode .back-link {
-    color: #2d2d2d;
+    color: #2c1810;
 }
 
 .theme-toggle-btn {
@@ -208,7 +208,7 @@ body.light-mode .back-link {
 }
 
 body.light-mode .remember-me label {
-    color: #4a4a4a;
+    color: #5c3d2e;
 }
 
 .error-message {
@@ -237,9 +237,9 @@ body.light-mode .remember-me label {
 }
 
 body.light-mode .signup-container {
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(212, 165, 116, 0.3);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    background: rgba(253, 246, 238, 0.92);
+    border: 1px solid rgba(107, 68, 35, 0.3);
+    box-shadow: 0 20px 60px rgba(44, 24, 16, 0.1);
 }
 
 .form-row {
@@ -310,7 +310,7 @@ body.light-mode .subject-item {
 }
 
 body.light-mode .link {
-    color: #2d2d2d;
+    color: #2c1810;
 }
 
 .info-text {
@@ -325,7 +325,7 @@ body.light-mode .link {
 
 body.light-mode .info-text {
     background: rgba(212, 165, 116, 0.15);
-    color: #4a4a4a;
+    color: #5c3d2e;
 }
 
 /* Shared login/signup form elements */
@@ -347,7 +347,7 @@ body.light-mode .info-text {
 }
 
 body.light-mode .subtitle {
-    color: #4a4a4a;
+    color: #5c3d2e;
 }
 
 .tabs {
@@ -379,8 +379,8 @@ body.light-mode .subtitle {
 
 body.light-mode .tab {
     background: rgba(212, 165, 116, 0.1);
-    border: 1px solid rgba(212, 165, 116, 0.3);
-    color: #4a4a4a;
+    border: 1px solid rgba(107, 68, 35, 0.25);
+    color: #5c3d2e;
 }
 
 body.light-mode .tab.active {
@@ -403,7 +403,7 @@ body.light-mode .tab.active {
 }
 
 body.light-mode .form-group label, body.light-mode label.form-label {
-    color: #2d2d2d;
+    color: #2c1810;
 }
 
 .form-group input,
@@ -423,9 +423,9 @@ body.light-mode .form-group label, body.light-mode label.form-label {
 body.light-mode .form-group input,
 body.light-mode .form-group select,
 body.light-mode .form-group textarea {
-    background: rgba(212, 165, 116, 0.05);
-    border: 1px solid rgba(212, 165, 116, 0.3);
-    color: #1a1a1a;
+    background: rgba(212, 165, 116, 0.08);
+    border: 1px solid rgba(107, 68, 35, 0.28);
+    color: #2c1810;
 }
 
 .form-group input:focus,
@@ -462,7 +462,7 @@ body.light-mode .form-group textarea {
 }
 
 body.light-mode .checkbox-group label {
-    color: #4a4a4a;
+    color: #5c3d2e;
 }
 
 .btn-submit {
@@ -2197,13 +2197,13 @@ body.light-mode .checkbox-group label {
 }
 
 body.light-mode .founder-card {
-    background: rgba(255, 255, 255, 0.9);
-    border: 1px solid rgba(212, 165, 116, 0.4);
+    background: rgba(253, 246, 238, 0.92);
+    border: 1px solid rgba(107, 68, 35, 0.35);
 }
 
 body.light-mode .founder-bio,
 body.light-mode .founder-title {
-    color: #3a3a3a;
+    color: #3d2415;
 }
 
 body.light-mode .purpose-highlight {
@@ -2211,7 +2211,7 @@ body.light-mode .purpose-highlight {
 }
 
 body.light-mode .purpose-highlight p {
-    color: #2d2d2d;
+    color: #2c1810;
 }
 
 @media (max-width: 768px) {
@@ -2245,8 +2245,8 @@ body.light-mode .purpose-highlight p {
 }
 
 body.light-mode .terms-container {
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(212, 165, 116, 0.3);
+    background: rgba(253, 246, 238, 0.92);
+    border: 1px solid rgba(107, 68, 35, 0.3);
 }
 
 .terms-h1 {
@@ -2276,7 +2276,7 @@ body.light-mode .terms-container {
 }
 
 body.light-mode .terms-p, body.light-mode .terms-li {
-    color: #333;
+    color: #3d2415;
 }
 
 .terms-ul {
