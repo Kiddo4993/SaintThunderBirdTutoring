@@ -9,6 +9,7 @@ const THEME_KEY = "st-theme";
 export default function SiteNav({ onInfoClick }) {
   const [isLight, setIsLight] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -31,6 +32,15 @@ export default function SiteNav({ onInfoClick }) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [menuOpen]);
+
   function toggleTheme() {
     document.body.classList.toggle("light-mode");
     const light = document.body.classList.contains("light-mode");
@@ -40,6 +50,10 @@ export default function SiteNav({ onInfoClick }) {
       /* ignore */
     }
     setIsLight(light);
+  }
+
+  function closeMenu() {
+    setMenuOpen(false);
   }
 
   return (
@@ -104,11 +118,70 @@ export default function SiteNav({ onInfoClick }) {
               </a>
             </li>
           </ul>
+
+          {/* Mobile controls */}
+          <div className="mobile-nav-controls">
+            <button
+              type="button"
+              className="theme-toggle"
+              aria-label={isLight ? "Switch to dark mode" : "Switch to light mode"}
+              onClick={toggleTheme}
+            >
+              {isLight ? (
+                <BrandIcon name="sun" size={18} />
+              ) : (
+                <BrandIcon name="moon" size={18} />
+              )}
+            </button>
+            <button
+              type="button"
+              className="hamburger-btn"
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen((o) => !o)}
+            >
+              <span className={`hamburger-icon ${menuOpen ? "open" : ""}`}>
+                <span />
+                <span />
+                <span />
+              </span>
+            </button>
+          </div>
         </div>
         <div className="nav-progress" aria-hidden="true">
           <div className="nav-progress-fill" style={{ width: `${progress}%` }} />
         </div>
       </nav>
+
+      {/* Mobile drawer */}
+      {menuOpen && (
+        <div className="mobile-menu-overlay" onClick={closeMenu} aria-hidden="true" />
+      )}
+      <div className={`mobile-menu-drawer ${menuOpen ? "open" : ""}`} aria-hidden={!menuOpen}>
+        <div className="mobile-menu-header">
+          <div className="logo">
+            <ThunderbirdLogo size={24} color="#d4a574" />
+            <span>Saint Thunderbird</span>
+          </div>
+          <button type="button" className="mobile-menu-close" onClick={closeMenu} aria-label="Close menu">
+            ✕
+          </button>
+        </div>
+        <nav className="mobile-menu-nav">
+          <a href="/about" className="mobile-nav-link" onClick={closeMenu}>About</a>
+          <a href="/subjects" className="mobile-nav-link" onClick={closeMenu}>Subjects</a>
+          <a href="/students" className="mobile-nav-link" onClick={closeMenu}>Students</a>
+          <a href="/mentors" className="mobile-nav-link" onClick={closeMenu}>Mentors</a>
+          <a href="/login" className="mobile-nav-link" onClick={closeMenu}>Login / Sign Up</a>
+          <button
+            type="button"
+            className="mobile-nav-link mobile-info-btn"
+            onClick={() => { closeMenu(); onInfoClick?.(); }}
+          >
+            Organization Info
+          </button>
+        </nav>
+      </div>
     </>
   );
 }
