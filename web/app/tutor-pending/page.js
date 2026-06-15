@@ -65,7 +65,7 @@ export default function TutorPendingPage() {
       <div className="dash-mesh-gradient"></div>
       <div className="auth-page-wrapper">
         <div className="pending-container">
-          <div className="pending-logo"><svg viewBox="0 0 40 40" width="40" height="40" fill="none"><rect x="4" y="8" width="32" height="4" fill="#d4a574" rx="1"/><rect x="18" y="12" width="4" height="22" fill="#d4a574" rx="1"/></svg></div>
+          <div className="pending-logo"><img src="/logo.svg" width="52" height="62" alt="" aria-hidden="true"/></div>
           <h1>Application Submitted</h1>
           <p className="pending-status">Your tutor application is under review</p>
           <div className="pending-badge">PENDING APPROVAL</div>

@@ -1,17 +1,16 @@
-import { Cormorant_Garamond, DM_Sans } from "next/font/google";
+import { Monoton, Alfa_Slab_One } from "next/font/google";
 import "./globals.css";
 
-const cormorant = Cormorant_Garamond({
+const monoton = Monoton({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  style: ["normal", "italic"],
+  weight: ["400"],
   variable: "--font-fraunces",
   display: "swap",
 });
 
-const dmSans = DM_Sans({
+const alfaSlabOne = Alfa_Slab_One({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400"],
   variable: "--font-jakarta",
   display: "swap",
 });
@@ -26,7 +25,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${cormorant.variable} ${dmSans.variable} antialiased`}>
+      <body className={`${monoton.variable} ${alfaSlabOne.variable} antialiased`}>
         {children}
       </body>
     </html>

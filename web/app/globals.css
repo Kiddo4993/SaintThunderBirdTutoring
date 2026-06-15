@@ -3,7 +3,7 @@
 
 /* Tailwind layout utilities used alongside legacy class-based theme (incremental migration). */
 @theme inline {
-  --font-sans: var(--font-jakarta), 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-sans: var(--font-jakarta), 'Alfa Slab One', Georgia, serif;
 }
 
 /* ============================================================
@@ -1847,17 +1847,13 @@ body.light-mode .checkbox-group label {
 }
 
 .thunderbird-hologram {
-    font-size: 12rem;
-    background: linear-gradient(135deg, #4a7c9e 0%, #d4a574 50%, #8b4513 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     opacity: 0;
     transform: rotateY(-90deg) rotateX(10deg) scale(0.3);
     animation: hologramReveal 2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards;
-    filter: drop-shadow(0 0 40px rgba(74, 124, 158, 0.5));
-    line-height: 1;
-    font-weight: 900;
+    filter: drop-shadow(0 0 40px rgba(212, 165, 116, 0.6));
 }
 
 @keyframes hologramReveal {

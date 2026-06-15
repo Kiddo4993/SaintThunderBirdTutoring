@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import BrandIcon from "@/components/BrandIcon";
+import ThunderbirdLogo from "@/components/ThunderbirdLogo";
 import HomeEffects from "./HomeEffects";
 import SiteNav from "./SiteNav";
 
@@ -64,7 +64,7 @@ export default function HomeClient({ children }) {
           <div className="loading-content">
             <div className="hologram-container">
               <div className="thunderbird-hologram" aria-hidden="true">
-                <BrandIcon name="lightning" size={64} color="d4a574" />
+                <ThunderbirdLogo size={96} color="#d4a574" />
               </div>
             </div>
             <h1 className="intro-title">Saint Thunderbird</h1>

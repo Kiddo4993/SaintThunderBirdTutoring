@@ -20,13 +20,13 @@ body {
     padding: 0;
     background: #0d0a06;
     color: #f0e8d8;
-    font-family: var(--font-jakarta), 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-family: var(--font-jakarta), 'Alfa Slab One', Georgia, serif;
     line-height: 1.7;
     overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-fraunces), 'Fraunces', Georgia, serif;
+    font-family: var(--font-fraunces), 'Monoton', Georgia, serif;
 }
 
 body::before {
@@ -398,7 +398,7 @@ nav.scrolled {
     line-height: 1.05;
     opacity: 0;
     animation: fadeUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.4s forwards;
-    font-family: var(--font-fraunces), 'Cormorant Garamond', Georgia, serif;
+    font-family: var(--font-fraunces), 'Monoton', Georgia, serif;
 }
 
 .gradient-text {
@@ -521,7 +521,7 @@ nav.scrolled {
     margin: 1rem 0;
     letter-spacing: -0.01em;
     line-height: 1.15;
-    font-family: var(--font-fraunces), 'Cormorant Garamond', Georgia, serif;
+    font-family: var(--font-fraunces), 'Monoton', Georgia, serif;
 }
 
 .section-subtitle {
@@ -790,7 +790,7 @@ nav.scrolled {
     font-weight: 500;
     letter-spacing: -0.01em;
     line-height: 1.2;
-    font-family: var(--font-fraunces), 'Cormorant Garamond', Georgia, serif;
+    font-family: var(--font-fraunces), 'Monoton', Georgia, serif;
     color: #f0e8d8;
 }
 
@@ -824,7 +824,7 @@ nav.scrolled {
     color: var(--beige);
     margin-bottom: 0.5rem;
     transition: all 0.3s ease;
-    font-family: var(--font-fraunces), 'Cormorant Garamond', Georgia, serif;
+    font-family: var(--font-fraunces), 'Monoton', Georgia, serif;
     letter-spacing: -0.02em;
     line-height: 1;
 }

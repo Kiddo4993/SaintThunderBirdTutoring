@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import BrandIcon from "@/components/BrandIcon";
+import ThunderbirdLogo from "@/components/ThunderbirdLogo";
 
 const THEME_KEY = "st-theme";
 
@@ -49,7 +50,7 @@ export default function SiteNav({ onInfoClick }) {
       <nav id="nav">
         <div className="nav-container">
           <div className="logo">
-            <BrandIcon name="lightning" size={22} className="logo-icon" color="d4a574" />
+            <ThunderbirdLogo size={28} color="#d4a574" className="logo-icon" />
             <span>Saint Thunderbird</span>
           </div>
           <ul className="nav-links">

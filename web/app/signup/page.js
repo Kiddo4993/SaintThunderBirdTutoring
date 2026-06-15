@@ -1,5 +1,6 @@
 'use client';
 import BrandIcon from '@/components/BrandIcon';
+import ThunderbirdLogo from '@/components/ThunderbirdLogo';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -149,7 +150,7 @@ export default function SignupPage() {
       <div className="auth-page-wrapper">
       <div className="signup-container">
         <div className="logo">
-          <BrandIcon name="lightning" size={40} color="d4a574" />
+          <ThunderbirdLogo size={52} color="#d4a574" />
         </div>
 
         <h1 style={{

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import BrandIcon from "@/components/BrandIcon";
+import ThunderbirdLogo from "@/components/ThunderbirdLogo";
 
 const TIME_LABELS = { "30min": "30 minutes", "1hour": "1 hour", "1.5hours": "1.5 hours", "2hours": "2 hours" };
 
@@ -134,7 +135,7 @@ export default function StudentDashboardPage() {
       <div className="container" style={{ padding: "2rem", position: "relative", zIndex: 10 }}>
         <div className="header">
           <div className="header-content">
-            <h1><BrandIcon name="lightning" size={22} style={{ display: "inline", verticalAlign: "middle", marginRight: "0.4rem" }} /> Welcome, <span>{user?.firstName || "Student"}</span>!</h1>
+            <h1><ThunderbirdLogo size={22} color="#d4a574" style={{ display: "inline", verticalAlign: "middle", marginRight: "0.4rem" }} /> Welcome, <span>{user?.firstName || "Student"}</span>!</h1>
             <p>Request tutoring help and get connected with tutors</p>
           </div>
           <div className="header-actions">
