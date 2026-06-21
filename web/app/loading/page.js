@@ -5,19 +5,22 @@ import { useRouter } from "next/navigation";
 
 export default function LoadingPage() {
   const router = useRouter();
-  const starsRef = useRef(null);
+  const emberRef = useRef(null);
 
   useEffect(() => {
-    // Generate stars
-    if (starsRef.current) {
-      for (let i = 0; i < 150; i++) {
-        const star = document.createElement("div");
-        star.className = "star";
-        star.style.left = Math.random() * 100 + "%";
-        star.style.top = Math.random() * 100 + "%";
-        star.style.animationDelay = Math.random() * 3 + "s";
-        star.style.width = star.style.height = (Math.random() * 2 + 1) + "px";
-        starsRef.current.appendChild(star);
+    if (emberRef.current) {
+      for (let i = 0; i < 45; i++) {
+        const ember = document.createElement("div");
+        ember.className = "ember";
+        ember.style.left = Math.random() * 100 + "%";
+        ember.style.bottom = Math.random() * 40 + "%";
+        ember.style.animationDelay = Math.random() * 5 + "s";
+        ember.style.animationDuration = (Math.random() * 3 + 2.5) + "s";
+        const s = (Math.random() * 3 + 1) + "px";
+        ember.style.width = s;
+        ember.style.height = s;
+        ember.style.setProperty("--drift", (Math.random() * 80 - 40) + "px");
+        emberRef.current.appendChild(ember);
       }
     }
 
@@ -45,36 +48,38 @@ export default function LoadingPage() {
 
   return (
     <div className="loading-container">
-      <div className="stars-field" ref={starsRef}></div>
-      <div className="grid-lines">
-        {[...Array(8)].map((_, i) => (
-          <div key={`h${i}`} className="grid-line-h" style={{ top: `${i * 14.28}%` }} />
-        ))}
-        {[...Array(8)].map((_, i) => (
-          <div key={`v${i}`} className="grid-line-v" style={{ left: `${i * 14.28}%` }} />
-        ))}
+      <div className="ember-field" ref={emberRef} aria-hidden="true" />
+      <div className="aurora-ribbons" aria-hidden="true">
+        <div className="aurora-ribbon ribbon-1" />
+        <div className="aurora-ribbon ribbon-2" />
+        <div className="aurora-ribbon ribbon-3" />
+        <div className="aurora-ribbon ribbon-4" />
       </div>
-      <div className="glow-orb orb-primary"></div>
-      <div className="glow-orb orb-secondary"></div>
-      <div className="glow-orb orb-accent"></div>
-      <div className="energy-ring"></div>
-      <div className="scan-line"></div>
       <div className="loading-content">
         <div className="hologram-container">
-          <div className="thunderbird-hologram"><img src="/logo.svg" width="120" height="144" alt="" aria-hidden="true" style={{filter:"drop-shadow(0 0 40px rgba(74,124,158,0.5))"}}/></div>
+          <div className="thunderbird-hologram">
+            <img
+              src="/logo.svg"
+              width="160"
+              height="77"
+              alt=""
+              aria-hidden="true"
+              style={{ filter: "drop-shadow(0 0 40px rgba(212,165,116,0.65))" }}
+            />
+          </div>
         </div>
         <h1 className="intro-title">Saint Thunderbird</h1>
         <p className="intro-subtitle">Tutoring</p>
         <div className="progress-section">
           <p className="progress-label">Loading your experience...</p>
           <div className="progress-bar-wrapper">
-            <div className="progress-bar-fill"></div>
+            <div className="progress-bar-fill" />
           </div>
         </div>
         <div className="loading-dots">
-          <div className="dot"></div>
-          <div className="dot"></div>
-          <div className="dot"></div>
+          <div className="dot" />
+          <div className="dot" />
+          <div className="dot" />
         </div>
       </div>
     </div>
